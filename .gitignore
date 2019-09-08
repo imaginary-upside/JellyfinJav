@@ -1,0 +1,7 @@
+.ionide/
+.vscode/
+bin/
+Debug/
+docker-config/
+obj/
+videos/
