@@ -8,37 +8,33 @@ using System.Collections.Generic;
 
 namespace JellyfinJav.Providers.R18 {
     class R18Api {
-        private readonly string code;
         private readonly HttpClient httpClient;
         private string html;
 
         public string id;
-        public readonly List<string> actresses;
         public bool successful = false;
 
-        public R18Api(string code) {
-            this.code = code;
+        public R18Api() {
             this.httpClient = new HttpClient();
-            this.actresses = new List<string>();
         }
 
-        public async Task init() {
-            id = await getProductId();
-
-            var response = await httpClient.GetAsync(buildUrl());
-            html = await response.Content.ReadAsStringAsync();
-            getActresses();
-
-            successful = true;
+        public async Task findVideo(string code) {
+            id = await getProductId(code);
+            await loadVideo(id);
         }
 
-        private string buildUrl() {
-            return String.Format(
-                "https://www.r18.com/videos/vod/movies/detail/-/id={0}/", id
+        public async Task loadVideo(string id) {
+            this.id = id;
+
+            var response = await httpClient.GetAsync(
+                string.Format("https://www.r18.com/videos/vod/movies/detail/-/id={0}/", id)
             );
+            html = await response.Content.ReadAsStringAsync();
         }
 
-        private void getActresses() {
+        public IEnumerable<string> getActresses() {
+            var actresses = new List<string>();
+
             var rx = new Regex("<span itemprop=\"name\">(.*)<\\/span>", RegexOptions.Compiled);
             var matches = rx.Matches(html);
 
@@ -53,6 +49,8 @@ namespace JellyfinJav.Providers.R18 {
 
                 actresses.Add(name);
             }
+
+            return actresses;
         }
 
         public string getTitle() {
@@ -61,7 +59,7 @@ namespace JellyfinJav.Providers.R18 {
 
             var title = new StringBuilder(match?.Groups[1].Value);
 
-            foreach (var actress in actresses) {
+            foreach (var actress in getActresses()) {
                 title.Replace(actress, "");
             }
 
@@ -75,7 +73,21 @@ namespace JellyfinJav.Providers.R18 {
             return (from Match m in matches select m.Groups[1].Value);
         }
 
-        private async Task<string> getProductId() {
+        public DateTime? getReleaseDate() {
+            var rx = new Regex("<dd itemprop=\"dateCreated\">(.*\n.*)<br>", RegexOptions.Compiled);
+            var match = rx.Match(html);
+
+            return DateTime.Parse(match?.Groups[1].Value);
+        }
+
+        public string getStudio() {
+            var rx = new Regex("<a .* itemprop=\"name\">\\s*(.*)<\\/a>", RegexOptions.Compiled);
+            var match = rx.Match(html);
+
+            return match?.Groups[1].Value;
+        }
+
+        private async Task<string> getProductId(string code) {
             var response = await httpClient.GetAsync(
                 String.Format("http://www.r18.com/common/search/order=match/searchword={0}", code)
             );

@@ -9,7 +9,6 @@ using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Providers;
 using MediaBrowser.Controller.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace JellyfinJav.Providers.R18 {
   public class R18Provider : IRemoteMetadataProvider<Movie, MovieInfo> {
@@ -28,23 +27,27 @@ namespace JellyfinJav.Providers.R18 {
                                                    CancellationToken cancelToken) {
       var result = new MetadataResult<Movie>();
 
-      var r18Client = new R18Api(info.Name);
-      await r18Client.init();
+      var r18Client = new R18Api();
 
-      if (!r18Client.successful) {
-        return result;
+      if (info.ProviderIds.ContainsKey("R18")) {
+        await r18Client.loadVideo(info.ProviderIds["R18"]);
+      } else {
+        await r18Client.findVideo(info.Name);
       }
 
       result.Item = new Movie();
       result.Item.ProviderIds.Add("R18", r18Client.id);
-      //result.Item.Name = r18Client.getTitle();
+      result.Item.OriginalTitle = info.Name;
+      result.Item.Name = r18Client.getTitle();
+      result.Item.PremiereDate = r18Client.getReleaseDate();
+      result.Item.Studios = new string[] {r18Client.getStudio()};
       result.HasMetadata = true;
 
       foreach (string category in r18Client.getCategories()) {
           result.Item.AddGenre(category);
       }
 
-      foreach (string actress in r18Client.actresses) {
+      foreach (string actress in r18Client.getActresses()) {
         result.AddPerson(new PersonInfo {
           Name = actress,
           Type = PersonType.Actor
