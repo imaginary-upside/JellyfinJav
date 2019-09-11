@@ -21,14 +21,15 @@ namespace JellyfinJav.Providers.Asianscreens {
 
         public async Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancelToken) {
             var result = new List<RemoteImageInfo>();
+
+            var client = new AsianscreensApi();
             
             var id = item.GetProviderId("Asianscreens");
             if (string.IsNullOrEmpty(id)) {
-                return result;
+                await client.findActress(item.Name);
+            } else {
+                await client.loadActress(id);
             }
-
-            var client = new AsianscreensApi(id);
-            await client.loadActress();
 
             result.Add(new RemoteImageInfo {
                 ProviderName = Name,

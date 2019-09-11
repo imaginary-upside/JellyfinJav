@@ -18,25 +18,39 @@ namespace JellyfinJav.Providers.Asianscreens {
             this.httpClient = httpClient;
         }
 
-        public Task<IEnumerable<RemoteSearchResult>> GetSearchResults(PersonLookupInfo info, CancellationToken cancelationToken) {
-            throw new NotImplementedException();
+        public async Task<IEnumerable<RemoteSearchResult>> GetSearchResults(PersonLookupInfo info, CancellationToken cancelationToken) {
+            var result = new RemoteSearchResult();
+            
+            var client = new AsianscreensApi();
+            if (info.ProviderIds.ContainsKey("Asianscreens")) {
+                await client.loadActress(info.ProviderIds["Asianscreens"]);
+            } else {
+                await client.findActress(info.Name);
+            }
+
+            result.ProviderIds.Add("Asianscreens", client.id);
+            result.PremiereDate = client.getBirthdate();
+            result.Name = info.Name;
+            
+            return new RemoteSearchResult[] { result };
         }
 
         public async Task<MetadataResult<Person>> GetMetadata(PersonLookupInfo info, CancellationToken cancellationToken) {
             var result = new MetadataResult<Person>();
 
+            var client = new AsianscreensApi();
+
             if (info.ProviderIds.ContainsKey("Asianscreens")) {
                 return result;
             }
-
-            var asianscreensClient = new AsianscreensApi();
-            await asianscreensClient.findActress(info.Name);
+            
+            await client.findActress(info.Name);
 
             result.Item = new Person {
                 Name = info.Name,
-                PremiereDate = asianscreensClient.getBirthdate()
+                PremiereDate = client.getBirthdate()
             };
-            result.Item.ProviderIds.Add("Asianscreens", asianscreensClient.id);
+            result.Item.ProviderIds.Add("Asianscreens", client.id);
             result.HasMetadata = true;
 
             return result;

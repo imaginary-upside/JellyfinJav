@@ -15,10 +15,6 @@ namespace JellyfinJav.Providers.Asianscreens {
             httpClient = new HttpClient();
         }
 
-        public AsianscreensApi(string id) : this() {
-            this.id = id;
-        }
-
         public async Task findActress(string name) {
             var response = await httpClient.GetAsync(
                 Uri.EscapeUriString(
@@ -35,25 +31,26 @@ namespace JellyfinJav.Providers.Asianscreens {
             );
             var actressUrl = rx.Match(html)?.Groups[1].Value;
             id = extractId(actressUrl);
-            await loadActress();
+            await loadActress(id);
         }
 
-        public async Task loadActress() {
+        public async Task loadActress(string id) {
             var response = await httpClient.GetAsync(
                 String.Format("https://www.asianscreens.com/{0}.asp", id)
             );
             html = await response.Content.ReadAsStringAsync();
+            this.id = id;
         }
 
         public DateTime? getBirthdate() {
             var rx = new Regex("<B>DOB:.*\n.*>(.*)<\\/FONT>", RegexOptions.Compiled);
             var match = rx.Match(html)?.Groups[1].Value;
 
-            if ("n/a" == match || "" == match) {
+            if ("n/a" == match || String.IsNullOrEmpty(match)) {
                 return null;
             }
 
-            return DateTime.Parse(match);
+            return DateTime.Parse(match.Trim());
         }
 
         public string getCover() {
