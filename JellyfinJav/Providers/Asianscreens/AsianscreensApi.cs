@@ -4,18 +4,22 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
-namespace JellyfinJav.Providers.Asianscreens {
-    public class AsianscreensApi {
+namespace JellyfinJav.Providers.Asianscreens
+{
+    public class AsianscreensApi
+    {
         private readonly HttpClient httpClient;
         private string html;
 
         public string id;
 
-        public AsianscreensApi() {
+        public AsianscreensApi()
+        {
             httpClient = new HttpClient();
         }
 
-        public async Task findActress(string name) {
+        public async Task findActress(string name)
+        {
             var response = await httpClient.GetAsync(
                 Uri.EscapeUriString(
                     String.Format("https://www.asianscreens.com/search/index.asp?zoom_query=\"{0}\"", name)
@@ -34,7 +38,8 @@ namespace JellyfinJav.Providers.Asianscreens {
             await loadActress(id);
         }
 
-        public async Task loadActress(string id) {
+        public async Task loadActress(string id)
+        {
             var response = await httpClient.GetAsync(
                 String.Format("https://www.asianscreens.com/{0}.asp", id)
             );
@@ -42,24 +47,28 @@ namespace JellyfinJav.Providers.Asianscreens {
             this.id = id;
         }
 
-        public DateTime? getBirthdate() {
+        public DateTime? getBirthdate()
+        {
             var rx = new Regex("<B>DOB:.*\n.*>(.*)<\\/FONT>", RegexOptions.Compiled);
             var match = rx.Match(html)?.Groups[1].Value;
 
-            if ("n/a" == match || String.IsNullOrEmpty(match)) {
+            if ("n/a" == match || String.IsNullOrEmpty(match))
+            {
                 return null;
             }
 
             return DateTime.Parse(match.Trim());
         }
 
-        public string getCover() {
+        public string getCover()
+        {
             var rx = new Regex("<IMG SRC=\"(.*)\" ALT=\".*'s Picture\">", RegexOptions.Compiled);
             var match = rx.Match(html)?.Groups[1].Value;
             return String.Format("https://asianscreens.com{0}", match);
         }
 
-        private static string extractId(string text) {
+        private static string extractId(string text)
+        {
             var rx = new Regex(".com\\/(.*).asp", RegexOptions.Compiled);
             return rx.Match(text)?.Groups[1].Value;
         }

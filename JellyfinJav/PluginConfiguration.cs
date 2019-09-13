@@ -1,5 +1,6 @@
 using MediaBrowser.Model.Plugins;
 
-namespace JellyfinJav {
-    public class PluginConfiguration : BasePluginConfiguration {}
+namespace JellyfinJav
+{
+    public class PluginConfiguration : BasePluginConfiguration { }
 }
