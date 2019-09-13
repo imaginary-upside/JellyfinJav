@@ -9,7 +9,6 @@ using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Providers;
 using MediaBrowser.Controller.Configuration;
-using JellyfinJav.Providers.Asianscreens;
 
 namespace JellyfinJav.Providers.R18
 {

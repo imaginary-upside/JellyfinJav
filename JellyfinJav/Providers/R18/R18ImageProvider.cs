@@ -32,7 +32,9 @@ namespace JellyfinJav.Providers.R18
                 return Task.FromResult<IEnumerable<RemoteImageInfo>>(result);
             }
 
-            var primaryImage = String.Format("https://pics.r18.com/digital/video/{0}/{0}pl.jpg", id);
+
+            // probably should be downloading the full size image, and then cropping the front cover
+            var primaryImage = String.Format("https://pics.r18.com/digital/video/{0}/{0}ps.jpg", id);
             result.Add(new RemoteImageInfo
             {
                 ProviderName = Name,
