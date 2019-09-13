@@ -58,24 +58,11 @@ namespace JellyfinJav.Providers.R18
 
             foreach (string actress in r18Client.getActresses())
             {
-                // jellyfin only downloads people metadata on demand.
-                // this is a ugly hack to get around this.
-                var client = new AsianscreensApi();
-                await client.findActress(actress);
-
-                var person = new PersonInfo
+                result.AddPerson(new PersonInfo
                 {
                     Name = actress,
                     Type = PersonType.Actor
-                };
-
-                var cover = client.getCover();
-                if (!string.IsNullOrEmpty(cover))
-                {
-                    person.ImageUrl = cover;
-                }
-
-                result.AddPerson(person);
+                });
             }
 
             return result;
