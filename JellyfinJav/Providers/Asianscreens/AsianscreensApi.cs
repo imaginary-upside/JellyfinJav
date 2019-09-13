@@ -33,7 +33,7 @@ namespace JellyfinJav.Providers.Asianscreens
                 "<div class=\"result_title\">.*href=\"(.*?)\".*<\\/div>",
                 RegexOptions.Compiled
             );
-            var actressUrl = rx.Match(html)?.Groups[1].Value;
+            var actressUrl = rx.Match(html)?.Groups[1].Value.Trim();
             id = extractId(actressUrl);
             await loadActress(id);
         }
@@ -64,13 +64,13 @@ namespace JellyfinJav.Providers.Asianscreens
         {
             var rx = new Regex("<IMG SRC=\"(.*)\" ALT=\".*'s Picture\">", RegexOptions.Compiled);
             var match = rx.Match(html)?.Groups[1].Value;
-            return String.Format("https://asianscreens.com{0}", match);
+            return String.Format("https://asianscreens.com{0}", match.Trim());
         }
 
         private static string extractId(string text)
         {
             var rx = new Regex(".com\\/(.*).asp", RegexOptions.Compiled);
-            return rx.Match(text)?.Groups[1].Value;
+            return rx.Match(text)?.Groups[1].Value.Trim();
         }
     }
 }

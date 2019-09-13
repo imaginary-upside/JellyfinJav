@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Net.Http;
@@ -55,7 +56,7 @@ namespace JellyfinJav.Providers.R18
                     name = name.Substring(0, index - 1);
                 }
 
-                actresses.Add(name);
+                actresses.Add(name.Trim());
             }
 
             return actresses;
@@ -68,12 +69,15 @@ namespace JellyfinJav.Providers.R18
 
             var title = new StringBuilder(match?.Groups[1].Value);
 
+            // r18.com normally appends actress name to end of title
             foreach (var actress in getActresses())
             {
                 title.Replace(actress, "");
+                title.Replace(actress.ToUpper(), "");
+                title.Replace(actress.ToLower(), "");
             }
 
-            return title.ToString();
+            return title.ToString().Trim();
         }
 
         public IEnumerable<string> getCategories()
@@ -81,7 +85,7 @@ namespace JellyfinJav.Providers.R18
             var rx = new Regex("itemprop=\"genre\">\\s+(.*?)<\\/a>", RegexOptions.Compiled);
             var matches = rx.Matches(html);
 
-            return (from Match m in matches select m.Groups[1].Value);
+            return (from Match m in matches select m.Groups[1].Value.Trim());
         }
 
         public DateTime? getReleaseDate()
@@ -89,7 +93,21 @@ namespace JellyfinJav.Providers.R18
             var rx = new Regex("<dd itemprop=\"dateCreated\">(.*\n.*)<br>", RegexOptions.Compiled);
             var match = rx.Match(html);
 
-            return DateTime.Parse(match?.Groups[1].Value);
+            // r18.com uses non-standard abreviations which c# doesn't natively support.
+            var culture = new CultureInfo("en-US");
+            culture.DateTimeFormat.AbbreviatedMonthNames = new string[]
+            {
+                "Jan.", "Feb.", "Mar.", "Apr.", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec.", ""
+            };
+
+            try
+            {
+                return DateTime.Parse(match?.Groups[1].Value.Trim(), culture);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public string getStudio()
@@ -97,7 +115,7 @@ namespace JellyfinJav.Providers.R18
             var rx = new Regex("<a .* itemprop=\"name\">\\s*(.*)<\\/a>", RegexOptions.Compiled);
             var match = rx.Match(html);
 
-            return match?.Groups[1].Value;
+            return match?.Groups[1].Value.Trim();
         }
 
         private async Task<string> getProductId(string code)
