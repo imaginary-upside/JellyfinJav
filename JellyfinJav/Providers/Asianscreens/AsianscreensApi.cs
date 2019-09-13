@@ -67,6 +67,20 @@ namespace JellyfinJav.Providers.Asianscreens
             return String.Format("https://asianscreens.com{0}", match.Trim());
         }
 
+        public string getBirthplace()
+        {
+            var rx = new Regex("Birthplace:.*\n<TD><FONT .*>(.*)<\\/FONT>", RegexOptions.Compiled);
+            var match = rx.Match(html);
+
+            var birthplace = match?.Groups[1].Value.Trim();
+            if (birthplace == "n/a")
+            {
+                return null;
+            }
+
+            return birthplace;
+        }
+
         private static string extractId(string text)
         {
             var rx = new Regex(".com\\/(.*).asp", RegexOptions.Compiled);

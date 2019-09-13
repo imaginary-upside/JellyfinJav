@@ -62,6 +62,12 @@ namespace JellyfinJav.Providers.Asianscreens
             result.Item.ProviderIds.Add("Asianscreens", client.id);
             result.HasMetadata = true;
 
+            var birthplace = client.getBirthplace();
+            if (birthplace != null)
+            {
+                result.Item.ProductionLocations = new string[] { client.getBirthplace() };
+            }
+
             return result;
         }
 
