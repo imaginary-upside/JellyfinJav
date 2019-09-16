@@ -50,14 +50,14 @@ namespace JellyfinJav.Providers.Asianscreens
         public DateTime? getBirthdate()
         {
             var rx = new Regex("<B>DOB:.*\n.*>(.*)<\\/FONT>", RegexOptions.Compiled);
-            var match = rx.Match(html)?.Groups[1].Value;
+            var match = rx.Match(html)?.Groups[1].Value.Trim();
 
             if ("n/a" == match || String.IsNullOrEmpty(match))
             {
                 return null;
             }
 
-            return DateTime.Parse(match.Trim());
+            return DateTime.Parse(match);
         }
 
         public string getCover()

@@ -15,17 +15,23 @@ namespace JellyfinJav.Providers.R18
         private string html;
 
         public string id;
-        public bool successful = false;
 
         public R18Api()
         {
             this.httpClient = new HttpClient();
         }
 
-        public async Task findVideo(string code)
+        public async Task<bool> findVideo(string code)
         {
             id = await getProductId(code);
+            if (String.IsNullOrEmpty(id))
+            {
+                return false;
+            }
+
             await loadVideo(id);
+
+            return true;
         }
 
         public async Task loadVideo(string id)
@@ -93,6 +99,12 @@ namespace JellyfinJav.Providers.R18
             var rx = new Regex("<dd itemprop=\"dateCreated\">(.*\n.*)<br>", RegexOptions.Compiled);
             var match = rx.Match(html);
 
+            var date = match?.Groups[1].Value.Trim();
+            if (String.IsNullOrEmpty(date))
+            {
+                return null;
+            }
+
             // r18.com uses non-standard abreviations which c# doesn't natively support.
             var culture = new CultureInfo("en-US");
             culture.DateTimeFormat.AbbreviatedMonthNames = new string[]
@@ -100,19 +112,12 @@ namespace JellyfinJav.Providers.R18
                 "Jan.", "Feb.", "Mar.", "Apr.", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec.", ""
             };
 
-            try
-            {
-                return DateTime.Parse(match?.Groups[1].Value.Trim(), culture);
-            }
-            catch
-            {
-                return null;
-            }
+            return DateTime.Parse(date, culture);
         }
 
         public string getStudio()
         {
-            var rx = new Regex("<a .* itemprop=\"name\">\\s*(.*)<\\/a>", RegexOptions.Compiled);
+            var rx = new Regex("<a .* itemprop=\"name\">\\s*(.*)\\n?<\\/a>", RegexOptions.Compiled);
             var match = rx.Match(html);
 
             return match?.Groups[1].Value.Trim();

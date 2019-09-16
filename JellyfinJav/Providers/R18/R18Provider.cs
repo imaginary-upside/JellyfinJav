@@ -9,6 +9,7 @@ using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Providers;
 using MediaBrowser.Controller.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace JellyfinJav.Providers.R18
 {
@@ -16,39 +17,52 @@ namespace JellyfinJav.Providers.R18
     {
         private readonly IServerConfigurationManager configManager;
         private readonly IHttpClient httpClient;
+        private readonly ILogger logger;
 
         public string Name => "R18";
 
         public R18Provider(IServerConfigurationManager configManager,
-                           IHttpClient httpClient)
+                           IHttpClient httpClient,
+                           ILogger logger)
         {
             this.configManager = configManager;
             this.httpClient = httpClient;
+            this.logger = logger;
         }
 
         public async Task<MetadataResult<Movie>> GetMetadata(MovieInfo info,
                                                        CancellationToken cancelToken)
         {
+            logger.LogInformation("[JellyfinJav] Scanning: " + info.Name);
+
             var result = new MetadataResult<Movie>();
 
             var r18Client = new R18Api();
-
             if (info.ProviderIds.ContainsKey("R18"))
             {
                 await r18Client.loadVideo(info.ProviderIds["R18"]);
             }
             else
             {
-                await r18Client.findVideo(info.Name);
+                if (!await r18Client.findVideo(info.Name))
+                {
+                    return result;
+                }
             }
 
-            result.Item = new Movie();
+            result.Item = new Movie
+            {
+                OriginalTitle = info.Name,
+                Name = r18Client.getTitle(),
+                PremiereDate = r18Client.getReleaseDate()
+            };
             result.Item.ProviderIds.Add("R18", r18Client.id);
-            result.Item.OriginalTitle = info.Name;
-            result.Item.Name = r18Client.getTitle();
-            result.Item.PremiereDate = r18Client.getReleaseDate();
-            result.Item.Studios = new string[] { r18Client.getStudio() };
             result.HasMetadata = true;
+
+            if (!String.IsNullOrEmpty(r18Client.getStudio()))
+            {
+                result.Item.AddStudio(r18Client.getStudio());
+            }
 
             foreach (string category in r18Client.getCategories())
             {
