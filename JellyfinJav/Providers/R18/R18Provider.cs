@@ -74,7 +74,7 @@ namespace JellyfinJav.Providers.R18
                 result.AddPerson(new PersonInfo
                 {
                     Name = actress,
-                    Type = PersonType.Actor
+                    Type = "JAV Actress"
                 });
             }
 

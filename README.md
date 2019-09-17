@@ -9,8 +9,6 @@ I'm not a C# developer, and am not really a big fan of the language, so the code
 # Instructions
 When adding the media library, make sure to select "Content type: movies". And "Show advanced settings" to be able to select the metadata downloaders you want. Currently only R18 is supported for movie metadata.
 
-Actress metadata is only downloaded on demand when the actress is first accessed. This is a limitation of Jellyfin, but I'll probably be able to work around this in the future, although the workaround will probably be pretty hacky.
-
 # Development
 ### Requirements
 * Docker
