@@ -31,7 +31,10 @@ namespace JellyfinJav.Providers.Asianscreens
             }
             else
             {
-                await client.findActress(info.Name);
+                if (!await client.findActress(info.Name))
+                {
+                    return new RemoteSearchResult[] { };
+                }
             }
 
             result.ProviderIds.Add("Asianscreens", client.id);

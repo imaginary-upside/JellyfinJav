@@ -18,7 +18,7 @@ namespace JellyfinJav.Providers.Asianscreens
             httpClient = new HttpClient();
         }
 
-        public async Task findActress(string name)
+        public async Task<bool> findActress(string name)
         {
             var response = await httpClient.GetAsync(
                 Uri.EscapeUriString(
@@ -34,8 +34,16 @@ namespace JellyfinJav.Providers.Asianscreens
                 RegexOptions.Compiled
             );
             var actressUrl = rx.Match(html)?.Groups[1].Value.Trim();
+
             id = extractId(actressUrl);
+            if (String.IsNullOrEmpty(id))
+            {
+                return false;
+            }
+
             await loadActress(id);
+
+            return true;
         }
 
         public async Task loadActress(string id)
@@ -58,13 +66,6 @@ namespace JellyfinJav.Providers.Asianscreens
             }
 
             return DateTime.Parse(match);
-        }
-
-        public string getCover()
-        {
-            var rx = new Regex("<IMG SRC=\"(.*)\" ALT=\".*'s Picture\">", RegexOptions.Compiled);
-            var match = rx.Match(html)?.Groups[1].Value;
-            return String.Format("https://asianscreens.com{0}", match.Trim());
         }
 
         public string getBirthplace()

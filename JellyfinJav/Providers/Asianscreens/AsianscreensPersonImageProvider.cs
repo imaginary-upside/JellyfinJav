@@ -6,6 +6,7 @@ using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Providers;
+using System;
 
 namespace JellyfinJav.Providers.Asianscreens
 {
@@ -20,7 +21,7 @@ namespace JellyfinJav.Providers.Asianscreens
             this.httpClient = httpClient;
         }
 
-        public async Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancelToken)
+        public Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancelToken)
         {
             var result = new List<RemoteImageInfo>();
 
@@ -29,21 +30,33 @@ namespace JellyfinJav.Providers.Asianscreens
             var id = item.GetProviderId("Asianscreens");
             if (string.IsNullOrEmpty(id))
             {
-                await client.findActress(item.Name);
+                return Task.FromResult<IEnumerable<RemoteImageInfo>>(result);
+            }
+
+            var idEnd = id[id.Length - 1];
+            var picEnd = "";
+            if (idEnd == '2')
+            {
+                picEnd = "";
             }
             else
             {
-                await client.loadActress(id);
+                picEnd = (Char.GetNumericValue(idEnd) - 1).ToString();
             }
+
+            var coverImage = string.Format(
+                "https://www.asianscreens.com/products/400000/portraits/{0}{1}.jpg",
+                id.TrimEnd(idEnd), picEnd
+            );
 
             result.Add(new RemoteImageInfo
             {
                 ProviderName = Name,
                 Type = ImageType.Primary,
-                Url = client.getCover()
+                Url = coverImage
             });
 
-            return result;
+            return Task.FromResult<IEnumerable<RemoteImageInfo>>(result);
         }
 
         public Task<HttpResponseInfo> GetImageResponse(string url, CancellationToken cancelToken)
