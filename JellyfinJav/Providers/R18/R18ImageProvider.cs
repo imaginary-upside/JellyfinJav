@@ -8,27 +8,22 @@ using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Providers;
-using Microsoft.Extensions.Logging;
 
 namespace JellyfinJav.Providers.R18
 {
     public class R18ImageProvider : IRemoteImageProvider
     {
         private readonly IHttpClient httpClient;
-        private readonly ILogger logger;
 
         public string Name => "R18";
 
-        public R18ImageProvider(IHttpClient httpClient, ILogger logger)
+        public R18ImageProvider(IHttpClient httpClient)
         {
             this.httpClient = httpClient;
-            this.logger = logger;
         }
 
         public Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancelToken)
         {
-            logger.LogInformation("[JellyfinJav] Finding images for: " + item.Name);
-
             var id = item.GetProviderId("R18");
             if (string.IsNullOrEmpty(id))
             {
