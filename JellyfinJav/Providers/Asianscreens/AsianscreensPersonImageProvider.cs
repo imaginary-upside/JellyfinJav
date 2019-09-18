@@ -25,8 +25,6 @@ namespace JellyfinJav.Providers.Asianscreens
         {
             var result = new List<RemoteImageInfo>();
 
-            var client = new AsianscreensApi();
-
             var id = item.GetProviderId("Asianscreens");
             if (string.IsNullOrEmpty(id))
             {
