@@ -24,9 +24,11 @@ namespace JellyfinJav.Tasks
             this.fileSystem = fileSystem;
         }
 
-        public async Task Run(IProgress<double> _progress,
+        public async Task Run(IProgress<double> progress,
                               CancellationToken cancellationToken)
         {
+            progress.Report(0);
+
             var options = new MetadataRefreshOptions(
                 new DirectoryService(logger, fileSystem)
             )
@@ -35,17 +37,24 @@ namespace JellyfinJav.Tasks
                 MetadataRefreshMode = MetadataRefreshMode.FullRefresh
             };
 
-            var actresses = libraryManager.GetPeopleItems(new InternalPeopleQuery()
+            var query = new InternalPeopleQuery()
             {
                 PersonTypes = new string[] { "JAV Actress" }
-            });
-            foreach (var actress in actresses)
+            };
+            var actresses = libraryManager.GetPeopleItems(query);
+            for (int i = 0; i < actresses.Count; ++i)
             {
+                var actress = actresses[i];
+
                 if (actress.DateLastRefreshed == default(DateTime))
                 {
                     await actress.RefreshMetadata(options, cancellationToken);
                 }
+
+                progress.Report(i / actresses.Count * 100);
             }
+
+            progress.Report(100);
         }
     }
 }
