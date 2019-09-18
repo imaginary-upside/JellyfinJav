@@ -32,6 +32,8 @@ namespace JellyfinJav.Providers.R18
 
             // probably should be downloading the full size image, and then cropping the front cover
             var primaryImage = String.Format("https://pics.r18.com/digital/video/{0}/{0}ps.jpg", id);
+            var thumbImage = String.Format("https://pics.r18.com/digital/video/{0}/{0}pl.jpg", id);
+
             return Task.FromResult<IEnumerable<RemoteImageInfo>>(new RemoteImageInfo[]
             {
                 new RemoteImageInfo
@@ -39,6 +41,12 @@ namespace JellyfinJav.Providers.R18
                     ProviderName = Name,
                     Type = ImageType.Primary,
                     Url = primaryImage
+                },
+                new RemoteImageInfo
+                {
+                    ProviderName = Name,
+                    Type = ImageType.Thumb,
+                    Url = thumbImage
                 }
             });
         }
