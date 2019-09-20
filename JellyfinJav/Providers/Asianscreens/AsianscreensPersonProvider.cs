@@ -37,32 +37,27 @@ namespace JellyfinJav.Providers.Asianscreens
 
         public async Task<MetadataResult<Person>> GetMetadata(PersonLookupInfo info, CancellationToken cancellationToken)
         {
-            var result = new MetadataResult<Person>();
+            var actress = (await GetSearchResults(
+                new PersonLookupInfo { Name = info.Name }, cancellationToken
+            )).First();
 
             var client = new AsianscreensApi();
+            await client.loadActress(actress.ProviderIds["Asianscreens"]);
 
-            if (info.ProviderIds.ContainsKey("Asianscreens"))
+            return new MetadataResult<Person>
             {
-                return result;
-            }
-
-            await client.findActress(info.Name);
-
-            result.Item = new Person
-            {
-                Name = info.Name,
-                PremiereDate = client.getBirthdate()
+                // Changing the actress name but still keeping them associated with
+                // their videos will be a challenge.
+                Item = new Person
+                {
+                    ProviderIds = actress.ProviderIds,
+                    PremiereDate = client.getBirthdate(),
+                    // Jellyfin will always refresh metadata unless Overview exists.
+                    // So giving Overview a zero width character to prevent that.
+                    Overview = "\u200B"
+                },
+                HasMetadata = true
             };
-            result.Item.ProviderIds.Add("Asianscreens", client.id);
-            result.HasMetadata = true;
-
-            var birthplace = client.getBirthplace();
-            if (birthplace != null)
-            {
-                result.Item.ProductionLocations = new string[] { client.getBirthplace() };
-            }
-
-            return result;
         }
 
         public Task<HttpResponseInfo> GetImageResponse(string url, CancellationToken cancelToken)
