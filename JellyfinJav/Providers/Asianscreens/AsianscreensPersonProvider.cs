@@ -52,6 +52,8 @@ namespace JellyfinJav.Providers.Asianscreens
                 {
                     ProviderIds = actress.ProviderIds,
                     PremiereDate = client.getBirthdate(),
+                    ProductionLocations =
+                        new[] { client.getBirthplace() }.OfType<string>().ToArray(),
                     // Jellyfin will always refresh metadata unless Overview exists.
                     // So giving Overview a zero width character to prevent that.
                     Overview = "\u200B"
