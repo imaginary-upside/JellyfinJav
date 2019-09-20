@@ -7,8 +7,28 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AngleSharp" Version="0.13.0" />
+    <PackageReference Include="ILRepack.MSBuild.Task" Version="2.0.13" />
     <PackageReference Include="Jellyfin.Controller" Version="10.3.7" />
     <PackageReference Include="Jellyfin.Model" Version="10.3.7" />
   </ItemGroup>
+
+  <Target Name="ILRepack" AfterTargets="Build">
+    <PropertyGroup>
+      <WorkingDirectory>$(MSBuildThisFileDirectory)bin\$(Configuration)\$(TargetFramework)</WorkingDirectory>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <InputAssemblies Include="publish/AngleSharp.dll" />
+    </ItemGroup>
+
+    <ILRepack 
+        OutputType="$(OutputType)" 
+        MainAssembly="$(AssemblyName).dll" 
+        OutputAssembly="$(AssemblyName).dll" 
+        InputAssemblies="@(InputAssemblies)" 
+        InternalizeExcludeAssemblies="@(InternalizeExcludeAssemblies)" 
+        WorkingDirectory="$(WorkingDirectory)" />
+  </Target>
 
 </Project>

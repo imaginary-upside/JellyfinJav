@@ -6,6 +6,7 @@ using MediaBrowser.Common.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Model.Providers;
+using System.Linq;
 
 namespace JellyfinJav.Providers.Asianscreens
 {
@@ -22,26 +23,16 @@ namespace JellyfinJav.Providers.Asianscreens
 
         public async Task<IEnumerable<RemoteSearchResult>> GetSearchResults(PersonLookupInfo info, CancellationToken cancelationToken)
         {
-            var result = new RemoteSearchResult();
-
             var client = new AsianscreensApi();
-            if (info.ProviderIds.ContainsKey("Asianscreens"))
-            {
-                await client.loadActress(info.ProviderIds["Asianscreens"]);
-            }
-            else
-            {
-                if (!await client.findActress(info.Name))
-                {
-                    return new RemoteSearchResult[] { };
-                }
-            }
-
-            result.ProviderIds.Add("Asianscreens", client.id);
-            result.PremiereDate = client.getBirthdate();
-            result.Name = info.Name;
-
-            return new RemoteSearchResult[] { result };
+            return from actress in await client.searchActresses(info.Name)
+                   select new RemoteSearchResult
+                   {
+                       Name = actress.Item1,
+                       ProviderIds = new Dictionary<string, string>
+                       {
+                           { "Asianscreens", actress.Item2 }
+                       }
+                   };
         }
 
         public async Task<MetadataResult<Person>> GetMetadata(PersonLookupInfo info, CancellationToken cancellationToken)
