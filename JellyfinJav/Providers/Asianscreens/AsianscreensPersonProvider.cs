@@ -31,7 +31,8 @@ namespace JellyfinJav.Providers.Asianscreens
                        ProviderIds = new Dictionary<string, string>
                        {
                            { "Asianscreens", actress.Item2 }
-                       }
+                       },
+                       ImageUrl = actress.Item3
                    };
         }
 
@@ -62,7 +63,11 @@ namespace JellyfinJav.Providers.Asianscreens
 
         public Task<HttpResponseInfo> GetImageResponse(string url, CancellationToken cancelToken)
         {
-            throw new NotImplementedException();
+            return httpClient.GetResponse(new HttpRequestOptions
+            {
+                Url = url,
+                CancellationToken = cancelToken
+            });
         }
     }
 }

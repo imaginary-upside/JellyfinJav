@@ -29,7 +29,7 @@ namespace JellyfinJav.Providers.Asianscreens
                                  .OpenAsync(req => req.Content(html));
         }
 
-        public async Task<IEnumerable<(string, string)>> searchActresses(string searchName, bool reverseName = true)
+        public async Task<IEnumerable<(string, string, string)>> searchActresses(string searchName, bool reverseName = true)
         {
             var response = await httpClient.GetAsync(
                 String.Format("https://www.asianscreens.com/directory/{0}.asp",
@@ -51,7 +51,8 @@ namespace JellyfinJav.Providers.Asianscreens
                             .GetAttribute("href")
                             .TrimStart('/')
                             .Replace(".asp", "");
-                return (name: name, id: id);
+                var img = getCover(id);
+                return (name: name, id: id, img: img);
             }).Where(actress => searchName
                                 .ToLower()
                                 .Split(' ')
@@ -98,6 +99,22 @@ namespace JellyfinJav.Providers.Asianscreens
             }
 
             return birthplace;
+        }
+
+        public static string getCover(string id)
+        {
+            var idEnd = id[id.Length - 1];
+            var picEnd = "";
+            if (idEnd == '2')
+                picEnd = "";
+            else
+                picEnd = (Char.GetNumericValue(idEnd) - 1).ToString();
+
+            return string.Format(
+                "https://www.asianscreens.com/products/400000/portraits/{0}{1}.jpg",
+                id.TrimEnd(idEnd),
+                picEnd
+            );
         }
     }
 }

@@ -31,27 +31,11 @@ namespace JellyfinJav.Providers.Asianscreens
                 return Task.FromResult<IEnumerable<RemoteImageInfo>>(result);
             }
 
-            var idEnd = id[id.Length - 1];
-            var picEnd = "";
-            if (idEnd == '2')
-            {
-                picEnd = "";
-            }
-            else
-            {
-                picEnd = (Char.GetNumericValue(idEnd) - 1).ToString();
-            }
-
-            var coverImage = string.Format(
-                "https://www.asianscreens.com/products/400000/portraits/{0}{1}.jpg",
-                id.TrimEnd(idEnd), picEnd
-            );
-
             result.Add(new RemoteImageInfo
             {
                 ProviderName = Name,
                 Type = ImageType.Primary,
-                Url = coverImage
+                Url = AsianscreensApi.getCover(id)
             });
 
             return Task.FromResult<IEnumerable<RemoteImageInfo>>(result);
