@@ -37,9 +37,7 @@ namespace JellyfinJav.Providers.Asianscreens
 
         public async Task<MetadataResult<Person>> GetMetadata(PersonLookupInfo info, CancellationToken cancellationToken)
         {
-            var actress = (await GetSearchResults(
-                new PersonLookupInfo { Name = info.Name }, cancellationToken
-            )).First();
+            var actress = (await GetSearchResults(info, cancellationToken)).First();
 
             var client = new AsianscreensApi();
             await client.loadActress(actress.ProviderIds["Asianscreens"]);

@@ -3,77 +3,67 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using AngleSharp;
+using AngleSharp.Dom;
 
 namespace JellyfinJav.Providers.R18
 {
     class R18Api
     {
         private readonly HttpClient httpClient;
-        private string html;
-
-        public string id;
+        private IDocument document;
 
         public R18Api()
         {
             this.httpClient = new HttpClient();
         }
 
-        public async Task<bool> findVideo(string code)
+        public async Task<IEnumerable<(string, string, string)>> searchVideos(string code)
         {
-            id = await getProductId(code);
-            if (String.IsNullOrEmpty(id))
-            {
-                return false;
-            }
+            var response = await httpClient.GetAsync(
+                string.Format("http://www.r18.com/common/search/order=match/searchword={0}", code)
+            );
+            var html = await response.Content.ReadAsStringAsync();
+            var doc = await BrowsingContext.New().OpenAsync(req => req.Content(html));
 
-            await loadVideo(id);
-
-            return true;
+            return doc.QuerySelectorAll(".item-list")
+                      .Select(n =>
+                      {
+                          var title = n.QuerySelector("dt")?.TextContent.Trim();
+                          var id = n.GetAttribute("data-content_id");
+                          var cover = n.QuerySelector("img")?.GetAttribute("data-original");
+                          return (title, id, cover);
+                      });
         }
 
         public async Task loadVideo(string id)
         {
-            this.id = id;
-
             var response = await httpClient.GetAsync(
                 string.Format("https://www.r18.com/videos/vod/movies/detail/-/id={0}/", id)
             );
-            html = await response.Content.ReadAsStringAsync();
+            var html = await response.Content.ReadAsStringAsync();
+            document = await BrowsingContext.New().OpenAsync(req => req.Content(html));
         }
 
         public IEnumerable<string> getActresses()
         {
-            var actresses = new List<string>();
-
-            var rx = new Regex("<span itemprop=\"name\">(.*)<\\/span>", RegexOptions.Compiled);
-            var matches = rx.Matches(html);
-
-            foreach (Match match in matches)
-            {
-                var name = match.Groups[1].Value;
-
-                // removes extra names
-                var index = name.IndexOf('(');
-                if (index != -1)
-                {
-                    name = name.Substring(0, index - 1);
-                }
-
-                actresses.Add(name.Trim());
-            }
-
-            return actresses;
+            return document.QuerySelectorAll("[data-type='actress-list'] a span")
+                           .Select(n =>
+                           {
+                               var name = n.TextContent;
+                               var index = name.IndexOf('(');
+                               if (index != -1)
+                                   return name.Substring(0, index - 1);
+                               else
+                                   return name;
+                           });
         }
 
         public string getTitle()
         {
-            var rx = new Regex("<cite itemprop=\"name\">(.*)<\\/cite>", RegexOptions.Compiled);
-            var match = rx.Match(html);
-
-            var title = new StringBuilder(match?.Groups[1].Value);
+            var title = document.QuerySelector("cite[itemprop='name']").TextContent;
 
             // r18.com normally appends actress name to end of title
             foreach (var actress in getActresses())
@@ -83,23 +73,19 @@ namespace JellyfinJav.Providers.R18
                 title.Replace(actress.ToLower(), "");
             }
 
-            return title.ToString().Trim();
+            return title.TrimEnd(' ', '-');
         }
 
         public IEnumerable<string> getCategories()
         {
-            var rx = new Regex("itemprop=\"genre\">\\s+(.*?)<\\/a>", RegexOptions.Compiled);
-            var matches = rx.Matches(html);
-
-            return (from Match m in matches select m.Groups[1].Value.Trim());
+            return document.QuerySelectorAll("[itemprop='genre']")
+                           .Select(n => n.TextContent.Trim());
         }
 
         public DateTime? getReleaseDate()
         {
-            var rx = new Regex("<dd itemprop=\"dateCreated\">(.*\n.*)<br>", RegexOptions.Compiled);
-            var match = rx.Match(html);
-
-            var date = match?.Groups[1].Value.Trim();
+            var date = document.QuerySelector("[itemprop='dateCreated']")?
+                               .TextContent.Trim();
             if (String.IsNullOrEmpty(date))
             {
                 return null;
@@ -117,23 +103,16 @@ namespace JellyfinJav.Providers.R18
 
         public string getStudio()
         {
-            var rx = new Regex("<a .* itemprop=\"name\">\\s*(.*)\\n?<\\/a>", RegexOptions.Compiled);
-            var match = rx.Match(html);
-
-            return match?.Groups[1].Value.Trim();
+            return document.QuerySelector("[itemprop='productionCompany'] a")
+                           .TextContent.Trim();
         }
 
-        private async Task<string> getProductId(string code)
+        public string getId()
         {
-            var response = await httpClient.GetAsync(
-                String.Format("http://www.r18.com/common/search/order=match/searchword={0}", code)
-            );
-            var html = await response.Content.ReadAsStringAsync();
-
-            var rx = new Regex("data-content_id=\"(.*)\"", RegexOptions.Compiled);
-            var match = rx.Match(html);
-
-            return match?.Groups[1].Value;
+            return document.QuerySelectorAll("dt")
+                           .First(n => n.TextContent == "Content ID:")
+                           .NextElementSibling
+                           .TextContent.Trim();
         }
     }
 }

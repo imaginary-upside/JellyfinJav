@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Common.Net;
@@ -28,60 +29,58 @@ namespace JellyfinJav.Providers.R18
         public async Task<MetadataResult<Movie>> GetMetadata(MovieInfo info,
                                                              CancellationToken cancelToken)
         {
-            var result = new MetadataResult<Movie>();
-
-            var r18Client = new R18Api();
+            var client = new R18Api();
             if (info.ProviderIds.ContainsKey("R18"))
-            {
-                await r18Client.loadVideo(info.ProviderIds["R18"]);
-            }
+                await client.loadVideo(info.ProviderIds["R18"]);
             else
             {
-                if (!await r18Client.findVideo(info.Name))
-                {
-                    return result;
-                }
+                var video = (await GetSearchResults(info, cancelToken)).First();
+                await client.loadVideo(video.ProviderIds["R18"]);
             }
 
-            result.Item = new Movie
+            return new MetadataResult<Movie>
             {
-                OriginalTitle = info.Name,
-                Name = r18Client.getTitle(),
-                PremiereDate = r18Client.getReleaseDate()
+                Item = new Movie
+                {
+                    OriginalTitle = info.Name,
+                    Name = client.getTitle(),
+                    PremiereDate = client.getReleaseDate(),
+                    ProviderIds = new Dictionary<string, string> { { "R18", client.getId() } },
+                    Studios = new[] { client.getStudio() }.OfType<string>().ToArray(),
+                    Genres = client.getCategories().OfType<string>().ToArray()
+                },
+                People = (from actress in client.getActresses()
+                          select new PersonInfo
+                          {
+                              Name = actress,
+                              Type = "JAV Actress"
+                          }).ToList(),
+                HasMetadata = true
             };
-            result.Item.ProviderIds.Add("R18", r18Client.id);
-            result.HasMetadata = true;
-
-            if (!String.IsNullOrEmpty(r18Client.getStudio()))
-            {
-                result.Item.AddStudio(r18Client.getStudio());
-            }
-
-            foreach (string category in r18Client.getCategories())
-            {
-                result.Item.AddGenre(category);
-            }
-
-            foreach (string actress in r18Client.getActresses())
-            {
-                result.AddPerson(new PersonInfo
-                {
-                    Name = actress,
-                    Type = "JAV Actress"
-                });
-            }
-
-            return result;
         }
 
-        public Task<IEnumerable<RemoteSearchResult>> GetSearchResults(MovieInfo info, CancellationToken cancelToken)
+        public async Task<IEnumerable<RemoteSearchResult>> GetSearchResults(MovieInfo info, CancellationToken cancelToken)
         {
-            throw new NotImplementedException();
+            var client = new R18Api();
+            return from video in await client.searchVideos(info.Name)
+                   select new RemoteSearchResult
+                   {
+                       Name = video.Item1,
+                       ProviderIds = new Dictionary<string, string>
+                       {
+                           { "R18", video.Item2 }
+                       },
+                       ImageUrl = video.Item3
+                   };
         }
 
         public Task<HttpResponseInfo> GetImageResponse(string url, CancellationToken cancelToken)
         {
-            throw new NotImplementedException();
+            return httpClient.GetResponse(new HttpRequestOptions
+            {
+                Url = url,
+                CancellationToken = cancelToken
+            });
         }
     }
 }
