@@ -34,8 +34,10 @@ namespace JellyfinJav.Providers.R18
                 await client.loadVideo(info.ProviderIds["R18"]);
             else
             {
-                var video = (await GetSearchResults(info, cancelToken)).First();
-                await client.loadVideo(video.ProviderIds["R18"]);
+                var videoResults = await GetSearchResults(info, cancelToken);
+                if (videoResults.Count() == 0)
+                    return new MetadataResult<Movie>();
+                await client.loadVideo(videoResults.First().ProviderIds["R18"]);
             }
 
             return new MetadataResult<Movie>

@@ -63,7 +63,7 @@ namespace JellyfinJav.Providers.R18
 
         public string getTitle()
         {
-            var title = document.QuerySelector("cite[itemprop='name']").TextContent;
+            var title = new StringBuilder(document.QuerySelector("cite[itemprop='name']")?.TextContent);
 
             // r18.com normally appends actress name to end of title
             foreach (var actress in getActresses())
@@ -73,7 +73,7 @@ namespace JellyfinJav.Providers.R18
                 title.Replace(actress.ToLower(), "");
             }
 
-            return title.TrimEnd(' ', '-');
+            return title.ToString().TrimEnd(' ', '-');
         }
 
         public IEnumerable<string> getCategories()
@@ -103,15 +103,15 @@ namespace JellyfinJav.Providers.R18
 
         public string getStudio()
         {
-            return document.QuerySelector("[itemprop='productionCompany'] a")
+            return document.QuerySelector("[itemprop='productionCompany'] a")?
                            .TextContent.Trim();
         }
 
         public string getId()
         {
             return document.QuerySelectorAll("dt")
-                           .First(n => n.TextContent == "Content ID:")
-                           .NextElementSibling
+                           .FirstOrDefault(n => n.TextContent == "Content ID:")?
+                           .NextElementSibling?
                            .TextContent.Trim();
         }
     }
