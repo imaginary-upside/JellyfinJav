@@ -28,4 +28,4 @@ When adding the media library, make sure to select "Content type: movies". And "
 JAV files for testing purposes are stored in ./videos
 
 # License
-Currently licensed under GPLv3, but I may be relicensing under AGPLv3 in the future.
+Licensed under AGPL-3.0-only
