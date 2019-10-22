@@ -23,7 +23,7 @@ namespace JellyfinJav.Providers.R18
         public async Task<IEnumerable<(string, string, string)>> searchVideos(string code)
         {
             var response = await httpClient.GetAsync(
-                string.Format("http://www.r18.com/common/search/order=match/searchword={0}", code)
+                string.Format("https://www.r18.com/common/search/order=match/searchword={0}", code)
             );
             var html = await response.Content.ReadAsStringAsync();
             var doc = await BrowsingContext.New().OpenAsync(req => req.Content(html));
