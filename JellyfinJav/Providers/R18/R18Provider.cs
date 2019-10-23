@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using MediaBrowser.Common.Net;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Entities.Movies;
@@ -63,8 +63,13 @@ namespace JellyfinJav.Providers.R18
 
         public async Task<IEnumerable<RemoteSearchResult>> GetSearchResults(MovieInfo info, CancellationToken cancelToken)
         {
+            var rx = new Regex("[A-z]+-[0-9]+", RegexOptions.Compiled);
+            var javCode = rx.Match(info.Name).Value;
+            if (string.IsNullOrEmpty(javCode))
+                return new RemoteSearchResult[] { };
+
             var client = new R18Api();
-            return from video in await client.searchVideos(info.Name)
+            return from video in await client.searchVideos(javCode)
                    select new RemoteSearchResult
                    {
                        Name = video.Item1,
