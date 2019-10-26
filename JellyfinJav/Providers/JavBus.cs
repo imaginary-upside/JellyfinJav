@@ -20,7 +20,7 @@ namespace JellyfinJav.JellyfinJav.Providers
     {
         public static string Name => "JavBus";
 
-        public static async Task<IEnumerable<JavBusResult>> GetAllResults(IHttpClient httpClient, ILogger logger, string name, bool uncensored)
+        public static async Task<IEnumerable<JavBusResult>> GetResults(IHttpClient httpClient, ILogger logger, string name, bool uncensored)
         {
             logger.LogInformation($"Jav find movies {name}");
             try
@@ -41,7 +41,7 @@ namespace JellyfinJav.JellyfinJav.Providers
                                   Name = element.QuerySelector("img").GetAttribute("title"),
                                   Url = element.GetAttribute("href"),
                                   ImageUrl = element.QuerySelector("img").GetAttribute("src"),
-                                  Code = GetCodeFromUrl(element.GetAttribute("href")),
+                                  Code = GetCodeFromUrl(element.GetAttribute("href")).ToUpper(),
                                   ReleaseDate = DateTime.Parse(element.QuerySelectorAll("date")[1].TextContent)
                               };
 
@@ -56,7 +56,7 @@ namespace JellyfinJav.JellyfinJav.Providers
                     return new JavBusResult[0];
                 } else
                 {
-                    return await GetAllResults(httpClient, logger, name, true);
+                    return await GetResults(httpClient, logger, name, true);
                 }
             }
         }
@@ -85,7 +85,7 @@ namespace JellyfinJav.JellyfinJav.Providers
 
                 var ret = new JavBusResult
                 {
-                    Code = code,
+                    Code = code.ToUpper(),
                     Url = res.ResponseUrl,
                     Name = image.GetAttribute("title"),
                     ImageUrl = image.GetAttribute("src"),
@@ -118,13 +118,11 @@ namespace JellyfinJav.JellyfinJav.Providers
                     PremiereDate = result.ReleaseDate,
                     ProductionYear = result.ReleaseDate.Year
                 },
-                People = (from actress in result.Actresses
-                    select new PersonInfo
-                    {
+                People = new List<PersonInfo> (from actress in result.Actresses select new PersonInfo {
                         Name = actress.Name,
                         Type = "JAV Actress",
                         ImageUrl = actress.ImageUrl
-                    }).ToList()
+                    })
             };
         }
     }
@@ -169,47 +167,45 @@ namespace JellyfinJav.JellyfinJav.Providers
         public async Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancellationToken)
         {
             logger.LogInformation($"Jav Get image for {item.Name}");
-            var output = new List<RemoteImageInfo>();
 
-            if (!item.ProviderIds.ContainsKey(Name))
+            var code = item.GetProviderId(Name);
+            if (string.IsNullOrEmpty(code))
             {
-                return output;
+                return new RemoteImageInfo[0];
             }
 
-            var r = await JavBus.GetResult(httpClient, logger, item.ProviderIds[Name]);
+            var r = await JavBus.GetResult(httpClient, logger, code);
 
-            output.Add(new RemoteImageInfo
+            var thumb = new List<RemoteImageInfo>
             {
-                Type = ImageType.Thumb,
-                Url = r.ImageUrl,
-                ProviderName = Name
-            });
+                new RemoteImageInfo
+                {
+                    Type = ImageType.Thumb,
+                    Url = r.ImageUrl,
+                    ProviderName = Name
+                }
+            };
 
-            foreach (var url in r.Screenshots)
-            {
-                output.Add(new RemoteImageInfo
+            var primary =
+                from e in await JavBus.GetResults(httpClient, logger, code, false)
+                where e.Code.Equals(code)
+                select new RemoteImageInfo
+                {
+                    Type = ImageType.Primary,
+                    Url = e.ImageUrl,
+                    ProviderName = Name
+                };
+
+            var screenshots =
+                from url in r.Screenshots
+                select new RemoteImageInfo
                 {
                     Type = ImageType.Screenshot,
                     Url = url,
                     ProviderName = Name
-                });
-            }
+                };
 
-            var results = await JavBus.GetAllResults(httpClient, logger, r.Code, false);
-            foreach (var e in results)
-            {
-                if (e.Code.ToUpper().Equals(r.Code.ToUpper()))
-                {
-                    output.Add(new RemoteImageInfo
-                    {
-                        Type = ImageType.Primary,
-                        Url = e.ImageUrl,
-                        ProviderName = Name,
-                    });
-                }
-            }
-
-            return output;
+            return thumb.Concat(primary).Concat(screenshots);
         }
 
         public Task<HttpResponseInfo> GetImageResponse(string url, CancellationToken cancellationToken)
@@ -283,7 +279,7 @@ namespace JellyfinJav.JellyfinJav.Providers
                     code = searchInfo.Name.Split(' ').First();
                 }
 
-                return from e in await JavBus.GetAllResults(httpClient, logger, code, false)
+                return from e in await JavBus.GetResults(httpClient, logger, code, false)
                        select new RemoteSearchResult
                        {
                            SearchProviderName = "JavBus",
