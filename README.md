@@ -1,6 +1,11 @@
 # JellyfinJav
 Mostly ready for production use, but don't expect perfection.
 
+# Screenshots
+![Grid Example](screenshots/example-grid.jpg)
+![Video Example](screenshots/example-video.jpg)
+![Actress Example](screenshots/example-actress.jpg)
+
 # Metadata Providers
 * R18 (Videos)
 * AsianScreens (Actresses)
