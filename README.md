@@ -7,8 +7,10 @@ Mostly ready for production use, but don't expect perfection.
 ![Actress Example](screenshots/example-actress.jpg)
 
 # Metadata Providers
-* R18 (Videos)
-* AsianScreens (Actresses)
+* R18 (Videos) - English
+* JAVLibrary (Videos) - English
+* JavBus (Videos, Actresses) - Chinese
+* AsianScreens (Actresses) - English
 
 # Instructions
 ### Installation
