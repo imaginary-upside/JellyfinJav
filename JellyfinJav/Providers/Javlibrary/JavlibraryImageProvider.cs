@@ -9,46 +9,44 @@ using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Providers;
 
-namespace JellyfinJav.Providers.R18
+namespace JellyfinJav.Providers.JavlibraryProvider
 {
-    public class R18ImageProvider : IRemoteImageProvider
+    public class JavlibraryImageProvider : IRemoteImageProvider
     {
         private readonly IHttpClient httpClient;
 
-        public string Name => "R18";
+        public string Name => "Javlibrary";
 
-        public R18ImageProvider(IHttpClient httpClient)
+        public JavlibraryImageProvider(IHttpClient httpClient)
         {
             this.httpClient = httpClient;
         }
 
-        public Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancelToken)
+        public async Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancelToken)
         {
-            var id = item.GetProviderId("R18");
+            var id = item.GetProviderId("Javlibrary");
             if (string.IsNullOrEmpty(id))
-            {
-                return Task.FromResult<IEnumerable<RemoteImageInfo>>(new RemoteImageInfo[] { });
-            }
+                return new RemoteImageInfo[] { };
 
             // probably should be downloading the full size image, and then cropping the front cover
-            var primaryImage = String.Format("https://pics.r18.com/digital/video/{0}/{0}ps.jpg", id);
-            var thumbImage = String.Format("https://pics.r18.com/digital/video/{0}/{0}pl.jpg", id);
+            var client = new Javlibrary.Client();
+            var video = await client.LoadVideo(id);
 
-            return Task.FromResult<IEnumerable<RemoteImageInfo>>(new RemoteImageInfo[]
+            return new RemoteImageInfo[]
             {
                 new RemoteImageInfo
                 {
                     ProviderName = Name,
                     Type = ImageType.Primary,
-                    Url = primaryImage
+                    Url = video.Cover
                 },
                 new RemoteImageInfo
                 {
                     ProviderName = Name,
                     Type = ImageType.Thumb,
-                    Url = thumbImage
+                    Url = video.BoxArt
                 }
-            });
+            };
         }
 
         public Task<HttpResponseInfo> GetImageResponse(string url, CancellationToken cancelToken)
