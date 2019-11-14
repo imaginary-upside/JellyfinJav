@@ -14,6 +14,7 @@ namespace JellyfinJav.Providers.JavlibraryProvider
     public class JavlibraryProvider : IRemoteMetadataProvider<Movie, MovieInfo>
     {
         private readonly IHttpClient httpClient;
+        private static readonly Javlibrary.Client client = new Javlibrary.Client();
 
         public string Name => "Javlibrary";
 
@@ -24,8 +25,6 @@ namespace JellyfinJav.Providers.JavlibraryProvider
 
         public async Task<MetadataResult<Movie>> GetMetadata(MovieInfo info, CancellationToken cancelToken)
         {
-            var client = new Javlibrary.Client();
-
             Javlibrary.Video? result = null;
             if (info.ProviderIds.ContainsKey("Javlibrary"))
                 result = await client.LoadVideo(info.ProviderIds["Javlibrary"]);
@@ -57,7 +56,6 @@ namespace JellyfinJav.Providers.JavlibraryProvider
 
         public async Task<IEnumerable<RemoteSearchResult>> GetSearchResults(MovieInfo info, CancellationToken cancelToken)
         {
-            var client = new Javlibrary.Client();
             return from video in await client.Search(info.Name)
                    select new RemoteSearchResult
                    {
