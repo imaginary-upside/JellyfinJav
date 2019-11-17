@@ -9,6 +9,7 @@ using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Providers;
 using MediaBrowser.Controller.Configuration;
+using MediaBrowser.Controller.Library;
 
 namespace JellyfinJav.Providers.R18
 {
@@ -16,19 +17,25 @@ namespace JellyfinJav.Providers.R18
     {
         private readonly IServerConfigurationManager configManager;
         private readonly IHttpClient httpClient;
+        private readonly ILibraryManager libraryManager;
 
         public string Name => "R18";
 
         public R18Provider(IServerConfigurationManager configManager,
-                           IHttpClient httpClient)
+                           IHttpClient httpClient,
+                           ILibraryManager libraryManager)
         {
             this.configManager = configManager;
             this.httpClient = httpClient;
+            this.libraryManager = libraryManager;
         }
 
         public async Task<MetadataResult<Movie>> GetMetadata(MovieInfo info,
                                                              CancellationToken cancelToken)
         {
+            var originalTitle = Utility.GetVideoOriginalTitle(info, libraryManager);
+            info.Name = originalTitle;
+
             var client = new R18Api();
             if (info.ProviderIds.ContainsKey("R18"))
                 await client.loadVideo(info.ProviderIds["R18"]);
