@@ -20,9 +20,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <InputAssemblies Include="AngleSharp.dll" />
-      <InputAssemblies Include="Javlibrary.dll" />
-      <InputAssemblies Include="CloudflareSolverRe.dll" />
+      <InputAssemblies Include="$(Home)/.nuget/packages/javlibrary/0.3.0/lib/netstandard2.0/Javlibrary.dll" />
+      <InputAssemblies Include="$(Home)/.nuget/packages/anglesharp/0.13.0/lib/netstandard2.0/AngleSharp.dll" />
+      <InputAssemblies Include="$(Home)/.nuget/packages/cloudflaresolverre/1.0.6/lib/netstandard1.1/CloudflareSolverRe.dll" />
     </ItemGroup>
 
     <ILRepack OutputType="$(OutputType)" MainAssembly="$(AssemblyName).dll" OutputAssembly="$(AssemblyName).dll" InputAssemblies="@(InputAssemblies)" InternalizeExcludeAssemblies="@(InternalizeExcludeAssemblies)" WorkingDirectory="$(WorkingDirectory)" />
