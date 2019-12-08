@@ -20,7 +20,7 @@ Either download the latest prebuilt release and drop the .dll into Jellyfin's pl
     cp bin/Release/netstandard2.0/JellyfinJav.dll $JELLYFIN_DIR/plugins/
 
 ### Usage
-When adding the media library, make sure to select "Content type: movies". And "Show advanced settings" to be able to select the metadata downloaders you want. Currently only R18 is supported for movie metadata.
+When adding the media library, make sure to select "Content type: movies". And "Show advanced settings" to be able to select the metadata downloaders you want.
 
 # Development
 ### Requirements
