@@ -13,13 +13,14 @@ using MediaBrowser.Controller.Library;
 
 namespace JellyfinJav.Providers.R18
 {
-    public class R18Provider : IRemoteMetadataProvider<Movie, MovieInfo>
+    public class R18Provider : IRemoteMetadataProvider<Movie, MovieInfo>, IHasOrder
     {
         private readonly IServerConfigurationManager configManager;
         private readonly IHttpClient httpClient;
         private readonly ILibraryManager libraryManager;
 
         public string Name => "R18";
+        public int Order => 10;
 
         public R18Provider(IServerConfigurationManager configManager,
                            IHttpClient httpClient,

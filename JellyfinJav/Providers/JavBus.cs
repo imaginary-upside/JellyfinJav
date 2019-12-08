@@ -223,13 +223,15 @@ namespace JellyfinJav.JellyfinJav.Providers
         private readonly IHttpClient httpClient;
         private readonly ILogger logger;
 
+        public string Name => "JavBus";
+        public int Order => 12;
+
         public JavBusMetadataProvider(IHttpClient httpClient, ILogger logger)
         {
             this.httpClient = httpClient;
             this.logger = logger;
         }
 
-        public string Name => "JavBus";
 
         public Task<HttpResponseInfo> GetImageResponse(string url, CancellationToken cancellationToken)
         {

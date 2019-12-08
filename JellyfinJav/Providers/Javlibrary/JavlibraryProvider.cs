@@ -12,13 +12,14 @@ using MediaBrowser.Controller.Library;
 
 namespace JellyfinJav.Providers.JavlibraryProvider
 {
-    public class JavlibraryProvider : IRemoteMetadataProvider<Movie, MovieInfo>
+    public class JavlibraryProvider : IRemoteMetadataProvider<Movie, MovieInfo>, IHasOrder
     {
         private readonly IHttpClient httpClient;
         private readonly ILibraryManager libraryManager;
         private static readonly Javlibrary.Client client = new Javlibrary.Client();
 
         public string Name => "Javlibrary";
+        public int Order => 11;
 
         public JavlibraryProvider(IHttpClient httpClient, ILibraryManager libraryManager)
         {
