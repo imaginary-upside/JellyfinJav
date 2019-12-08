@@ -54,7 +54,8 @@ namespace JellyfinJav.JellyfinJav.Providers
                 {
                     logger.LogInformation($"Jav Search movies {name} exceptions. {e.Message}");
                     return new JavBusResult[0];
-                } else
+                }
+                else
                 {
                     return await GetResults(httpClient, logger, name, true);
                 }
@@ -113,16 +114,18 @@ namespace JellyfinJav.JellyfinJav.Providers
                 {
                     OriginalTitle = $"{result.Code} {string.Join(" ", result.Genres)}",
                     Name = result.Name,
-                    ProviderIds = new Dictionary<string, string> {{"JavBus", result.Code}},
+                    ProviderIds = new Dictionary<string, string> { { "JavBus", result.Code } },
                     Genres = result.Genres.ToArray(),
                     PremiereDate = result.ReleaseDate,
                     ProductionYear = result.ReleaseDate.Year
                 },
-                People = new List<PersonInfo> (from actress in result.Actresses select new PersonInfo {
-                        Name = actress.Name,
-                        Type = "JAV Actress",
-                        ImageUrl = actress.ImageUrl
-                    })
+                People = new List<PersonInfo>(from actress in result.Actresses
+                                              select new PersonInfo
+                                              {
+                                                  Name = actress.Name,
+                                                  Type = "JAV Actress",
+                                                  ImageUrl = actress.ImageUrl
+                                              })
             };
         }
     }
@@ -218,7 +221,7 @@ namespace JellyfinJav.JellyfinJav.Providers
         }
     }
 
-    public class JavBusMetadataProvider : IRemoteMetadataProvider<Movie, MovieInfo>
+    public class JavBusMetadataProvider : IRemoteMetadataProvider<Movie, MovieInfo>, IHasOrder
     {
         private readonly IHttpClient httpClient;
         private readonly ILogger logger;
@@ -266,7 +269,7 @@ namespace JellyfinJav.JellyfinJav.Providers
         }
 
 
-        public async Task<IEnumerable<RemoteSearchResult>> GetSearchResults(MovieInfo searchInfo, 
+        public async Task<IEnumerable<RemoteSearchResult>> GetSearchResults(MovieInfo searchInfo,
             CancellationToken cancellationToken)
         {
             var code = searchInfo.GetProviderId(JavBus.Name);
@@ -287,7 +290,7 @@ namespace JellyfinJav.JellyfinJav.Providers
                            SearchProviderName = "JavBus",
                            Name = e.Name,
                            ImageUrl = e.ImageUrl,
-                           ProviderIds = new Dictionary<string, string> {{"JavBus", e.Code}},
+                           ProviderIds = new Dictionary<string, string> { { "JavBus", e.Code } },
                            PremiereDate = e.ReleaseDate,
                            ProductionYear = e.ReleaseDate.Year
                        };
