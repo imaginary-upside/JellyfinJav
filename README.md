@@ -22,7 +22,7 @@ Either download the latest prebuilt release and drop the .dll into Jellyfin's pl
 ### Usage
 When adding the media library, make sure to select "Content type: movies". And "Show advanced settings" to be able to select the metadata downloaders you want.
 
-All the file names are required to be in the following format: ABP-008.mkv
+All the file names need to contain the JAV code seperated by a dash.
 
 # Development
 ### Requirements

@@ -2,6 +2,7 @@ using System.Linq;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Controller.Entities;
+using System.Text.RegularExpressions;
 
 namespace JellyfinJav.Providers
 {
@@ -21,6 +22,13 @@ namespace JellyfinJav.Providers
                 return info.Name;
 
             return result.OriginalTitle ?? result.Name;
+        }
+
+        public static string ExtractCodeFromFilename(string filename)
+        {
+            var rx = new Regex(@"\w+-?\d+", RegexOptions.Compiled);
+            var match = rx.Match(filename);
+            return match?.Value;
         }
     }
 }

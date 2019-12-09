@@ -9,6 +9,7 @@ using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Providers;
 using System.Web;
 using MediaBrowser.Controller.Library;
+using Microsoft.Extensions.Logging;
 
 namespace JellyfinJav.Providers.JavlibraryProvider
 {
@@ -16,26 +17,34 @@ namespace JellyfinJav.Providers.JavlibraryProvider
     {
         private readonly IHttpClient httpClient;
         private readonly ILibraryManager libraryManager;
+        private readonly ILogger logger;
         private static readonly Javlibrary.Client client = new Javlibrary.Client();
 
         public string Name => "Javlibrary";
         public int Order => 11;
 
-        public JavlibraryProvider(IHttpClient httpClient, ILibraryManager libraryManager)
+        public JavlibraryProvider(IHttpClient httpClient,
+                                  ILibraryManager libraryManager,
+                                  ILogger logger)
         {
             this.httpClient = httpClient;
             this.libraryManager = libraryManager;
+            this.logger = logger;
         }
 
         public async Task<MetadataResult<Movie>> GetMetadata(MovieInfo info, CancellationToken cancelToken)
         {
             var originalTitle = Utility.GetVideoOriginalTitle(info, libraryManager);
 
+            logger.LogInformation("[JellyfinJav] Javlibrary - Scanning: " + originalTitle);
+
             Javlibrary.Video? result = null;
             if (info.ProviderIds.ContainsKey("Javlibrary"))
                 result = await client.LoadVideo(info.ProviderIds["Javlibrary"]);
             else
-                result = await client.SearchFirst(originalTitle);
+                result = await client.SearchFirst(
+                    Utility.ExtractCodeFromFilename(originalTitle)
+                );
 
             if (!result.HasValue)
                 return new MetadataResult<Movie>();

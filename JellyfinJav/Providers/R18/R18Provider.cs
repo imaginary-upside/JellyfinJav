@@ -10,6 +10,7 @@ using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Providers;
 using MediaBrowser.Controller.Configuration;
 using MediaBrowser.Controller.Library;
+using Microsoft.Extensions.Logging;
 
 namespace JellyfinJav.Providers.R18
 {
@@ -18,17 +19,20 @@ namespace JellyfinJav.Providers.R18
         private readonly IServerConfigurationManager configManager;
         private readonly IHttpClient httpClient;
         private readonly ILibraryManager libraryManager;
+        private readonly ILogger logger;
 
         public string Name => "R18";
         public int Order => 10;
 
         public R18Provider(IServerConfigurationManager configManager,
                            IHttpClient httpClient,
-                           ILibraryManager libraryManager)
+                           ILibraryManager libraryManager,
+                           ILogger logger)
         {
             this.configManager = configManager;
             this.httpClient = httpClient;
             this.libraryManager = libraryManager;
+            this.logger = logger;
         }
 
         public async Task<MetadataResult<Movie>> GetMetadata(MovieInfo info,
@@ -36,6 +40,8 @@ namespace JellyfinJav.Providers.R18
         {
             var originalTitle = Utility.GetVideoOriginalTitle(info, libraryManager);
             info.Name = originalTitle;
+
+            logger.LogInformation("[JellyfinJav] R18 - Scanning: " + originalTitle);
 
             var client = new R18Api();
             if (info.ProviderIds.ContainsKey("R18"))
