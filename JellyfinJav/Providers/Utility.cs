@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Controller.Library;
@@ -26,7 +27,7 @@ namespace JellyfinJav.Providers
 
         public static string ExtractCodeFromFilename(string filename)
         {
-            var rx = new Regex(@"\w+-?\d+", RegexOptions.Compiled);
+            var rx = new Regex(@"[\w\d]+-?\d+", RegexOptions.Compiled);
             var match = rx.Match(filename);
             return match?.Value;
         }

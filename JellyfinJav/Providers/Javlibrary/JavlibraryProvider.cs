@@ -62,7 +62,7 @@ namespace JellyfinJav.Providers.JavlibraryProvider
                 People = (from actress in result.Value.Actresses
                           select new PersonInfo
                           {
-                              Name = actress,
+                              Name = NormalizeActressName(actress),
                               Type = "JAV Actress"
                           }).ToList(),
                 HasMetadata = true
@@ -90,6 +90,13 @@ namespace JellyfinJav.Providers.JavlibraryProvider
                 Url = url,
                 CancellationToken = cancelToken
             });
+        }
+
+        private static string NormalizeActressName(string name)
+        {
+            if (Plugin.Instance.Configuration.actressNameOrder == ActressNameOrder.FirstLast)
+                return string.Join(" ", name.Split(' ').Reverse());
+            return name;
         }
     }
 }

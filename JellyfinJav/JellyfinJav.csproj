@@ -28,4 +28,12 @@
     <ILRepack OutputType="$(OutputType)" MainAssembly="$(AssemblyName).dll" OutputAssembly="$(AssemblyName).dll" InputAssemblies="@(InputAssemblies)" InternalizeExcludeAssemblies="@(InternalizeExcludeAssemblies)" WorkingDirectory="$(WorkingDirectory)" />
   </Target>
 
+  <ItemGroup>
+    <None Remove="config_page.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="config_page.html" />
+  </ItemGroup>
+
 </Project>

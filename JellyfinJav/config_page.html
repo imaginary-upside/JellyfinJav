@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>JellyfinJav Config</title>
+</head>
+
+<body>
+    <div id="JellyfinJavConfigPage" data-role="page" class="page type-interior pluginConfigurationPage"
+        data-require="emby-input,emby-button,emby-select,emby-checkbox">
+        <div data-role="content">
+            <div class="content-primary">
+                <form id="JellyfinJavConfigForm">
+                    <div class="selectContainer">
+                        <label class="selectLabel" for="actressNameOrder">Actress Name Order</label>
+                        <select is="emby-select" id="actressNameOrder" name="actressNameOrder"
+                            class="emby-select-withcolor emby-select">
+                            <option id="FirstLast" value="FirstLast">First Name - Last Name</option>
+                            <option id="LastFirst" value="LastFirst">Last Name - First Name</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button is="emby-button" type="submit" class="raised button-submit block emby-button">
+                            <span>Save</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script type="text/javascript">
+            var pluginUniqueId = '1d5fffc2-1028-4553-9660-bd4966899e44';
+
+            $('#JellyfinJavConfigPage').on('pageshow', () => {
+                ApiClient.getPluginConfiguration(pluginUniqueId).then(config => {
+                    $('#actressNameOrder').val(config.actressNameOrder).change();
+                });
+            });
+
+            $('#JellyfinJavConfigForm').on('submit', function () {
+                ApiClient.getPluginConfiguration(pluginUniqueId).then(config => {
+                    config.actressNameOrder = $('#actressNameOrder').val();
+                    ApiClient.updatePluginConfiguration(pluginUniqueId, config).then(function (result) {
+                        Dashboard.processPluginConfigurationUpdateResult(result);
+                    });
+                });
+                return false;
+            });
+        </script>
+    </div>
+</body>
+
+</html>

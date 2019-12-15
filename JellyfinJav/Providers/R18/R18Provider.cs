@@ -68,7 +68,7 @@ namespace JellyfinJav.Providers.R18
                 People = (from actress in client.getActresses()
                           select new PersonInfo
                           {
-                              Name = actress,
+                              Name = NormalizeActressName(actress),
                               Type = "JAV Actress"
                           }).ToList(),
                 HasMetadata = true
@@ -77,8 +77,7 @@ namespace JellyfinJav.Providers.R18
 
         public async Task<IEnumerable<RemoteSearchResult>> GetSearchResults(MovieInfo info, CancellationToken cancelToken)
         {
-            var rx = new Regex("[A-z]+-[0-9]+", RegexOptions.Compiled);
-            var javCode = rx.Match(info.Name).Value;
+            var javCode = Utility.ExtractCodeFromFilename(info.Name);
             if (string.IsNullOrEmpty(javCode))
                 return new RemoteSearchResult[] { };
 
@@ -102,6 +101,14 @@ namespace JellyfinJav.Providers.R18
                 Url = url,
                 CancellationToken = cancelToken
             });
+        }
+
+
+        private static string NormalizeActressName(string name)
+        {
+            if (Plugin.Instance.Configuration.actressNameOrder == ActressNameOrder.LastFirst)
+                return string.Join(" ", name.Split(' ').Reverse());
+            return name;
         }
     }
 }

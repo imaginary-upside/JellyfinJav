@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-dotnet build
+(cd JellyfinJav; dotnet build)
 mkdir -p ./docker-config/plugins
 docker-compose kill
 docker-compose up -d
