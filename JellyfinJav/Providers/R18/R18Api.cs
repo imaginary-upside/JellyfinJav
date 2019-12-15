@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using AngleSharp;
 using AngleSharp.Dom;
+using System.Text.RegularExpressions;
 
 namespace JellyfinJav.Providers.R18
 {
@@ -14,6 +15,28 @@ namespace JellyfinJav.Providers.R18
     {
         private readonly HttpClient httpClient;
         private IDocument document;
+        private readonly static IDictionary<String, String> censoredWords = new Dictionary<String, String>
+        {
+            {"S***e", "Slave"},
+            {"S*********l", "School Girl"},
+            {"S********l", "Schoolgirl"},
+            {"F***ed", "Forced"},
+            {"M****tation", "Molestation"},
+            {"S*****t", "Student"},
+            {"T*****e", "Torture"},
+            {"D**g", "Drug"},
+            {"H*******e", "Hypnotize"},
+            {"C***dren", "Children"},
+            {"V*****ed", "Violated"},
+            {"M****ter", "Molester"},
+            {"Y********l", "Young Girl"},
+            {"A*****ted", "Assaulted"},
+            {"D***k", "Drink"},
+            {"V*****t", "Violent"},
+            {"S******g", "Sleeping"},
+            {"R**e", "Rape"},
+            {"S**tology", "Scatology"}
+        };
 
         public R18Api()
         {
@@ -73,13 +96,13 @@ namespace JellyfinJav.Providers.R18
                 title.Replace(actress.ToLower(), "");
             }
 
-            return title.ToString().TrimEnd(' ', '-');
+            return decensor(title.ToString()).TrimEnd(' ', '-');
         }
 
         public IEnumerable<string> getCategories()
         {
             return document.QuerySelectorAll("[itemprop='genre']")
-                           .Select(n => n.TextContent.Trim());
+                           .Select(n => decensor(n.TextContent).Trim());
         }
 
         public DateTime? getReleaseDate()
@@ -113,6 +136,12 @@ namespace JellyfinJav.Providers.R18
                            .FirstOrDefault(n => n.TextContent == "Content ID:")?
                            .NextElementSibling?
                            .TextContent.Trim();
+        }
+
+        private static string decensor(string censored)
+        {
+            var rx = new Regex(String.Join("|", censoredWords.Keys.Select(k => Regex.Escape(k))));
+            return rx.Replace(censored, m => censoredWords[m.Value]);
         }
     }
 }
