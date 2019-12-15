@@ -112,7 +112,6 @@ namespace JellyfinJav.JellyfinJav.Providers
                 HasMetadata = true,
                 Item = new Movie
                 {
-                    OriginalTitle = $"{result.Code} {string.Join(" ", result.Genres)}",
                     Name = result.Name,
                     ProviderIds = new Dictionary<string, string> { { "JavBus", result.Code } },
                     Genres = result.Genres.ToArray(),
@@ -255,11 +254,13 @@ namespace JellyfinJav.JellyfinJav.Providers
 
             logger.LogInformation($"Jav Get metadata with name {info.Name}");
 
-            var results = await GetSearchResults(info, cancellationToken);
+            var searchResults = await GetSearchResults(info, cancellationToken);
             try
             {
-                var first = results.First();
-                return JavBus.GetMovieFromResult(await JavBus.GetResult(httpClient, logger, first.ProviderIds["JavBus"]));
+                var first = searchResults.First();
+                var result = JavBus.GetMovieFromResult(await JavBus.GetResult(httpClient, logger, first.ProviderIds["JavBus"]));
+                result.Item.OriginalTitle = info.Name;
+                return result;
             }
             catch (Exception e)
             {
