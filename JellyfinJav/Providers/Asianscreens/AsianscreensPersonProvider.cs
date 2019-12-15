@@ -38,12 +38,19 @@ namespace JellyfinJav.Providers.Asianscreens
 
         public async Task<MetadataResult<Person>> GetMetadata(PersonLookupInfo info, CancellationToken cancellationToken)
         {
-            var actress = (await GetSearchResults(info, cancellationToken)).FirstOrDefault();
-            if (actress == null)
-                return new MetadataResult<Person>();
-
+            var providerIds = info.ProviderIds;
             var client = new AsianscreensApi();
-            await client.loadActress(actress.ProviderIds["Asianscreens"]);
+            if (info.ProviderIds.ContainsKey("Asianscreens"))
+            {
+                await client.loadActress(info.ProviderIds["Asianscreens"]);
+            }
+            else
+            {
+                var actress = (await GetSearchResults(info, cancellationToken)).FirstOrDefault();
+                if (actress == null)
+                    return new MetadataResult<Person>();
+                providerIds = actress.ProviderIds;
+            }
 
             return new MetadataResult<Person>
             {
@@ -51,7 +58,7 @@ namespace JellyfinJav.Providers.Asianscreens
                 // their videos will be a challenge.
                 Item = new Person
                 {
-                    ProviderIds = actress.ProviderIds,
+                    ProviderIds = providerIds,
                     PremiereDate = client.getBirthdate(),
                     ProductionLocations =
                         new[] { client.getBirthplace() }.OfType<string>().ToArray(),
