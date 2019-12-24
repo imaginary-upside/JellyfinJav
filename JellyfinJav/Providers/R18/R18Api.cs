@@ -20,22 +20,21 @@ namespace JellyfinJav.Providers.R18
             {"S***e", "Slave"},
             {"S*********l", "School Girl"},
             {"S********l", "Schoolgirl"},
-            {"F***ed", "Forced"},
-            {"M****tation", "Molestation"},
+            {"F***e", "Force"},
+            {"M****t", "Molest"},
             {"S*****t", "Student"},
             {"T*****e", "Torture"},
             {"D**g", "Drug"},
             {"H*******e", "Hypnotize"},
-            {"C***dren", "Children"},
-            {"V*****ed", "Violated"},
-            {"M****ter", "Molester"},
+            {"C***d", "Child"},
+            {"V*****e", "Violate"},
             {"Y********l", "Young Girl"},
-            {"A*****ted", "Assaulted"},
+            {"A*****t", "Assault"},
             {"D***k", "Drink"},
             {"V*****t", "Violent"},
             {"S******g", "Sleeping"},
             {"R**e", "Rape"},
-            {"S**tology", "Scatology"}
+            {"S**t", "Scat"}
         };
 
         public R18Api()
