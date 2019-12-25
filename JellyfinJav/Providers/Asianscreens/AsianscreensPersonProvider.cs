@@ -54,7 +54,7 @@ namespace JellyfinJav.Providers.AsianscreensProvider
                 {
                     ProviderIds = new Dictionary<string, string> { { "Asianscreens", actress.Value.Id } },
                     PremiereDate = actress.Value.Birthdate,
-                    ProductionLocations = new[] { actress.Value.Birthplace },
+                    ProductionLocations = new[] { actress.Value.Birthplace }.OfType<string>().ToArray(),
                     // Jellyfin will always refresh metadata unless Overview exists.
                     // So giving Overview a zero width character to prevent that.
                     Overview = "\u200B"
