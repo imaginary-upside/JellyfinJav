@@ -10,6 +10,7 @@
     <PackageReference Include="AngleSharp" Version="0.13.0" />
     <PackageReference Include="ILRepack.MSBuild.Task" Version="2.0.13" />
     <PackageReference Include="Javlibrary" Version="0.3.0" />
+    <PackageReference Include="Asianscreens" Version="0.1.0" />
     <PackageReference Include="Jellyfin.Controller" Version="10.4.0" />
     <PackageReference Include="Jellyfin.Model" Version="10.4.0" />
   </ItemGroup>
@@ -21,6 +22,7 @@
 
     <ItemGroup>
       <InputAssemblies Include="$(Home)/.nuget/packages/javlibrary/0.3.0/lib/netstandard2.0/Javlibrary.dll" />
+      <InputAssemblies Include="$(Home)/.nuget/packages/asianscreens/0.1.0/lib/netstandard2.0/Asianscreens.dll" />
       <InputAssemblies Include="$(Home)/.nuget/packages/anglesharp/0.13.0/lib/netstandard2.0/AngleSharp.dll" />
       <InputAssemblies Include="$(Home)/.nuget/packages/cloudflaresolverre/1.0.6/lib/netstandard1.1/CloudflareSolverRe.dll" />
     </ItemGroup>

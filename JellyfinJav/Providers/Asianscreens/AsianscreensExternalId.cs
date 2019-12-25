@@ -2,7 +2,7 @@ using MediaBrowser.Controller.Providers;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Model.Entities;
 
-namespace JellyfinJav.Providers.R18
+namespace JellyfinJav.Providers.AsianscreensProvider
 {
     public class AsianscreensExternalId : IExternalId
     {

@@ -1,4 +1,3 @@
-using System;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Controller.Entities;
 using System.Collections.Generic;
@@ -8,11 +7,12 @@ using System.Threading.Tasks;
 using MediaBrowser.Model.Providers;
 using System.Linq;
 
-namespace JellyfinJav.Providers.Asianscreens
+namespace JellyfinJav.Providers.AsianscreensProvider
 {
     public class AsianscreensPersonProvider : IRemoteMetadataProvider<Person, PersonLookupInfo>
     {
         private readonly IHttpClient httpClient;
+        private static readonly Asianscreens.Client client = new Asianscreens.Client();
 
         public string Name => "Asianscreens";
 
@@ -23,34 +23,28 @@ namespace JellyfinJav.Providers.Asianscreens
 
         public async Task<IEnumerable<RemoteSearchResult>> GetSearchResults(PersonLookupInfo info, CancellationToken cancelationToken)
         {
-            var client = new AsianscreensApi();
-            return from actress in await client.searchActresses(info.Name)
+            return from actress in await client.Search(info.Name)
                    select new RemoteSearchResult
                    {
-                       Name = actress.Item1,
+                       Name = actress.name,
                        ProviderIds = new Dictionary<string, string>
                        {
-                           { "Asianscreens", actress.Item2 }
+                           { "Asianscreens", actress.id }
                        },
-                       ImageUrl = actress.Item3
+                       ImageUrl = actress.cover.ToString()
                    };
         }
 
         public async Task<MetadataResult<Person>> GetMetadata(PersonLookupInfo info, CancellationToken cancellationToken)
         {
-            var providerIds = info.ProviderIds;
-            var client = new AsianscreensApi();
+            Asianscreens.Actress? actress = null;
             if (info.ProviderIds.ContainsKey("Asianscreens"))
-            {
-                await client.loadActress(info.ProviderIds["Asianscreens"]);
-            }
+                actress = await client.LoadActress(info.ProviderIds["Asianscreens"]);
             else
-            {
-                var actress = (await GetSearchResults(info, cancellationToken)).FirstOrDefault();
-                if (actress == null)
-                    return new MetadataResult<Person>();
-                providerIds = actress.ProviderIds;
-            }
+                actress = await client.SearchFirst(info.Name);
+
+            if (!actress.HasValue)
+                return new MetadataResult<Person>();
 
             return new MetadataResult<Person>
             {
@@ -58,10 +52,9 @@ namespace JellyfinJav.Providers.Asianscreens
                 // their videos will be a challenge.
                 Item = new Person
                 {
-                    ProviderIds = providerIds,
-                    PremiereDate = client.getBirthdate(),
-                    ProductionLocations =
-                        new[] { client.getBirthplace() }.OfType<string>().ToArray(),
+                    ProviderIds = new Dictionary<string, string> { { "Asianscreens", actress.Value.Id } },
+                    PremiereDate = actress.Value.Birthdate,
+                    ProductionLocations = new[] { actress.Value.Birthplace },
                     // Jellyfin will always refresh metadata unless Overview exists.
                     // So giving Overview a zero width character to prevent that.
                     Overview = "\u200B"

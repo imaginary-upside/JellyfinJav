@@ -8,11 +8,12 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Providers;
 using System;
 
-namespace JellyfinJav.Providers.Asianscreens
+namespace JellyfinJav.Providers.AsianscreensProvider
 {
     public class AsianscreensPersonImageProvider : IRemoteImageProvider
     {
         private readonly IHttpClient httpClient;
+        private readonly static Asianscreens.Client client = new Asianscreens.Client();
 
         public string Name => "Asianscreens";
 
@@ -21,24 +22,23 @@ namespace JellyfinJav.Providers.Asianscreens
             this.httpClient = httpClient;
         }
 
-        public Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancelToken)
+        public async Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancelToken)
         {
-            var result = new List<RemoteImageInfo>();
-
             var id = item.GetProviderId("Asianscreens");
             if (string.IsNullOrEmpty(id))
-            {
-                return Task.FromResult<IEnumerable<RemoteImageInfo>>(result);
-            }
+                return new RemoteImageInfo[] { };
 
-            result.Add(new RemoteImageInfo
-            {
-                ProviderName = Name,
-                Type = ImageType.Primary,
-                Url = AsianscreensApi.getCover(id)
-            });
+            var actress = await client.LoadActress(id);
 
-            return Task.FromResult<IEnumerable<RemoteImageInfo>>(result);
+            return new RemoteImageInfo[]
+            {
+                new RemoteImageInfo
+                {
+                    ProviderName = Name,
+                    Type = ImageType.Primary,
+                    Url = actress.Cover
+                }
+            };
         }
 
         public Task<HttpResponseInfo> GetImageResponse(string url, CancellationToken cancelToken)
