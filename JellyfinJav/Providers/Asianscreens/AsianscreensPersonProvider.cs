@@ -6,19 +6,22 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Model.Providers;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace JellyfinJav.Providers.AsianscreensProvider
 {
     public class AsianscreensPersonProvider : IRemoteMetadataProvider<Person, PersonLookupInfo>
     {
         private readonly IHttpClient httpClient;
+        private readonly ILogger logger;
         private static readonly Asianscreens.Client client = new Asianscreens.Client();
 
         public string Name => "Asianscreens";
 
-        public AsianscreensPersonProvider(IHttpClient httpClient)
+        public AsianscreensPersonProvider(IHttpClient httpClient, ILogger logger)
         {
             this.httpClient = httpClient;
+            this.logger = logger;
         }
 
         public async Task<IEnumerable<RemoteSearchResult>> GetSearchResults(PersonLookupInfo info, CancellationToken cancelationToken)
@@ -37,6 +40,8 @@ namespace JellyfinJav.Providers.AsianscreensProvider
 
         public async Task<MetadataResult<Person>> GetMetadata(PersonLookupInfo info, CancellationToken cancellationToken)
         {
+            logger.LogInformation("[JellyfinJav] Asianscreens - Scanning: " + info.Name);
+
             Asianscreens.Actress? actress = null;
             if (info.ProviderIds.ContainsKey("Asianscreens"))
                 actress = await client.LoadActress(info.ProviderIds["Asianscreens"]);
