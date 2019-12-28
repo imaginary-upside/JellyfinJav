@@ -29,6 +29,8 @@ namespace JellyfinJav.Providers.AsianscreensProvider
                 return new RemoteImageInfo[] { };
 
             var actress = await client.LoadActress(id);
+            if (actress.Cover == null)
+                return new RemoteImageInfo[] { };
 
             return new RemoteImageInfo[]
             {
