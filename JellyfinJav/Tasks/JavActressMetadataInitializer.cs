@@ -46,10 +46,8 @@ namespace JellyfinJav.Tasks
             {
                 var actress = actresses[i];
 
-                if (actress.DateLastRefreshed == default(DateTime))
-                {
+                if (String.IsNullOrEmpty(actress.Overview))
                     await actress.RefreshMetadata(options, cancellationToken);
-                }
 
                 progress.Report(i / actresses.Count * 100);
             }
