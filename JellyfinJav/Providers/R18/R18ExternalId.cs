@@ -2,7 +2,7 @@ using MediaBrowser.Controller.Providers;
 using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Model.Entities;
 
-namespace JellyfinJav.Providers.R18
+namespace JellyfinJav.Providers.R18Provider
 {
     public class R18ExternalId : IExternalId
     {

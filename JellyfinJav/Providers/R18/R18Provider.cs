@@ -11,8 +11,9 @@ using MediaBrowser.Model.Providers;
 using MediaBrowser.Controller.Configuration;
 using MediaBrowser.Controller.Library;
 using Microsoft.Extensions.Logging;
+using R18;
 
-namespace JellyfinJav.Providers.R18
+namespace JellyfinJav.Providers.R18Provider
 {
     public class R18Provider : IRemoteMetadataProvider<Movie, MovieInfo>, IHasOrder
     {
@@ -20,6 +21,7 @@ namespace JellyfinJav.Providers.R18
         private readonly IHttpClient httpClient;
         private readonly ILibraryManager libraryManager;
         private readonly ILogger logger;
+        private readonly R18.Client client = new R18.Client();
 
         public string Name => "R18";
         public int Order => 10;
@@ -43,29 +45,27 @@ namespace JellyfinJav.Providers.R18
 
             logger.LogInformation("[JellyfinJav] R18 - Scanning: " + originalTitle);
 
-            var client = new R18Api();
+            R18.Video? video = null;
             if (info.ProviderIds.ContainsKey("R18"))
-                await client.loadVideo(info.ProviderIds["R18"]);
+                video = await client.LoadVideo(info.ProviderIds["R18"]);
             else
-            {
-                var videoResults = await GetSearchResults(info, cancelToken);
-                if (videoResults.Count() == 0)
-                    return new MetadataResult<Movie>();
-                await client.loadVideo(videoResults.First().ProviderIds["R18"]);
-            }
+                video = await client.SearchFirst(Utility.ExtractCodeFromFilename(originalTitle));
+
+            if (!video.HasValue)
+                return new MetadataResult<Movie>();
 
             return new MetadataResult<Movie>
             {
                 Item = new Movie
                 {
                     OriginalTitle = info.Name,
-                    Name = client.getTitle(),
-                    PremiereDate = client.getReleaseDate(),
-                    ProviderIds = new Dictionary<string, string> { { "R18", client.getId() } },
-                    Studios = new[] { client.getStudio() }.OfType<string>().ToArray(),
-                    Genres = client.getCategories().OfType<string>().ToArray()
+                    Name = video.Value.Title,
+                    PremiereDate = video.Value.ReleaseDate,
+                    ProviderIds = new Dictionary<string, string> { { "R18", video.Value.Id } },
+                    Studios = new[] { video.Value.Studio }.OfType<string>().ToArray(),
+                    Genres = video.Value.Genres.OfType<string>().ToArray()
                 },
-                People = (from actress in client.getActresses()
+                People = (from actress in video.Value.Actresses
                           select new PersonInfo
                           {
                               Name = NormalizeActressName(actress),
@@ -81,16 +81,15 @@ namespace JellyfinJav.Providers.R18
             if (string.IsNullOrEmpty(javCode))
                 return new RemoteSearchResult[] { };
 
-            var client = new R18Api();
-            return from video in await client.searchVideos(javCode)
+            return from video in await client.Search(javCode)
                    select new RemoteSearchResult
                    {
-                       Name = video.Item1,
+                       Name = video.code,
                        ProviderIds = new Dictionary<string, string>
                        {
-                           { "R18", video.Item2 }
+                           { "R18", video.id }
                        },
-                       ImageUrl = video.Item3
+                       ImageUrl = video.cover.ToString()
                    };
         }
 

@@ -9,7 +9,7 @@ using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Providers;
 
-namespace JellyfinJav.Providers.R18
+namespace JellyfinJav.Providers.R18Provider
 {
     public class R18ImageProvider : IRemoteImageProvider
     {
