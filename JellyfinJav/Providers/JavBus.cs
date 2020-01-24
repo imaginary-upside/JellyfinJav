@@ -135,7 +135,7 @@ namespace JellyfinJav.JellyfinJav.Providers
 
         public string Key => "JavBus";
 
-        public string UrlFormatString => "http://javbus.com/{0}";
+        public string UrlFormatString => "https://javbus.com/{0}";
 
         public bool Supports(IHasProviderIds item)
         {

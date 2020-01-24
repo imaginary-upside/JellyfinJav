@@ -8,7 +8,7 @@ namespace JellyfinJav.Providers.JavlibraryProvider
     {
         public string Name => "Javlibrary";
         public string Key => "Javlibrary";
-        public string UrlFormatString => "http://www.javlibrary.com/en/?v={0}";
+        public string UrlFormatString => "https://www.javlibrary.com/en/?v={0}";
 
         public bool Supports(IHasProviderIds item)
         {
