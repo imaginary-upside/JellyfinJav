@@ -14,7 +14,7 @@ namespace JellyfinJav.Providers.AsianscreensProvider
     {
         private readonly IHttpClient httpClient;
         private readonly ILogger logger;
-        private static readonly Asianscreens.Client client = new Asianscreens.Client();
+        private static readonly Api.AsianscreensClient client = new Api.AsianscreensClient();
 
         public string Name => "Asianscreens";
 
@@ -42,7 +42,7 @@ namespace JellyfinJav.Providers.AsianscreensProvider
         {
             logger.LogInformation("[JellyfinJav] Asianscreens - Scanning: " + info.Name);
 
-            Asianscreens.Actress? actress = null;
+            Api.Actress? actress = null;
             if (info.ProviderIds.ContainsKey("Asianscreens"))
                 actress = await client.LoadActress(info.ProviderIds["Asianscreens"]);
             else

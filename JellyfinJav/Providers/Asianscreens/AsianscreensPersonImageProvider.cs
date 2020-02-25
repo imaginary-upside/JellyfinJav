@@ -13,7 +13,7 @@ namespace JellyfinJav.Providers.AsianscreensProvider
     public class AsianscreensPersonImageProvider : IRemoteImageProvider
     {
         private readonly IHttpClient httpClient;
-        private readonly static Asianscreens.Client client = new Asianscreens.Client();
+        private readonly static Api.AsianscreensClient client = new Api.AsianscreensClient();
 
         public string Name => "Asianscreens";
 

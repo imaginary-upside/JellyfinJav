@@ -29,7 +29,7 @@ namespace JellyfinJav.Providers.JavlibraryProvider
                 return new RemoteImageInfo[] { };
 
             // probably should be downloading the full size image, and then cropping the front cover
-            var client = new Javlibrary.Client();
+            var client = new Api.JavlibraryClient();
             var video = await client.LoadVideo(id);
 
             return new RemoteImageInfo[]

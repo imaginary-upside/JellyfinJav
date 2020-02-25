@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Text.RegularExpressions;
 using MediaBrowser.Common.Net;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Entities.Movies;
@@ -11,7 +10,6 @@ using MediaBrowser.Model.Providers;
 using MediaBrowser.Controller.Configuration;
 using MediaBrowser.Controller.Library;
 using Microsoft.Extensions.Logging;
-using R18;
 
 namespace JellyfinJav.Providers.R18Provider
 {
@@ -21,7 +19,7 @@ namespace JellyfinJav.Providers.R18Provider
         private readonly IHttpClient httpClient;
         private readonly ILibraryManager libraryManager;
         private readonly ILogger logger;
-        private readonly R18.Client client = new R18.Client();
+        private readonly Api.R18Client client = new Api.R18Client();
 
         public string Name => "R18";
         public int Order => 10;
@@ -45,7 +43,7 @@ namespace JellyfinJav.Providers.R18Provider
 
             logger.LogInformation("[JellyfinJav] R18 - Scanning: " + originalTitle);
 
-            R18.Video? video = null;
+            Api.Video? video = null;
             if (info.ProviderIds.ContainsKey("R18"))
                 video = await client.LoadVideo(info.ProviderIds["R18"]);
             else

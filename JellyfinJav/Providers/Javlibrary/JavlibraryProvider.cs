@@ -18,7 +18,7 @@ namespace JellyfinJav.Providers.JavlibraryProvider
         private readonly IHttpClient httpClient;
         private readonly ILibraryManager libraryManager;
         private readonly ILogger logger;
-        private static readonly Javlibrary.Client client = new Javlibrary.Client();
+        private static readonly Api.JavlibraryClient client = new Api.JavlibraryClient();
 
         public string Name => "Javlibrary";
         public int Order => 11;
@@ -38,7 +38,7 @@ namespace JellyfinJav.Providers.JavlibraryProvider
 
             logger.LogInformation("[JellyfinJav] Javlibrary - Scanning: " + originalTitle);
 
-            Javlibrary.Video? result = null;
+            Api.Video? result = null;
             if (info.ProviderIds.ContainsKey("Javlibrary"))
                 result = await client.LoadVideo(info.ProviderIds["Javlibrary"]);
             else
