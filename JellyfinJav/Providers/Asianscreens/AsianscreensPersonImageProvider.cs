@@ -29,7 +29,7 @@ namespace JellyfinJav.Providers.AsianscreensProvider
                 return new RemoteImageInfo[] { };
 
             var actress = await client.LoadActress(id);
-            if (actress.Cover == null)
+            if (!actress.HasValue || actress.Value.Cover == null)
                 return new RemoteImageInfo[] { };
 
             return new RemoteImageInfo[]
@@ -38,7 +38,7 @@ namespace JellyfinJav.Providers.AsianscreensProvider
                 {
                     ProviderName = Name,
                     Type = ImageType.Primary,
-                    Url = actress.Cover
+                    Url = actress.Value.Cover
                 }
             };
         }

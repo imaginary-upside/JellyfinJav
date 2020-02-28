@@ -68,14 +68,17 @@ namespace JellyfinJav.Api
             return await LoadActress(result.ElementAt(0).id);
         }
 
-        public async Task<Actress> LoadActress(string id)
+        public async Task<Actress?> LoadActress(string id)
         {
             return await LoadActress(new Uri($"https://www.asianscreens.com/{id}.asp"));
         }
 
-        public async Task<Actress> LoadActress(Uri url)
+        public async Task<Actress?> LoadActress(Uri url)
         {
             var response = await httpClient.GetAsync(url);
+            if (!response.IsSuccessStatusCode)
+                return null;
+
             var html = await response.Content.ReadAsStringAsync();
             var doc = await context.OpenAsync(req => req.Content(html));
 
