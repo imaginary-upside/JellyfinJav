@@ -1,16 +1,11 @@
 # JellyfinJav
 Mostly ready for production use, but don't expect perfection.
 
-# Screenshots
-![Grid Example](screenshots/example-grid.jpg)
-![Video Example](screenshots/example-video.jpg)
-![Actress Example](screenshots/example-actress.jpg)
-
 # Metadata Providers
-* R18 (Videos) - English
-* JAVLibrary (Videos) - English
-* JavBus (Videos, Actresses) - Chinese
-* AsianScreens (Actresses) - English
+* R18 (Videos)
+* JAVLibrary (Videos)
+* AsianScreens (Actresses)
+* Warashi Asian Pornstars (Actresses)
 
 # Instructions
 ### Installation
@@ -22,7 +17,11 @@ Either download the latest prebuilt release and drop the .dll into Jellyfin's pl
 ### Usage
 When adding the media library, make sure to select "Content type: movies". And "Show advanced settings" to be able to select the metadata downloaders you want.
 
-All the file names need to contain the JAV code seperated by a dash.
+##### Example File Names
+* abp200.mkv
+* ABP200.mkv
+* ABP-200.mkv
+* some random text abp-200 more random text.mkv
 
 # Development
 ### Requirements
@@ -35,6 +34,11 @@ All the file names need to contain the JAV code seperated by a dash.
 
 ### General
 JAV files for testing purposes are stored in ./videos
+
+# Screenshots
+![Grid Example](screenshots/example-grid.jpg)
+![Video Example](screenshots/example-video.jpg)
+![Actress Example](screenshots/example-actress.jpg)
 
 # License
 Licensed under AGPL-3.0-only
