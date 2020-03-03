@@ -1,5 +1,5 @@
 # JellyfinJav
-Mostly ready for production use, but don't expect perfection.
+Don't expect perfection.
 
 # Metadata Providers
 * R18 (Videos)
@@ -9,15 +9,18 @@ Mostly ready for production use, but don't expect perfection.
 
 # Instructions
 ### Installation
-Either download the latest prebuilt release and drop the .dll into Jellyfin's plugins directory, or build the .dll with the following:
+Either download the latest prebuilt release and drop the .dll into Jellyfin's
+plugins directory, or build the .dll with the following:
         
     dotnet publish --configuration Release
     cp bin/Release/netstandard2.0/JellyfinJav.dll $JELLYFIN_DIR/plugins/
 
 ### Usage
-When adding the media library, make sure to select "Content type: movies". And "Show advanced settings" to be able to select the metadata downloaders you want.
+When adding the media library, make sure to select "Content type: movies".
+And "Show advanced settings" to be able to select the metadata downloaders
+you want.
 
-##### Example File Names
+### Example File Names
 * abp200.mkv
 * ABP200.mkv
 * ABP-200.mkv
