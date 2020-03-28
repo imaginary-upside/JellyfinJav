@@ -12,15 +12,12 @@ namespace JellyfinJav.Tasks
     public class JavActressMetadataInitializer : ILibraryPostScanTask
     {
         private readonly ILibraryManager libraryManager;
-        private readonly ILogger logger;
         private readonly IFileSystem fileSystem;
 
         public JavActressMetadataInitializer(ILibraryManager libraryManager,
-                                             ILogger logger,
                                              IFileSystem fileSystem)
         {
             this.libraryManager = libraryManager;
-            this.logger = logger;
             this.fileSystem = fileSystem;
         }
 
@@ -30,7 +27,7 @@ namespace JellyfinJav.Tasks
             progress.Report(0);
 
             var options = new MetadataRefreshOptions(
-                new DirectoryService(logger, fileSystem)
+                new DirectoryService(fileSystem)
             )
             {
                 ImageRefreshMode = MetadataRefreshMode.FullRefresh,
