@@ -22,13 +22,6 @@ namespace Tests
             var results = await client.Search("abp");
 
             Assert.AreEqual(30, results.Count());
-
-            foreach (var result in results)
-            {
-                Assert.AreEqual(11, result.id.Count());
-                Assert.AreEqual(7, result.code.Count());
-                Assert.Less(60, result.cover.ToString().Length);
-            }
         }
 
         [Test]
