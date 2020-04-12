@@ -16,6 +16,7 @@ jobs:
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.101
-    - run: cd Tests
     - run: dotnet restore
+      working-directory: Tests
     - run: dotnet test --no-restore --verbosity normal
+      working-directory: Tests
