@@ -54,7 +54,11 @@ namespace JellyfinJav.Api
 
         public async Task<Actress?> LoadActress(string id)
         {
-            return await LoadActress(new Uri($"http://warashi-asian-pornstars.fr/en/s-2-0/anything/asian-female-pornstar/{id}"));
+            var parsedId = id.Split('/');
+            if (parsedId.Length != 2)
+                return null;
+
+            return await LoadActress(new Uri($"http://warashi-asian-pornstars.fr/en/{parsedId[0]}/anything/anything/{parsedId[1]}"));
         }
 
         private async Task<Actress?> LoadActress(Uri url)
@@ -91,12 +95,12 @@ namespace JellyfinJav.Api
 
         private static string ExtractId(string url)
         {
-            var match = Regex.Match(url, @".+\/(\d+)$");
+            var match = Regex.Match(url, @"\/en\/(.+?)\/.+\/(\d+)$");
 
             if (!match.Success)
                 return null;
 
-            return match.Groups[1].Value;
+            return $"{match.Groups[1].Value}/{match.Groups[2].Value}";
         }
 
         private static string NormalizeName(string name)
@@ -114,7 +118,12 @@ namespace JellyfinJav.Api
 
         private static string ExtractCover(IDocument doc)
         {
+            // First try asian-female-pornstar
             var cover = doc.QuerySelector("#pornostar-profil-photos-0 [itemprop=image]")?.GetAttribute("src");
+
+            // Next try female-pornstare
+            if (cover == null)
+                cover = doc.QuerySelector("#casting-profil-preview [itemprop=image]")?.GetAttribute("src");
 
             if (cover == null)
                 return null;
