@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="AngleSharp" Version="0.13.0" />
-    <PackageReference Include="CloudflareSolverReNgosang" Version="1.0.6.1" />
+    <PackageReference Include="CloudflareSolverReNgosang" Version="1.0.6.2" />
     <PackageReference Include="ILRepack.MSBuild.Task" Version="2.0.*" />
     <PackageReference Include="Jellyfin.Controller" Version="10.5.*" />
     <PackageReference Include="Jellyfin.Model" Version="10.5.*" />
@@ -21,7 +21,7 @@
 
     <ItemGroup>
       <InputAssemblies Include="$(Home)/.nuget/packages/anglesharp/0.13.0/lib/netstandard2.0/AngleSharp.dll" />
-      <InputAssemblies Include="$(Home)/.nuget/packages/cloudflaresolverrengosang/1.0.6.1/lib/netstandard1.1/CloudflareSolverRe.dll" />
+      <InputAssemblies Include="$(Home)/.nuget/packages/cloudflaresolverrengosang/1.0.6.2/lib/netstandard1.1/CloudflareSolverRe.dll" />
     </ItemGroup>
 
     <ILRepack OutputType="$(OutputType)" MainAssembly="$(AssemblyName).dll" OutputAssembly="$(AssemblyName).dll" InputAssemblies="@(InputAssemblies)" InternalizeExcludeAssemblies="@(InternalizeExcludeAssemblies)" WorkingDirectory="$(WorkingDirectory)" />
