@@ -72,7 +72,7 @@ namespace Tests
                 name: "Ai Uehara",
                 birthdate: DateTime.Parse("1992-11-22"),
                 birthplace: null,
-                cover: "http://www.asianscreens.com/products/400000/portraits/ai_uehara.jpg"
+                cover: "https://www.asianscreens.com/products/400000/portraits/ai_uehara.jpg"
             );
 
             Assert.AreEqual(expected, result);
@@ -95,7 +95,7 @@ namespace Tests
                 name: "Koharu Suzuki",
                 birthdate: DateTime.Parse("1993-12-1"),
                 birthplace: "Kanagawa",
-                cover: "http://www.asianscreens.com/products/400000/portraits/koharu_suzuki.jpg"
+                cover: "https://www.asianscreens.com/products/400000/portraits/koharu_suzuki.jpg"
             );
 
             Assert.AreEqual(expected, result);

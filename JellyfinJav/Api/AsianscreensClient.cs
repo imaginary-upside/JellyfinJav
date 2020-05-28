@@ -27,7 +27,7 @@ namespace JellyfinJav.Api
         private async Task<IEnumerable<(string name, string id, Uri cover)>> SearchHelper(string searchName)
         {
             var response = await httpClient.GetAsync(
-                $"http://www.asianscreens.com/directory/{searchName[0]}.asp"
+                $"https://www.asianscreens.com/directory/{searchName[0]}.asp"
             );
 
             if (!response.IsSuccessStatusCode)
@@ -70,7 +70,7 @@ namespace JellyfinJav.Api
 
         public async Task<Actress?> LoadActress(string id)
         {
-            return await LoadActress(new Uri($"http://www.asianscreens.com/{id}.asp"));
+            return await LoadActress(new Uri($"https://www.asianscreens.com/{id}.asp"));
         }
 
         public async Task<Actress?> LoadActress(Uri url)
@@ -138,7 +138,7 @@ namespace JellyfinJav.Api
             if (path == "/products/400000/portraits/no_picture_available.gif")
                 return null;
 
-            return $"http://www.asianscreens.com{path}";
+            return $"https://www.asianscreens.com{path}";
         }
 
         private static Uri GenerateCoverUrl(string id)
@@ -151,7 +151,7 @@ namespace JellyfinJav.Api
                 picEnd = (Char.GetNumericValue(idEnd) - 1).ToString();
 
             var url = string.Format(
-                "http://www.asianscreens.com/products/400000/portraits/{0}{1}.jpg",
+                "https://www.asianscreens.com/products/400000/portraits/{0}{1}.jpg",
                 id.TrimEnd(idEnd),
                 picEnd
             );
