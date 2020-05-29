@@ -13,15 +13,8 @@ namespace JellyfinJav.Api
     /// <summary>A web scraping client for javlibrary.com</summary>
     public class JavlibraryClient
     {
-        private readonly HttpClient httpClient;
-        private readonly IBrowsingContext context;
-
-        public JavlibraryClient()
-        {
-            var handler = new ClearanceHandler();
-            httpClient = new HttpClient(handler);
-            context = BrowsingContext.New();
-        }
+        private static readonly HttpClient httpClient = new HttpClient(new ClearanceHandler());
+        private static readonly IBrowsingContext context = BrowsingContext.New();
 
         /// <summary>Searches by the specified identifier.</summary>
         /// <param name="identifier">The identifier to search for.</param>

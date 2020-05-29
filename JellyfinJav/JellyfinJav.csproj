@@ -22,6 +22,7 @@
     <ItemGroup>
       <InputAssemblies Include="$(Home)/.nuget/packages/anglesharp/0.13.0/lib/netstandard2.0/AngleSharp.dll" />
       <InputAssemblies Include="$(Home)/.nuget/packages/cloudflaresolverrengosang/1.0.7.3/lib/netstandard1.3/CloudflareSolverRe.dll" />
+      <InputAssemblies Include="$(Home)/.nuget/packages/jint/2.11.58/lib/netstandard2.0/Jint.dll" />
     </ItemGroup>
 
     <ILRepack OutputType="$(OutputType)" MainAssembly="$(AssemblyName).dll" OutputAssembly="$(AssemblyName).dll" InputAssemblies="@(InputAssemblies)" InternalizeExcludeAssemblies="@(InternalizeExcludeAssemblies)" WorkingDirectory="$(WorkingDirectory)" />
