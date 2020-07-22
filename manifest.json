@@ -8,7 +8,7 @@
         "overview": "JAV metadata providers for Jellyfin.",
         "versions": [
             {
-                "checksum": "c9b3910ccfa7d9b6d679a19b53f8fd8d",
+                "checksum": "9d9b35812c085a1f16653d8dea10c947",
                 "changelog": "",
                 "targetAbi": "10.6.0.0",
                 "sourceUrl": "https://github.com/imaginary-upside/JellyfinJav/releases/download/0.4.0/jellyfinjav_0.4.zip",
