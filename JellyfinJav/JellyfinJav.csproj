@@ -10,8 +10,8 @@
     <PackageReference Include="AngleSharp" Version="0.13.0" />
     <PackageReference Include="CloudflareSolverReNgosang" Version="1.0.7.3" />
     <PackageReference Include="ILRepack.MSBuild.Task" Version="2.0.*" />
-    <PackageReference Include="Jellyfin.Controller" Version="10.5.*" />
-    <PackageReference Include="Jellyfin.Model" Version="10.5.*" />
+    <PackageReference Include="Jellyfin.Controller" Version="10.6.*" />
+    <PackageReference Include="Jellyfin.Model" Version="10.6.*" />
   </ItemGroup>
 
   <Target Name="ILRepack" AfterTargets="Build">

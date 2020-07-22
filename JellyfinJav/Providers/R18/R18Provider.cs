@@ -18,7 +18,7 @@ namespace JellyfinJav.Providers.R18Provider
         private readonly IServerConfigurationManager configManager;
         private readonly IHttpClient httpClient;
         private readonly ILibraryManager libraryManager;
-        private readonly ILogger logger;
+        private readonly ILogger<R18Provider> logger;
         private readonly Api.R18Client client = new Api.R18Client();
 
         public string Name => "R18";
@@ -27,7 +27,7 @@ namespace JellyfinJav.Providers.R18Provider
         public R18Provider(IServerConfigurationManager configManager,
                            IHttpClient httpClient,
                            ILibraryManager libraryManager,
-                           ILogger logger)
+                           ILogger<R18Provider> logger)
         {
             this.configManager = configManager;
             this.httpClient = httpClient;
@@ -67,7 +67,8 @@ namespace JellyfinJav.Providers.R18Provider
                           select new PersonInfo
                           {
                               Name = NormalizeActressName(actress),
-                              Type = "JAV Actress"
+                              Type = "Actor",
+                              Role = "JAV Actress"
                           }).ToList(),
                 HasMetadata = true
             };

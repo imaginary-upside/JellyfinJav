@@ -17,7 +17,7 @@ namespace JellyfinJav.Providers.JavlibraryProvider
     {
         private readonly IHttpClient httpClient;
         private readonly ILibraryManager libraryManager;
-        private readonly ILogger logger;
+        private readonly ILogger<JavlibraryProvider> logger;
         private static readonly Api.JavlibraryClient client = new Api.JavlibraryClient();
 
         public string Name => "Javlibrary";
@@ -25,7 +25,7 @@ namespace JellyfinJav.Providers.JavlibraryProvider
 
         public JavlibraryProvider(IHttpClient httpClient,
                                   ILibraryManager libraryManager,
-                                  ILogger logger)
+                                  ILogger<JavlibraryProvider> logger)
         {
             this.httpClient = httpClient;
             this.libraryManager = libraryManager;

@@ -13,13 +13,13 @@ namespace JellyfinJav.Providers.AsianscreensProvider
     public class AsianscreensPersonProvider : IRemoteMetadataProvider<Person, PersonLookupInfo>
     {
         private readonly IHttpClient httpClient;
-        private readonly ILogger logger;
+        private readonly ILogger<AsianscreensPersonProvider> logger;
         private static readonly Api.AsianscreensClient client = new Api.AsianscreensClient();
 
         public string Name => "Asianscreens";
         public int Order => 11;
 
-        public AsianscreensPersonProvider(IHttpClient httpClient, ILogger logger)
+        public AsianscreensPersonProvider(IHttpClient httpClient, ILogger<AsianscreensPersonProvider> logger)
         {
             this.httpClient = httpClient;
             this.logger = logger;
