@@ -9,11 +9,9 @@ Don't expect perfection.
 
 # Instructions
 ### Installation
-Either download the latest prebuilt release and drop the .dll into Jellyfin's
-plugins directory, or build the .dll with the following:
-        
-    dotnet publish --configuration Release
-    cp bin/Release/netstandard2.0/JellyfinJav.dll $JELLYFIN_DIR/plugins/
+Within your Jellyfin admin panel, go to Plugins -> Repositories, and add
+https://raw.githubusercontent.com/imaginary-upside/JellyfinJav/master/manifest.json.
+Then switch over to the Catalog tab and install the latest version.
 
 ### Usage
 When adding the media library, make sure to select "Content type: movies".
