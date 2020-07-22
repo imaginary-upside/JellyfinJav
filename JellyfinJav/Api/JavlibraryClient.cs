@@ -1,6 +1,5 @@
 using AngleSharp;
 using AngleSharp.Dom;
-using CloudflareSolverRe;
 using System;
 using System.Net.Http;
 using System.Web;
@@ -13,7 +12,7 @@ namespace JellyfinJav.Api
     /// <summary>A web scraping client for javlibrary.com</summary>
     public class JavlibraryClient
     {
-        private static readonly HttpClient httpClient = new HttpClient(new ClearanceHandler());
+        private static readonly HttpClient httpClient = new HttpClient();
         private static readonly IBrowsingContext context = BrowsingContext.New();
 
         /// <summary>Searches by the specified identifier.</summary>

@@ -1,0 +1,20 @@
+[
+    {
+        "category": "Metadata",
+        "guid": "1d5fffc2-1028-4553-9660-bd4966899e44",
+        "name": "JellyfinJav",
+        "description": "JAV metadata providers for Jellyfin.",
+        "owner": "imaginary-upside",
+        "overview": "JAV metadata providers for Jellyfin.",
+        "versions": [
+            {
+                "checksum": "ad6db5175f4732308b5dd166f79a1c2d",
+                "changelog": "",
+                "targetAbi": "10.6.0.0",
+                "sourceUrl": "https://repo.jellyfin.org/releases/other/whats-this-plugin.zip.gif",
+                "timestamp": "2020-03-27 06:02:58",
+                "version": "0.3"
+            }
+        ]
+    }
+]
