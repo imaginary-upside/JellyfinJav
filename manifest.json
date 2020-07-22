@@ -8,12 +8,12 @@
         "overview": "JAV metadata providers for Jellyfin.",
         "versions": [
             {
-                "checksum": "ad6db5175f4732308b5dd166f79a1c2d",
+                "checksum": "c9b3910ccfa7d9b6d679a19b53f8fd8d",
                 "changelog": "",
                 "targetAbi": "10.6.0.0",
-                "sourceUrl": "https://repo.jellyfin.org/releases/other/whats-this-plugin.zip.gif",
-                "timestamp": "2020-03-27 06:02:58",
-                "version": "0.3"
+                "sourceUrl": "https://github.com/imaginary-upside/JellyfinJav/releases/download/0.4.0/jellyfinjav_0.4.zip",
+                "timestamp": "2020-07-22T02:18:45Z",
+                "version": "0.4"
             }
         ]
     }
