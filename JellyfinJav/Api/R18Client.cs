@@ -98,8 +98,8 @@ namespace JellyfinJav.Api
                                ?.Select(n => Decensor(n.TextContent.Trim()))
                                .Where(genre => NotSaleGenre(genre));
             var studio = doc.QuerySelector("[itemprop=productionCompany]")?.TextContent.Trim();
-            var boxArt = doc.QuerySelector("video")?.GetAttribute("poster");
             var cover = doc.QuerySelector("[itemprop=image]")?.GetAttribute("src");
+            var boxArt = cover.Replace("ps.jpg", "pl.jpg");
             var releaseDate = ExtractReleaseDate(doc);
 
             title = NormalizeTitle(title, actresses);
