@@ -93,7 +93,8 @@ namespace JellyfinJav.Api
             var code = doc.QuerySelector(".product-details dl:nth-child(2) dd:nth-of-type(3)")?.TextContent.Trim();
             var title = Decensor(doc.QuerySelector("cite[itemprop=name]")?.TextContent);
             var actresses = doc.QuerySelectorAll("span[itemprop=name]")
-                               ?.Select(n => NormalizeActress(n.TextContent));
+                               ?.Select(n => NormalizeActress(n.TextContent))
+                               .Where(actress => actress != "----");
             var genres = doc.QuerySelectorAll("[itemprop=genre]")
                                ?.Select(n => Decensor(n.TextContent.Trim()))
                                .Where(genre => NotSaleGenre(genre));
