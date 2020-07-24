@@ -7,6 +7,7 @@ using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Providers;
+using MediaBrowser.Model.Entities;
 using System.Web;
 using MediaBrowser.Controller.Library;
 using Microsoft.Extensions.Logging;
@@ -63,7 +64,7 @@ namespace JellyfinJav.Providers.JavlibraryProvider
                           select new PersonInfo
                           {
                               Name = NormalizeActressName(actress),
-                              Type = "JAV Actress"
+                              Type = PersonType.Actor
                           }).ToList(),
                 HasMetadata = true
             };
