@@ -6,14 +6,20 @@
         "description": "JAV metadata providers for Jellyfin.",
         "owner": "imaginary-upside",
         "overview": "JAV metadata providers for Jellyfin.",
-        "versions": [
-            {
+        "versions": [{
                 "checksum": "9d9b35812c085a1f16653d8dea10c947",
                 "changelog": "",
                 "targetAbi": "10.6.0.0",
                 "sourceUrl": "https://github.com/imaginary-upside/JellyfinJav/releases/download/0.4.0/jellyfinjav_0.4.zip",
                 "timestamp": "2020-07-22T02:18:45Z",
                 "version": "0.4"
+            }, {
+                "checksum": "7c1e129404b076dea4fe060708d22197",
+                "changelog": "",
+                "targetAbi": "10.6.0.0",
+                "sourceUrl": "https://github.com/imaginary-upside/JellyfinJav/releases/download/0.4.1/jellyfinjav_0.4.1.zip",
+                "timestamp": "2020-07-24T17:12:10Z",
+                "version": "0.4.1"
             }
         ]
     }
