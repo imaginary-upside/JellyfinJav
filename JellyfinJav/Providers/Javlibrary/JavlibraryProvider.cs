@@ -55,7 +55,7 @@ namespace JellyfinJav.Providers.JavlibraryProvider
                 Item = new Movie
                 {
                     OriginalTitle = originalTitle,
-                    Name = result.Value.Title,
+                    Name = Utility.CreateVideoDisplayName(result.Value),
                     ProviderIds = new Dictionary<string, string> { { "Javlibrary", result.Value.Id } },
                     Studios = new[] { result.Value.Studio }.OfType<string>().ToArray(),
                     Genres = result.Value.Genres.ToArray()

@@ -20,6 +20,14 @@
                             <option id="LastFirst" value="LastFirst">Last Name - First Name</option>
                         </select>
                     </div>
+                    <div class="selectContainer">
+                        <label class="selectLabel" for="videoDisplayName">Video Display Name</label>
+                        <select is="emby-select" id="videoDisplayName" name="videoDisplayName"
+                            class="emby-select-withcolor emby-select">
+                            <option id="CodeTitle" value="CodeTitle">Code Title</option>
+                            <option id="Title" value="Title">Title</option>
+                        </select>
+                    </div>
                     <div>
                         <button is="emby-button" type="submit" class="raised button-submit block emby-button">
                             <span>Save</span>
@@ -34,12 +42,15 @@
             $('#JellyfinJavConfigPage').on('pageshow', () => {
                 ApiClient.getPluginConfiguration(pluginUniqueId).then(config => {
                     $('#actressNameOrder').val(config.actressNameOrder).change();
+                    $('#videoDisplayName').val(config.videoDisplayName).change();
                 });
             });
 
             $('#JellyfinJavConfigForm').on('submit', function () {
                 ApiClient.getPluginConfiguration(pluginUniqueId).then(config => {
                     config.actressNameOrder = $('#actressNameOrder').val();
+                    config.videoDisplayName = $('#videoDisplayName').val();
+
                     ApiClient.updatePluginConfiguration(pluginUniqueId, config).then(function (result) {
                         Dashboard.processPluginConfigurationUpdateResult(result);
                     });

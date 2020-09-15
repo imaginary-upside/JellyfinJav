@@ -31,5 +31,19 @@ namespace JellyfinJav.Providers
             var match = rx.Match(filename);
             return match?.Value.ToUpper();
         }
+
+        public static string CreateVideoDisplayName(Api.Video video)
+        {
+            switch(Plugin.Instance.Configuration.videoDisplayName)
+            {
+            case VideoDisplayName.CodeTitle:
+                return video.Code + " " + video.Title;
+            case VideoDisplayName.Title:
+                return video.Title;
+            default:
+                // This should be impossible to reach.
+                return null;
+            }
+        }
     }
 }

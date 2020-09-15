@@ -58,7 +58,7 @@ namespace JellyfinJav.Providers.R18Provider
                 Item = new Movie
                 {
                     OriginalTitle = info.Name,
-                    Name = video.Value.Title,
+                    Name = Utility.CreateVideoDisplayName(video.Value),
                     PremiereDate = video.Value.ReleaseDate,
                     ProviderIds = new Dictionary<string, string> { { "R18", video.Value.Id } },
                     Studios = new[] { video.Value.Studio }.OfType<string>().ToArray(),
