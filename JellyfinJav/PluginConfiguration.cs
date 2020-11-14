@@ -18,5 +18,6 @@ namespace JellyfinJav
     {
         public ActressNameOrder actressNameOrder { get; set; } = ActressNameOrder.LastFirst;
         public VideoDisplayName videoDisplayName { get; set; } = VideoDisplayName.Title;
+        public bool enableActresses { get; set; } = true;
     }
 }

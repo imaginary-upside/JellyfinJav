@@ -64,12 +64,7 @@ namespace JellyfinJav.Providers.R18Provider
                     Studios = new[] { video.Value.Studio }.OfType<string>().ToArray(),
                     Genres = video.Value.Genres.OfType<string>().ToArray()
                 },
-                People = (from actress in video.Value.Actresses
-                          select new PersonInfo
-                          {
-                              Name = NormalizeActressName(actress),
-                              Type = PersonType.Actor
-                          }).ToList(),
+                People = CreateActressList(video.Value),
                 HasMetadata = true
             };
         }
@@ -101,12 +96,24 @@ namespace JellyfinJav.Providers.R18Provider
             });
         }
 
-
         private static string NormalizeActressName(string name)
         {
             if (Plugin.Instance.Configuration.actressNameOrder == ActressNameOrder.LastFirst)
                 return string.Join(" ", name.Split(' ').Reverse());
             return name;
+        }
+
+        private static List<PersonInfo> CreateActressList(Api.Video video)
+        {
+            if (!Plugin.Instance.Configuration.enableActresses)
+                return new List<PersonInfo>();
+
+            return (from actress in video.Actresses
+                    select new PersonInfo
+                    {
+                        Name = NormalizeActressName(actress),
+                        Type = PersonType.Actor
+                    }).ToList();
         }
     }
 }

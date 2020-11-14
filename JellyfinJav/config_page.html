@@ -28,6 +28,12 @@
                             <option id="Title" value="Title">Title</option>
                         </select>
                     </div>
+                    <div class="checkboxContainer checkboxContainer-withDescripton">
+                        <label class="emby-checkbox-label">
+                            <input id="enableActresses" name="TrueFalseCheckBox" type="checkbox" is="emby-checkbox" />
+                            <span>Enable Actresses</span>
+                        </label>
+                    </div>
                     <div>
                         <button is="emby-button" type="submit" class="raised button-submit block emby-button">
                             <span>Save</span>
@@ -43,6 +49,7 @@
                 ApiClient.getPluginConfiguration(pluginUniqueId).then(config => {
                     $('#actressNameOrder').val(config.actressNameOrder).change();
                     $('#videoDisplayName').val(config.videoDisplayName).change();
+                    document.getElementById('enableActresses').checked = config.enableActresses;
                 });
             });
 
@@ -50,6 +57,7 @@
                 ApiClient.getPluginConfiguration(pluginUniqueId).then(config => {
                     config.actressNameOrder = $('#actressNameOrder').val();
                     config.videoDisplayName = $('#videoDisplayName').val();
+                    config.enableActresses = document.getElementById('enableActresses').checked;
 
                     ApiClient.updatePluginConfiguration(pluginUniqueId, config).then(function (result) {
                         Dashboard.processPluginConfigurationUpdateResult(result);

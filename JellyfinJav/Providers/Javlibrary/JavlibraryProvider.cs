@@ -60,12 +60,7 @@ namespace JellyfinJav.Providers.JavlibraryProvider
                     Studios = new[] { result.Value.Studio }.OfType<string>().ToArray(),
                     Genres = result.Value.Genres.ToArray()
                 },
-                People = (from actress in result.Value.Actresses
-                          select new PersonInfo
-                          {
-                              Name = NormalizeActressName(actress),
-                              Type = PersonType.Actor
-                          }).ToList(),
+                People = CreateActressList(result.Value),
                 HasMetadata = true
             };
         }
@@ -98,6 +93,19 @@ namespace JellyfinJav.Providers.JavlibraryProvider
             if (Plugin.Instance.Configuration.actressNameOrder == ActressNameOrder.FirstLast)
                 return string.Join(" ", name.Split(' ').Reverse());
             return name;
+        }
+
+        private static List<PersonInfo> CreateActressList(Api.Video video)
+        {
+            if (!Plugin.Instance.Configuration.enableActresses)
+                return new List<PersonInfo>();
+
+            return (from actress in video.Actresses
+                    select new PersonInfo
+                    {
+                        Name = NormalizeActressName(actress),
+                        Type = PersonType.Actor
+                    }).ToList();
         }
     }
 }
