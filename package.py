@@ -1,0 +1,45 @@
+#!/usr/bin/env python
+import xml.etree.ElementTree as ET
+from datetime import datetime
+from pathlib import Path
+from hashlib import md5
+import json
+import re
+
+tree = ET.parse("JellyfinJav/JellyfinJav.csproj")
+version = tree.find("./PropertyGroup/AssemblyVersion").text
+targetAbi = tree.find("./ItemGroup/*[@Include='Jellyfin.Model']").attrib["Version"]
+targetAbi = re.sub("-\w+", "", targetAbi) # Remove trailing release candidate version.
+timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
+
+meta = {
+    "category": "Metadata",
+    "guid": "1d5fffc2-1028-4553-9660-bd4966899e44",
+    "name": "JellyfinJav",
+    "description": "JAV metadata providers for Jellyfin.",
+    "owner": "imaginary-upside",
+    "overview": "JAV metadata providers for Jellyfin.",
+    "targetAbi": f"{targetAbi}.0",
+    "timestamp": timestamp,
+    "version": version
+}
+
+Path(f"release/{version}").mkdir(parents=True, exist_ok=True)
+print(json.dumps(meta, indent=4), file=open(f"release/{version}/meta.json", "w"))
+
+entry = {
+    "checksum": md5(open(f"release/{version}/meta.json", "rb").read()).hexdigest(),
+    "changelog": "",
+    "targetAbi": f"{targetAbi}.0",
+    "sourceUrl": f"https://github.com/imaginary-upside/JellyfinJav/releases/download/{version}/jellyfinjav_{version}.zip",
+    "timestamp": timestamp,
+    "version": version
+}
+
+manifest = json.loads(open("manifest.json", "r").read())
+
+if manifest[0]["versions"][-1]["version"] == version:
+    del manifest[0]["versions"][-1]
+
+manifest[0]["versions"].append(entry)
+print(json.dumps(manifest, indent=4), file=open("manifest.json", "w"))
