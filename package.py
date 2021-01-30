@@ -53,8 +53,8 @@ entry = {
 
 manifest = json.loads(open("manifest.json", "r").read())
 
-if manifest[0]["versions"][-1]["version"] == version:
-    del manifest[0]["versions"][-1]
+if manifest[0]["versions"][0]["version"] == version:
+    del manifest[0]["versions"][0]
 
-manifest[0]["versions"].append(entry)
+manifest[0]["versions"].insert(0, entry)
 print(json.dumps(manifest, indent=4), file=open("manifest.json", "w"))
