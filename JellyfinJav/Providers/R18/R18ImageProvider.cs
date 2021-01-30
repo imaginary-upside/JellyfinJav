@@ -11,11 +11,12 @@ using MediaBrowser.Model.Providers;
 
 namespace JellyfinJav.Providers.R18Provider
 {
-    public class R18ImageProvider : IRemoteImageProvider
+    public class R18ImageProvider : IRemoteImageProvider, IHasOrder
     {
         private static readonly HttpClient httpClient = new HttpClient();
 
         public string Name => "R18";
+        public int Order => 99;
 
         public R18ImageProvider()
         {

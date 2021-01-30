@@ -22,7 +22,7 @@ namespace JellyfinJav.Providers.JavlibraryProvider
         private static readonly Api.JavlibraryClient client = new Api.JavlibraryClient();
 
         public string Name => "Javlibrary";
-        public int Order => 11;
+        public int Order => 100;
 
         public JavlibraryProvider(ILibraryManager libraryManager,
                                   ILogger<JavlibraryProvider> logger)

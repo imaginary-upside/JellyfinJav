@@ -17,7 +17,6 @@ namespace JellyfinJav.Providers.AsianscreensProvider
         private static readonly Api.WarashiClient client = new Api.WarashiClient();
 
         public string Name => "Warashi";
-        public int Order => 10;
 
         public WarashiPersonProvider(ILogger<WarashiPersonProvider> logger)
         {

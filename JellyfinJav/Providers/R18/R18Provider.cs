@@ -23,7 +23,7 @@ namespace JellyfinJav.Providers.R18Provider
         private readonly Api.R18Client client = new Api.R18Client();
 
         public string Name => "R18";
-        public int Order => 10;
+        public int Order => 99;
 
         public R18Provider(ILibraryManager libraryManager,
                            ILogger<R18Provider> logger)

@@ -11,11 +11,12 @@ using MediaBrowser.Model.Providers;
 
 namespace JellyfinJav.Providers.JavlibraryProvider
 {
-    public class JavlibraryImageProvider : IRemoteImageProvider
+    public class JavlibraryImageProvider : IRemoteImageProvider, IHasOrder
     {
         private static readonly HttpClient httpClient = new HttpClient();
 
         public string Name => "Javlibrary";
+        public int Order => 100;
 
         public async Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancelToken)
         {

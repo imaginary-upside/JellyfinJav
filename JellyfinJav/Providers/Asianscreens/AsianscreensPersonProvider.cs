@@ -17,7 +17,6 @@ namespace JellyfinJav.Providers.AsianscreensProvider
         private static readonly Api.AsianscreensClient client = new Api.AsianscreensClient();
 
         public string Name => "Asianscreens";
-        public int Order => 11;
 
         public AsianscreensPersonProvider(ILogger<AsianscreensPersonProvider> logger)
         {
