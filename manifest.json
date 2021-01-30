@@ -38,6 +38,14 @@
                 "sourceUrl": "https://github.com/imaginary-upside/JellyfinJav/releases/download/2020.01.30.0/jellyfinjav_2020.01.30.0.zip",
                 "timestamp": "2021-01-30T11:08:22Z",
                 "version": "2020.01.30.0"
+            },
+            {
+                "checksum": "668680e14eced5ff6dda55da8052d21d",
+                "changelog": "",
+                "targetAbi": "10.7.0.0",
+                "sourceUrl": "https://github.com/imaginary-upside/JellyfinJav/releases/download/2020.01.30.1/jellyfinjav_2020.01.30.1.zip",
+                "timestamp": "2021-01-30T11:39:27Z",
+                "version": "2020.01.30.1"
             }
         ]
     }
