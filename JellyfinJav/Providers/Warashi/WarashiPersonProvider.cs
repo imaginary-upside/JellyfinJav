@@ -1,7 +1,7 @@
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Controller.Entities;
 using System.Collections.Generic;
-using MediaBrowser.Common.Net;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Model.Providers;
@@ -12,16 +12,15 @@ namespace JellyfinJav.Providers.AsianscreensProvider
 {
     public class WarashiPersonProvider : IRemoteMetadataProvider<Person, PersonLookupInfo>
     {
-        private readonly IHttpClient httpClient;
+        private static readonly HttpClient httpClient = new HttpClient();
         private readonly ILogger<WarashiPersonProvider> logger;
         private static readonly Api.WarashiClient client = new Api.WarashiClient();
 
         public string Name => "Warashi";
         public int Order => 10;
 
-        public WarashiPersonProvider(IHttpClient httpClient, ILogger<WarashiPersonProvider> logger)
+        public WarashiPersonProvider(ILogger<WarashiPersonProvider> logger)
         {
-            this.httpClient = httpClient;
             this.logger = logger;
         }
 
@@ -69,13 +68,9 @@ namespace JellyfinJav.Providers.AsianscreensProvider
             };
         }
 
-        public Task<HttpResponseInfo> GetImageResponse(string url, CancellationToken cancelToken)
+        public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancelToken)
         {
-            return httpClient.GetResponse(new HttpRequestOptions
-            {
-                Url = url,
-                CancellationToken = cancelToken
-            });
+            return await httpClient.GetAsync(url).ConfigureAwait(false);
         }
     }
 }

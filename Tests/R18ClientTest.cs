@@ -88,7 +88,7 @@ namespace Tests
                 code: "NJVR-023",
                 title: "[VR] The Horn Dogs Chose My Apartment To Be Their Fuck Pad. My Friend Was A Nampa Artist And He Brought Over Tsubasa-chan For Some Lotion Lathered Slick And Slippery Fucking",
                 actresses: new string[] {},
-                genres: new[] {"Beautiful Girl", "Big Tits", "Threesome / Foursome", "Lotion", "POV", "VR Exclusive", "High-Quality VR"},
+                genres: new[] {"Beautiful Girl", "Big Tits", "Threesome / Foursome", "Lotion", "POV", "VR Exclusive"},
                 studio: "Nanpa JAPAN",
                 boxArt: "https://pics.r18.com/digital/video/njvr00023/njvr00023pl.jpg",
                 cover: "https://pics.r18.com/digital/video/njvr00023/njvr00023ps.jpg",

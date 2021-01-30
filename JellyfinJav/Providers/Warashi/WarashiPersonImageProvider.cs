@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using MediaBrowser.Common.Net;
+using System.Net.Http;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Entities;
@@ -12,15 +12,10 @@ namespace JellyfinJav.Providers.WarashiProvider
 {
     public class WarashiPersonImageProvider : IRemoteImageProvider
     {
-        private readonly IHttpClient httpClient;
+        private readonly static HttpClient httpClient = new HttpClient();
         private readonly static Api.WarashiClient client = new Api.WarashiClient();
 
         public string Name => "Warashi";
-
-        public WarashiPersonImageProvider(IHttpClient httpClient)
-        {
-            this.httpClient = httpClient;
-        }
 
         public async Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancelToken)
         {
@@ -43,13 +38,9 @@ namespace JellyfinJav.Providers.WarashiProvider
             };
         }
 
-        public Task<HttpResponseInfo> GetImageResponse(string url, CancellationToken cancelToken)
+        public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancelToken)
         {
-            return httpClient.GetResponse(new HttpRequestOptions
-            {
-                Url = url,
-                CancellationToken = cancelToken
-            });
+            return await httpClient.GetAsync(url).ConfigureAwait(false);
         }
 
         public IEnumerable<ImageType> GetSupportedImages(BaseItem item)
@@ -57,9 +48,6 @@ namespace JellyfinJav.Providers.WarashiProvider
             return new[] { ImageType.Primary };
         }
 
-        public bool Supports(BaseItem item)
-        {
-            return item is Person;
-        }
+        public bool Supports(BaseItem item) =>item is Person;
     }
 }

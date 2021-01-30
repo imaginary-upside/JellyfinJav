@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using MediaBrowser.Common.Net;
+using System.Net.Http;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Controller.Providers;
@@ -13,13 +13,13 @@ namespace JellyfinJav.Providers.R18Provider
 {
     public class R18ImageProvider : IRemoteImageProvider
     {
-        private readonly IHttpClient httpClient;
+        private static readonly HttpClient httpClient = new HttpClient();
 
         public string Name => "R18";
 
-        public R18ImageProvider(IHttpClient httpClient)
+        public R18ImageProvider()
         {
-            this.httpClient = httpClient;
+            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
         }
 
         public Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancelToken)
@@ -51,13 +51,9 @@ namespace JellyfinJav.Providers.R18Provider
             });
         }
 
-        public Task<HttpResponseInfo> GetImageResponse(string url, CancellationToken cancelToken)
+        public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancelToken)
         {
-            return httpClient.GetResponse(new HttpRequestOptions
-            {
-                Url = url,
-                CancellationToken = cancelToken
-            });
+            return await httpClient.GetAsync(url).ConfigureAwait(false);
         }
 
         public IEnumerable<ImageType> GetSupportedImages(BaseItem item)
@@ -65,9 +61,6 @@ namespace JellyfinJav.Providers.R18Provider
             return new[] { ImageType.Primary, ImageType.Thumb };
         }
 
-        public bool Supports(BaseItem item)
-        {
-            return item is Movie;
-        }
+        public bool Supports(BaseItem item) => item is Movie;
     }
 }

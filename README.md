@@ -15,8 +15,6 @@ Then switch over to the Catalog tab and install the latest version.
 
 ### Usage
 When adding the media library, make sure to select "Content type: movies".
-And "Show advanced settings" to be able to select the metadata downloaders
-you want.
 
 ### Example File Names
 * abp200.mkv
@@ -28,7 +26,7 @@ you want.
 ### Requirements
 * Docker
 * Docker Compose
-* .NET Core v2.2
+* .NET 5.0
 
 ### Building
     ./build.sh

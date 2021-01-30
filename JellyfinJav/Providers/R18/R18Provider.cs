@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Net.Http;
 using MediaBrowser.Common.Net;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Entities.Movies;
@@ -16,8 +17,7 @@ namespace JellyfinJav.Providers.R18Provider
 {
     public class R18Provider : IRemoteMetadataProvider<Movie, MovieInfo>, IHasOrder
     {
-        private readonly IServerConfigurationManager configManager;
-        private readonly IHttpClient httpClient;
+        private static readonly HttpClient httpClient = new HttpClient();
         private readonly ILibraryManager libraryManager;
         private readonly ILogger<R18Provider> logger;
         private readonly Api.R18Client client = new Api.R18Client();
@@ -25,13 +25,9 @@ namespace JellyfinJav.Providers.R18Provider
         public string Name => "R18";
         public int Order => 10;
 
-        public R18Provider(IServerConfigurationManager configManager,
-                           IHttpClient httpClient,
-                           ILibraryManager libraryManager,
+        public R18Provider(ILibraryManager libraryManager,
                            ILogger<R18Provider> logger)
         {
-            this.configManager = configManager;
-            this.httpClient = httpClient;
             this.libraryManager = libraryManager;
             this.logger = logger;
         }
@@ -87,13 +83,9 @@ namespace JellyfinJav.Providers.R18Provider
                    };
         }
 
-        public Task<HttpResponseInfo> GetImageResponse(string url, CancellationToken cancelToken)
+        public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancelToken)
         {
-            return httpClient.GetResponse(new HttpRequestOptions
-            {
-                Url = url,
-                CancellationToken = cancelToken
-            });
+            return await httpClient.GetAsync(url).ConfigureAwait(false);
         }
 
         private static string NormalizeActressName(string name)

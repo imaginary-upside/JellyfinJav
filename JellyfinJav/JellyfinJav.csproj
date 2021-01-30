@@ -1,29 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <AssemblyVersion>0.4.2</AssemblyVersion>
-    <FileVersion>0.4.2</FileVersion>
+    <TargetFramework>net50</TargetFramework>
+    <AssemblyVersion>2020.01.30.0</AssemblyVersion>
+    <FileVersion>2020.01.30.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AngleSharp" Version="0.13.0" />
-    <PackageReference Include="ILRepack.MSBuild.Task" Version="2.0.*" />
-    <PackageReference Include="Jellyfin.Controller" Version="10.6.*" />
-    <PackageReference Include="Jellyfin.Model" Version="10.6.*" />
+    <PackageReference Include="AngleSharp" Version="0.14.0" />
+    <PackageReference Include="Jellyfin.Controller" Version="10.7.0-rc3" />
+    <PackageReference Include="Jellyfin.Model" Version="10.7.0-rc3" />
   </ItemGroup>
-
-  <Target Name="ILRepack" AfterTargets="Build">
-    <PropertyGroup>
-      <WorkingDirectory>$(MSBuildThisFileDirectory)bin\$(Configuration)\$(TargetFramework)</WorkingDirectory>
-    </PropertyGroup>
-
-    <ItemGroup>
-      <InputAssemblies Include="$(Home)/.nuget/packages/anglesharp/0.13.0/lib/netstandard2.0/AngleSharp.dll" />
-    </ItemGroup>
-
-    <ILRepack OutputType="$(OutputType)" MainAssembly="$(AssemblyName).dll" OutputAssembly="$(AssemblyName).dll" InputAssemblies="@(InputAssemblies)" InternalizeExcludeAssemblies="@(InternalizeExcludeAssemblies)" WorkingDirectory="$(WorkingDirectory)" />
-  </Target>
 
   <ItemGroup>
     <None Remove="config_page.html" />

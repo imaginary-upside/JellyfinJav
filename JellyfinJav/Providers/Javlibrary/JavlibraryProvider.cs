@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MediaBrowser.Common.Net;
+using System.Net.Http;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Controller.Providers;
@@ -16,7 +16,7 @@ namespace JellyfinJav.Providers.JavlibraryProvider
 {
     public class JavlibraryProvider : IRemoteMetadataProvider<Movie, MovieInfo>, IHasOrder
     {
-        private readonly IHttpClient httpClient;
+        private static readonly HttpClient httpClient = new HttpClient();
         private readonly ILibraryManager libraryManager;
         private readonly ILogger<JavlibraryProvider> logger;
         private static readonly Api.JavlibraryClient client = new Api.JavlibraryClient();
@@ -24,11 +24,9 @@ namespace JellyfinJav.Providers.JavlibraryProvider
         public string Name => "Javlibrary";
         public int Order => 11;
 
-        public JavlibraryProvider(IHttpClient httpClient,
-                                  ILibraryManager libraryManager,
+        public JavlibraryProvider(ILibraryManager libraryManager,
                                   ILogger<JavlibraryProvider> logger)
         {
-            this.httpClient = httpClient;
             this.libraryManager = libraryManager;
             this.logger = logger;
         }
@@ -79,13 +77,9 @@ namespace JellyfinJav.Providers.JavlibraryProvider
                    };
         }
 
-        public Task<HttpResponseInfo> GetImageResponse(string url, CancellationToken cancelToken)
+        public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancelToken)
         {
-            return httpClient.GetResponse(new HttpRequestOptions
-            {
-                Url = url,
-                CancellationToken = cancelToken
-            });
+            return await httpClient.GetAsync(url).ConfigureAwait(false);
         }
 
         private static string NormalizeActressName(string name)

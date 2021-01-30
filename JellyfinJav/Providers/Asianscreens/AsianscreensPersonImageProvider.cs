@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Net.Http;
 using MediaBrowser.Common.Net;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Providers;
@@ -12,15 +13,10 @@ namespace JellyfinJav.Providers.AsianscreensProvider
 {
     public class AsianscreensPersonImageProvider : IRemoteImageProvider
     {
-        private readonly IHttpClient httpClient;
+        private readonly static HttpClient httpClient = new HttpClient();
         private readonly static Api.AsianscreensClient client = new Api.AsianscreensClient();
 
         public string Name => "Asianscreens";
-
-        public AsianscreensPersonImageProvider(IHttpClient httpClient)
-        {
-            this.httpClient = httpClient;
-        }
 
         public async Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancelToken)
         {
@@ -43,13 +39,9 @@ namespace JellyfinJav.Providers.AsianscreensProvider
             };
         }
 
-        public Task<HttpResponseInfo> GetImageResponse(string url, CancellationToken cancelToken)
+        public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancelToken)
         {
-            return httpClient.GetResponse(new HttpRequestOptions
-            {
-                Url = url,
-                CancellationToken = cancelToken
-            });
+            return await httpClient.GetAsync(url).ConfigureAwait(false);
         }
 
         public IEnumerable<ImageType> GetSupportedImages(BaseItem item)
@@ -57,9 +49,6 @@ namespace JellyfinJav.Providers.AsianscreensProvider
             return new[] { ImageType.Primary };
         }
 
-        public bool Supports(BaseItem item)
-        {
-            return item is Person;
-        }
+        public bool Supports(BaseItem item) => item is Person;
     }
 }
