@@ -1,9 +1,12 @@
-using System;
 using System.Linq;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Controller.Entities;
 using System.Text.RegularExpressions;
+using System.IO;
+using System.Threading.Tasks;
+using System.Net.Http;
+using SkiaSharp;
 
 namespace JellyfinJav.Providers
 {
@@ -43,6 +46,27 @@ namespace JellyfinJav.Providers
             default:
                 // This should be impossible to reach.
                 return null;
+            }
+        }
+
+        public static async Task CropThumb(HttpResponseMessage httpResponse)
+        {
+            using (var imageStream = await httpResponse.Content.ReadAsStreamAsync())
+            {
+                using (var imageBitmap = SKBitmap.Decode(imageStream))
+                {
+                    SKBitmap subset = new SKBitmap();
+                    imageBitmap.ExtractSubset(subset, SKRectI.Create(421, 0, 379, 538));
+
+                    // I think there will be a memory leak if I use MemoryStore.
+                    var finalStream = File.Open(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".jpg"), FileMode.OpenOrCreate);
+                    subset.Encode(finalStream, SKEncodedImageFormat.Jpeg, 100);
+                    finalStream.Seek(0, 0);
+
+                    var newContent = new StreamContent(finalStream);
+                    newContent.Headers.ContentType = httpResponse.Content.Headers.ContentType;
+                    httpResponse.Content = newContent;
+                }
             }
         }
     }

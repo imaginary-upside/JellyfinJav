@@ -1,8 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Http;
+using System.IO;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Controller.Providers;
@@ -24,7 +24,6 @@ namespace JellyfinJav.Providers.JavlibraryProvider
             if (string.IsNullOrEmpty(id))
                 return new RemoteImageInfo[] { };
 
-            // probably should be downloading the full size image, and then cropping the front cover
             var client = new Api.JavlibraryClient();
             var video = await client.LoadVideo(id);
 
@@ -34,12 +33,6 @@ namespace JellyfinJav.Providers.JavlibraryProvider
                 {
                     ProviderName = Name,
                     Type = ImageType.Primary,
-                    Url = video.Cover
-                },
-                new RemoteImageInfo
-                {
-                    ProviderName = Name,
-                    Type = ImageType.Thumb,
                     Url = video.BoxArt
                 }
             };
@@ -47,12 +40,14 @@ namespace JellyfinJav.Providers.JavlibraryProvider
 
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancelToken)
         {
-            return await httpClient.GetAsync(url).ConfigureAwait(false);
+            var httpResponse = await httpClient.GetAsync(url).ConfigureAwait(false);
+            await Utility.CropThumb(httpResponse);
+            return httpResponse;
         }
 
         public IEnumerable<ImageType> GetSupportedImages(BaseItem item)
         {
-            return new[] { ImageType.Primary, ImageType.Thumb };
+            return new[] { ImageType.Primary };
         }
 
         public bool Supports(BaseItem item) => item is Movie;
