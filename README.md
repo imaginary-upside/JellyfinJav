@@ -26,13 +26,19 @@ When adding the media library, make sure to select "Content type: movies".
 ### Requirements
 * Docker
 * Docker Compose
+* Python
 * .NET 5.0
 
 ### Building
-    ./build.sh
+    $ ./build.sh
+    # Visit localhost:8096
+
+### Packaging
+    $ python package.py
+    # manifest.json will update, and the package will be zipped up in release/
 
 ### General
-JAV files for testing purposes are stored in ./videos
+JAV files for testing purposes are stored in videos/
 
 # Screenshots
 ![Grid Example](screenshots/example-grid.jpg)
