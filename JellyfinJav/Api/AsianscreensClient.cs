@@ -141,7 +141,7 @@ namespace JellyfinJav.Api
 
         private static Uri GenerateCoverUrl(string id)
         {
-            var idEnd = id[-1];
+            var idEnd = id[^1];
             string picEnd;
             if (idEnd == '2')
                 picEnd = "";
