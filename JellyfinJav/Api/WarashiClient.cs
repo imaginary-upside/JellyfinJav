@@ -25,11 +25,9 @@ namespace JellyfinJav.Api
                 {"y", "0"}
             });
 
-            var response = await httpClient.PostAsync(
-                "http://warashi-asian-pornstars.fr/en/s-12/search", form
-            );
-            var html = await response.Content.ReadAsStringAsync();
-            var doc = await context.OpenAsync(req => req.Content(html));
+            var response = await httpClient.PostAsync("http://warashi-asian-pornstars.fr/en/s-12/search", form).ConfigureAwait(false);
+            var html = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var doc = await context.OpenAsync(req => req.Content(html)).ConfigureAwait(false);
 
             return doc.QuerySelectorAll(".resultat-pornostar")
                       .Select(n =>
@@ -44,12 +42,12 @@ namespace JellyfinJav.Api
 
         public async Task<Actress?> SearchFirst(string searchName)
         {
-            var results = await Search(searchName);
+            var results = await Search(searchName).ConfigureAwait(false);
 
-            if (results.Count() == 0)
+            if (!results.Any())
                 return null;
 
-            return await LoadActress(results.First().id);
+            return await LoadActress(results.First().id).ConfigureAwait(false);
         }
 
         public async Task<Actress?> LoadActress(string id)
@@ -58,17 +56,17 @@ namespace JellyfinJav.Api
             if (parsedId.Length != 2)
                 return null;
 
-            return await LoadActress(new Uri($"http://warashi-asian-pornstars.fr/en/{parsedId[0]}/anything/anything/{parsedId[1]}"));
+            return await LoadActress(new Uri($"http://warashi-asian-pornstars.fr/en/{parsedId[0]}/anything/anything/{parsedId[1]}")).ConfigureAwait(false);
         }
 
         private async Task<Actress?> LoadActress(Uri url)
         {
-            var response = await httpClient.GetAsync(url);
+            var response = await httpClient.GetAsync(url).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
                 return null;
 
-            var html = await response.Content.ReadAsStringAsync();
-            var doc = await context.OpenAsync(req => req.Content(html));
+            var html = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var doc = await context.OpenAsync(req => req.Content(html)).ConfigureAwait(false);
 
             var id = ExtractId(url.ToString());
             var name = NormalizeName(doc.QuerySelector("#pornostar-profil [itemprop=name]")?.TextContent);
@@ -119,11 +117,8 @@ namespace JellyfinJav.Api
         private static string ExtractCover(IDocument doc)
         {
             // First try asian-female-pornstar
-            var cover = doc.QuerySelector("#pornostar-profil-photos-0 [itemprop=image]")?.GetAttribute("src");
-
-            // Next try female-pornstare
-            if (cover == null)
-                cover = doc.QuerySelector("#casting-profil-preview [itemprop=image]")?.GetAttribute("src");
+            var cover = doc.QuerySelector("#pornostar-profil-photos-0 [itemprop=image]")?.GetAttribute("src") ??
+                        doc.QuerySelector("#casting-profil-preview [itemprop=image]")?.GetAttribute("src");
 
             if (cover == null)
                 return null;

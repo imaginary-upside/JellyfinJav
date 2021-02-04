@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Http;
-using MediaBrowser.Common.Net;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Entities;
@@ -22,11 +21,11 @@ namespace JellyfinJav.Providers.AsianscreensProvider
         {
             var id = item.GetProviderId("Asianscreens");
             if (string.IsNullOrEmpty(id))
-                return new RemoteImageInfo[] { };
+                return Array.Empty<RemoteImageInfo>();
 
-            var actress = await client.LoadActress(id);
+            var actress = await client.LoadActress(id).ConfigureAwait(false);
             if (!actress.HasValue || actress.Value.Cover == null)
-                return new RemoteImageInfo[] { };
+                return Array.Empty<RemoteImageInfo>();
 
             return new RemoteImageInfo[]
             {
@@ -41,7 +40,7 @@ namespace JellyfinJav.Providers.AsianscreensProvider
 
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancelToken)
         {
-            return await httpClient.GetAsync(url).ConfigureAwait(false);
+            return await httpClient.GetAsync(url, cancelToken).ConfigureAwait(false);
         }
 
         public IEnumerable<ImageType> GetSupportedImages(BaseItem item)

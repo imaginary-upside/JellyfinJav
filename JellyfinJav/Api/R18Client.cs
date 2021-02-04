@@ -54,11 +54,9 @@ namespace JellyfinJav.Api
 
         public async Task<IEnumerable<(string code, string id, Uri cover)>> Search(string searchCode)
         {
-            var response = await httpClient.GetAsync(
-                $"https://www.r18.com/common/search/order=match/searchword={searchCode}"
-            );
-            var html = await response.Content.ReadAsStringAsync();
-            var doc = await context.OpenAsync(req => req.Content(html));
+            var response = await httpClient.GetAsync($"https://www.r18.com/common/search/order=match/searchword={searchCode}").ConfigureAwait(false);
+            var html = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var doc = await context.OpenAsync(req => req.Content(html)).ConfigureAwait(false);
 
             return doc.QuerySelectorAll(".item-list")
                       .Select(n =>
@@ -72,23 +70,21 @@ namespace JellyfinJav.Api
 
         public async Task<Video?> SearchFirst(string searchCode)
         {
-            var results = await Search(searchCode);
-            if (results.Count() == 0)
+            var results = await Search(searchCode).ConfigureAwait(false);
+            if (!results.Any())
                 return null;
 
-            return await LoadVideo(results.First().id);
+            return await LoadVideo(results.First().id).ConfigureAwait(false);
         }
 
         public async Task<Video?> LoadVideo(string id)
         {
-            var response = await httpClient.GetAsync(
-                $"https://www.r18.com/videos/vod/movies/detail/-/id={id}/"
-            );
+            var response = await httpClient.GetAsync($"https://www.r18.com/videos/vod/movies/detail/-/id={id}/").ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
                 return null;
 
-            var html = await response.Content.ReadAsStringAsync();
-            var doc = await context.OpenAsync(req => req.Content(html));
+            var html = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var doc = await context.OpenAsync(req => req.Content(html)).ConfigureAwait(false);
 
             var code = doc.QuerySelector(".product-details dl:nth-child(2) dd:nth-of-type(3)")?.TextContent.Trim();
             var title = Decensor(doc.QuerySelector("cite[itemprop=name]")?.TextContent);
@@ -124,7 +120,7 @@ namespace JellyfinJav.Api
                 return title;
 
             var name = actresses.ElementAt(0);
-            var rx = new Regex($@"^({name} - )?(.+?)( ?-? {name})?$");
+            var rx = new Regex($"^({name} - )?(.+?)( ?-? {name})?$");
             var match = rx.Match(title);
 
             if (!match.Success)
@@ -144,7 +140,7 @@ namespace JellyfinJav.Api
             return match.Groups[1].Value;
         }
 
-        private DateTime? ExtractReleaseDate(IDocument doc)
+        private static DateTime? ExtractReleaseDate(IDocument doc)
         {
             var release = doc.QuerySelector("[itemprop=dateCreated]")?.TextContent;
             if (release == null)

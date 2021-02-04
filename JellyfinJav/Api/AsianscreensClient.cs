@@ -26,15 +26,13 @@ namespace JellyfinJav.Api
 
         private async Task<IEnumerable<(string name, string id, Uri cover)>> SearchHelper(string searchName)
         {
-            var response = await httpClient.GetAsync(
-                $"https://www.asianscreens.com/directory/{searchName[0]}.asp"
-            );
+            var response = await httpClient.GetAsync($"https://www.asianscreens.com/directory/{searchName[0]}.asp").ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
-                return new (string, string, Uri)[] { };
+                return Array.Empty<(string, string, Uri)>();
 
-            var html = await response.Content.ReadAsStringAsync();
-            var doc = await context.OpenAsync(req => req.Content(html));
+            var html = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var doc = await context.OpenAsync(req => req.Content(html)).ConfigureAwait(false);
 
             var actressRows = doc.QuerySelectorAll("table[bgcolor='#000000']")
                                  .First(n => n.InnerHtml.Contains("ACTRESS"))
@@ -49,7 +47,7 @@ namespace JellyfinJav.Api
                             .TrimStart('/')
                             .Replace(".asp", "");
                 var cover = GenerateCoverUrl(id);
-                return (name: name, id: id, cover: cover);
+                return (name, id, cover);
             }).Where(actress =>
             {
                 return actress.name.Split(' ').Contains(
@@ -62,25 +60,25 @@ namespace JellyfinJav.Api
         {
             var result = await Search(searchName);
 
-            if (result.Count() == 0)
+            if (!result.Any())
                 return null;
 
-            return await LoadActress(result.ElementAt(0).id);
+            return await LoadActress(result.ElementAt(0).id).ConfigureAwait(false);
         }
 
         public async Task<Actress?> LoadActress(string id)
         {
-            return await LoadActress(new Uri($"https://www.asianscreens.com/{id}.asp"));
+            return await LoadActress(new Uri($"https://www.asianscreens.com/{id}.asp")).ConfigureAwait(false);
         }
 
         public async Task<Actress?> LoadActress(Uri url)
         {
-            var response = await httpClient.GetAsync(url);
+            var response = await httpClient.GetAsync(url).ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
                 return null;
 
-            var html = await response.Content.ReadAsStringAsync();
-            var doc = await context.OpenAsync(req => req.Content(html));
+            var html = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var doc = await context.OpenAsync(req => req.Content(html)).ConfigureAwait(false);
 
             var id = ExtractId(url);
             var name = ExtractCell(doc, "Name: ");
@@ -143,8 +141,8 @@ namespace JellyfinJav.Api
 
         private static Uri GenerateCoverUrl(string id)
         {
-            var idEnd = id[id.Length - 1];
-            var picEnd = "";
+            var idEnd = id[-1];
+            string picEnd;
             if (idEnd == '2')
                 picEnd = "";
             else

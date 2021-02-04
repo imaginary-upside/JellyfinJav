@@ -56,11 +56,11 @@ namespace JellyfinJav.Api
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine($"id: {Id}");
-            sb.AppendLine($"name: {Name}");
-            sb.AppendLine($"birthdate: {Birthdate}");
-            sb.AppendLine($"birthplace: {Birthplace}");
-            sb.AppendLine($"cover: {Cover}");
+            sb.Append("id: ").AppendLine(Id);
+            sb.Append("name: ").AppendLine(Name);
+            sb.Append("birthdate: ").AppendLine(Birthdate.ToString());
+            sb.Append("birthplace: ").AppendLine(Birthplace);
+            sb.Append("cover: ").AppendLine(Cover);
 
             return sb.ToString();
         }

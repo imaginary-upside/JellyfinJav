@@ -16,8 +16,8 @@ namespace JellyfinJav
 
     public class PluginConfiguration : BasePluginConfiguration
     {
-        public ActressNameOrder actressNameOrder { get; set; } = ActressNameOrder.LastFirst;
-        public VideoDisplayName videoDisplayName { get; set; } = VideoDisplayName.Title;
-        public bool enableActresses { get; set; } = true;
+        public ActressNameOrder ActressNameOrder { get; set; } = ActressNameOrder.LastFirst;
+        public VideoDisplayName VideoDisplayName { get; set; } = VideoDisplayName.Title;
+        public bool EnableActresses { get; set; } = true;
     }
 }

@@ -10,7 +10,7 @@ using SkiaSharp;
 
 namespace JellyfinJav.Providers
 {
-    public class Utility
+    public static class Utility
     {
         // When setting the video title in a Provider, we lose the JAV code details in MovieInfo.
         // So this is used to retrieve the JAV code to then be able to search using a different Provider.
@@ -37,37 +37,30 @@ namespace JellyfinJav.Providers
 
         public static string CreateVideoDisplayName(Api.Video video)
         {
-            switch(Plugin.Instance.Configuration.videoDisplayName)
+            return Plugin.Instance.Configuration.VideoDisplayName switch
             {
-            case VideoDisplayName.CodeTitle:
-                return video.Code + " " + video.Title;
-            case VideoDisplayName.Title:
-                return video.Title;
-            default:
-                // This should be impossible to reach.
-                return null;
-            }
+                VideoDisplayName.CodeTitle => video.Code + " " + video.Title,
+                VideoDisplayName.Title => video.Title,
+                _ => throw new System.Exception("Impossible to reach.")
+            };
         }
 
         public static async Task CropThumb(HttpResponseMessage httpResponse)
         {
-            using (var imageStream = await httpResponse.Content.ReadAsStreamAsync())
-            {
-                using (var imageBitmap = SKBitmap.Decode(imageStream))
-                {
-                    SKBitmap subset = new SKBitmap();
-                    imageBitmap.ExtractSubset(subset, SKRectI.Create(421, 0, 379, 538));
+            using var imageStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            using var imageBitmap = SKBitmap.Decode(imageStream);
 
-                    // I think there will be a memory leak if I use MemoryStore.
-                    var finalStream = File.Open(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".jpg"), FileMode.OpenOrCreate);
-                    subset.Encode(finalStream, SKEncodedImageFormat.Jpeg, 100);
-                    finalStream.Seek(0, 0);
+            SKBitmap subset = new SKBitmap();
+            imageBitmap.ExtractSubset(subset, SKRectI.Create(421, 0, 379, 538));
 
-                    var newContent = new StreamContent(finalStream);
-                    newContent.Headers.ContentType = httpResponse.Content.Headers.ContentType;
-                    httpResponse.Content = newContent;
-                }
-            }
+            // I think there will be a memory leak if I use MemoryStore.
+            var finalStream = File.Open(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".jpg"), FileMode.OpenOrCreate);
+            subset.Encode(finalStream, SKEncodedImageFormat.Jpeg, 100);
+            finalStream.Seek(0, 0);
+
+            var newContent = new StreamContent(finalStream);
+            newContent.Headers.ContentType = httpResponse.Content.Headers.ContentType;
+            httpResponse.Content = newContent;
         }
     }
 }

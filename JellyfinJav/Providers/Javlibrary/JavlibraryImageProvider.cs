@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Http;
-using System.IO;
+using System;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Controller.Providers;
@@ -22,10 +22,10 @@ namespace JellyfinJav.Providers.JavlibraryProvider
         {
             var id = item.GetProviderId("Javlibrary");
             if (string.IsNullOrEmpty(id))
-                return new RemoteImageInfo[] { };
+                return Array.Empty<RemoteImageInfo>();
 
             var client = new Api.JavlibraryClient();
-            var video = await client.LoadVideo(id);
+            var video = await client.LoadVideo(id).ConfigureAwait(false);
 
             return new RemoteImageInfo[]
             {
@@ -40,8 +40,8 @@ namespace JellyfinJav.Providers.JavlibraryProvider
 
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancelToken)
         {
-            var httpResponse = await httpClient.GetAsync(url).ConfigureAwait(false);
-            await Utility.CropThumb(httpResponse);
+            var httpResponse = await httpClient.GetAsync(url, cancelToken).ConfigureAwait(false);
+            await Utility.CropThumb(httpResponse).ConfigureAwait(false);
             return httpResponse;
         }
 

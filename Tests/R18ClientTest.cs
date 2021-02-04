@@ -19,7 +19,7 @@ namespace Tests
         [Test]
         public async Task TestSearchMany()
         {
-            var results = await client.Search("abp");
+            var results = await client.Search("abp").ConfigureAwait(false);
 
             Assert.AreEqual(30, results.Count());
         }
@@ -27,7 +27,7 @@ namespace Tests
         [Test]
         public async Task TestSearchNone()
         {
-            var results = await client.Search("noresult");
+            var results = await client.Search("noresult").ConfigureAwait(false);
 
             Assert.AreEqual(0, results.Count());
         }
@@ -47,7 +47,7 @@ namespace Tests
                 releaseDate: DateTime.Parse("2015-12-12")
             );
 
-            var result = await client.SearchFirst("MVSD-282");
+            var result = await client.SearchFirst("MVSD-282").ConfigureAwait(false);
 
             Assert.AreEqual(expected, result);
         }
@@ -55,7 +55,7 @@ namespace Tests
         [Test]
         public async Task TestSearchFirstNone()
         {
-            var result = await client.SearchFirst("noresult");
+            var result = await client.SearchFirst("noresult").ConfigureAwait(false);
 
             Assert.AreEqual(null, result);
         }
@@ -75,19 +75,19 @@ namespace Tests
                 releaseDate: DateTime.Parse("2019-11-22")
             );
 
-            var result = await client.LoadVideo("118abp00925");
+            var result = await client.LoadVideo("118abp00925").ConfigureAwait(false);
 
             Assert.AreEqual(expected, result);
         }
 
         [Test]
-        public async Task testLoadVideoNoActress()
+        public async Task TestLoadVideoNoActress()
         {
             var expected = new Video(
                 id: "njvr00023",
                 code: "NJVR-023",
                 title: "[VR] The Horn Dogs Chose My Apartment To Be Their Fuck Pad. My Friend Was A Nampa Artist And He Brought Over Tsubasa-chan For Some Lotion Lathered Slick And Slippery Fucking",
-                actresses: new string[] {},
+                actresses: Array.Empty<string>(),
                 genres: new[] {"Beautiful Girl", "Big Tits", "Threesome / Foursome", "Lotion", "POV", "VR Exclusive"},
                 studio: "Nanpa JAPAN",
                 boxArt: "https://pics.r18.com/digital/video/njvr00023/njvr00023pl.jpg",
@@ -95,7 +95,7 @@ namespace Tests
                 releaseDate: DateTime.Parse("2019-07-26")
             );
 
-            var result = await client.LoadVideo("njvr00023");
+            var result = await client.LoadVideo("njvr00023").ConfigureAwait(false);
 
             Assert.AreEqual(expected, result);
         }
@@ -103,7 +103,7 @@ namespace Tests
         [Test]
         public async Task TestLoadVideoInvalid()
         {
-            var result = await client.LoadVideo("invalid");
+            var result = await client.LoadVideo("invalid").ConfigureAwait(false);
 
             Assert.AreEqual(null, result);
         }

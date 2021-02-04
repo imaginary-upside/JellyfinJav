@@ -25,7 +25,7 @@ namespace JellyfinJav.Providers.AsianscreensProvider
 
         public async Task<IEnumerable<RemoteSearchResult>> GetSearchResults(PersonLookupInfo info, CancellationToken cancelationToken)
         {
-            return from actress in await client.Search(info.Name)
+            return from actress in await client.Search(info.Name).ConfigureAwait(false)
                    select new RemoteSearchResult
                    {
                        Name = actress.name,
@@ -41,11 +41,11 @@ namespace JellyfinJav.Providers.AsianscreensProvider
         {
             logger.LogInformation("[JellyfinJav] Asianscreens - Scanning: " + info.Name);
 
-            Api.Actress? actress = null;
+            Api.Actress? actress;
             if (info.ProviderIds.ContainsKey("Asianscreens"))
-                actress = await client.LoadActress(info.ProviderIds["Asianscreens"]);
+                actress = await client.LoadActress(info.ProviderIds["Asianscreens"]).ConfigureAwait(false);
             else
-                actress = await client.SearchFirst(info.Name);
+                actress = await client.SearchFirst(info.Name).ConfigureAwait(false);
 
             if (!actress.HasValue)
                 return new MetadataResult<Person>();
@@ -58,7 +58,7 @@ namespace JellyfinJav.Providers.AsianscreensProvider
                 {
                     ProviderIds = new Dictionary<string, string> { { "Asianscreens", actress.Value.Id } },
                     PremiereDate = actress.Value.Birthdate,
-                    ProductionLocations = new[] { actress.Value.Birthplace }.OfType<string>().ToArray(),
+                    ProductionLocations = new [] { actress.Value.Birthplace },
                     // Jellyfin will always refresh metadata unless Overview exists.
                     // So giving Overview a zero width character to prevent that.
                     Overview = "\u200B"
@@ -69,7 +69,7 @@ namespace JellyfinJav.Providers.AsianscreensProvider
 
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancelToken)
         {
-            return await httpClient.GetAsync(url).ConfigureAwait(false);
+            return await httpClient.GetAsync(url, cancelToken).ConfigureAwait(false);
         }
     }
 }

@@ -102,20 +102,20 @@ namespace JellyfinJav.Api
         /// </example>
         public async Task<Video> LoadVideo(Uri url)
         {
-            var response = await httpClient.GetAsync(url);
-            var html = await response.Content.ReadAsStringAsync();
-            var doc = await context.OpenAsync(req => req.Content(html));
+            var response = await httpClient.GetAsync(url).ConfigureAwait(false);
+            var html = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var doc = await context.OpenAsync(req => req.Content(html)).ConfigureAwait(false);
             return ParseVideoPage(doc);
         }
 
-        private async Task<IDocument> LoadPage(string url)
+        private static async Task<IDocument> LoadPage(string url)
         {
-            var response = await httpClient.GetAsync(url);
-            var html = await response.Content.ReadAsStringAsync();
-            return await context.OpenAsync(req => req.Content(html));
+            var response = await httpClient.GetAsync(url).ConfigureAwait(false);
+            var html = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            return await context.OpenAsync(req => req.Content(html)).ConfigureAwait(false);
         }
 
-        private Video ParseVideoPage(IDocument doc)
+        private static Video ParseVideoPage(IDocument doc)
         {
             var id = HttpUtility.ParseQueryString(
                 new Uri("https://www.javlibrary.com" + doc.QuerySelector("#video_title a")?.GetAttribute("href")).Query

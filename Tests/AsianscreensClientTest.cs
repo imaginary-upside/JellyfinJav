@@ -19,7 +19,7 @@ namespace Tests
         [Test]
         public async Task TestSearchLastFirst()
         {
-            var results = await client.Search("Sasaki Aki");
+            var results = await client.Search("Sasaki Aki").ConfigureAwait(false);
             Assert.AreEqual(1, results.Count());
             Assert.AreEqual("Aki Sasaki", results.ElementAt(0).name);
         }
@@ -27,7 +27,7 @@ namespace Tests
         [Test]
         public async Task TestSearchFirstLast()
         {
-            var results = await client.Search("Aki Sasaki");
+            var results = await client.Search("Aki Sasaki").ConfigureAwait(false);
             Assert.AreEqual(1, results.Count());
             Assert.AreEqual("Aki Sasaki", results.ElementAt(0).name);
         }
@@ -35,7 +35,7 @@ namespace Tests
         [Test]
         public async Task TestSearchMany()
         {
-            var results = await client.Search("Ai Nanase");
+            var results = await client.Search("Ai Nanase").ConfigureAwait(false);
             Assert.AreEqual(2, results.Count());
             Assert.AreEqual("Ai Nanase", results.ElementAt(0).name);
             Assert.AreEqual("Ai Nanase #2", results.ElementAt(1).name);
@@ -44,28 +44,28 @@ namespace Tests
         [Test]
         public async Task TestSearchManyMany()
         {
-            var results = await client.Search("Ai");
+            var results = await client.Search("Ai").ConfigureAwait(false);
             Assert.Greater(results.Count(), 100);
         }
 
         [Test]
         public async Task TestSearchNone()
         {
-            var results = await client.Search("test");
+            var results = await client.Search("test").ConfigureAwait(false);
             Assert.AreEqual(0, results.Count());
         }
 
         [Test]
         public async Task TestSearchInvalid()
         {
-            var results = await client.Search("æŒç”°æ žé‡Œ");
+            var results = await client.Search("æŒç”°æ žé‡Œ").ConfigureAwait(false);
             Assert.AreEqual(0, results.Count());
         }
 
         [Test]
         public async Task TestSearchFirst()
         {
-            var result = await client.SearchFirst("Ai Uehara");
+            var result = await client.SearchFirst("Ai Uehara").ConfigureAwait(false);
 
             var expected = new Actress(
                 id: "ai_uehara2",
@@ -81,14 +81,14 @@ namespace Tests
         [Test]
         public async Task TestSearchFirstNone()
         {
-            var result = await client.SearchFirst("test");
+            var result = await client.SearchFirst("test").ConfigureAwait(false);
             Assert.IsNull(result);
         }
 
         [Test]
         public async Task TestLoadActress()
         {
-            var result = await client.LoadActress("koharu_suzuki2");
+            var result = await client.LoadActress("koharu_suzuki2").ConfigureAwait(false);
 
             var expected = new Actress(
                 id: "koharu_suzuki2",
@@ -104,7 +104,7 @@ namespace Tests
         [Test]
         public async Task TestLoadActressMinimalMetadata()
         {
-            var result = await client.LoadActress("amika_tsuboi2");
+            var result = await client.LoadActress("amika_tsuboi2").ConfigureAwait(false);
 
             var expected = new Actress(
                 id: "amika_tsuboi2",

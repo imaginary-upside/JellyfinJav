@@ -21,11 +21,11 @@ namespace JellyfinJav.Providers.WarashiProvider
         {
             var id = item.GetProviderId("Warashi");
             if (string.IsNullOrEmpty(id))
-                return new RemoteImageInfo[] { };
+                return Array.Empty<RemoteImageInfo>();
 
-            var actress = await client.LoadActress(id);
+            var actress = await client.LoadActress(id).ConfigureAwait(false);
             if (!actress.HasValue || actress.Value.Cover == null)
-                return new RemoteImageInfo[] { };
+                return Array.Empty<RemoteImageInfo>();
 
             return new RemoteImageInfo[]
             {
@@ -40,7 +40,7 @@ namespace JellyfinJav.Providers.WarashiProvider
 
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancelToken)
         {
-            return await httpClient.GetAsync(url).ConfigureAwait(false);
+            return await httpClient.GetAsync(url, cancelToken).ConfigureAwait(false);
         }
 
         public IEnumerable<ImageType> GetSupportedImages(BaseItem item)
@@ -48,6 +48,6 @@ namespace JellyfinJav.Providers.WarashiProvider
             return new[] { ImageType.Primary };
         }
 
-        public bool Supports(BaseItem item) =>item is Person;
+        public bool Supports(BaseItem item) => item is Person;
     }
 }

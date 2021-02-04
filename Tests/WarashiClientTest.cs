@@ -19,7 +19,7 @@ namespace Tests
         [Test]
         public async Task TestSearchLastFirst()
         {
-            var results = await client.Search("Sasaki Aki");
+            var results = await client.Search("Sasaki Aki").ConfigureAwait(false);
             Assert.AreEqual(1, results.Count());
             Assert.AreEqual("Aki Sasaki", results.ElementAt(0).name);
             Assert.AreEqual("s-2-0/2714", results.ElementAt(0).id);
@@ -32,7 +32,7 @@ namespace Tests
         [Test]
         public async Task TestSearchFirstLast()
         {
-            var results = await client.Search("Maria Nagai");
+            var results = await client.Search("Maria Nagai").ConfigureAwait(false);
             Assert.AreEqual(2, results.Count());
             Assert.AreEqual("Maria Nagai", results.ElementAt(0).name);
             Assert.AreEqual("s-2-0/3743", results.ElementAt(0).id);
@@ -45,7 +45,7 @@ namespace Tests
         [Test]
         public async Task TestLoadActress()
         {
-            var result = await client.LoadActress("s-2-0/2714");
+            var result = await client.LoadActress("s-2-0/2714").ConfigureAwait(false);
 
             var expected = new Actress(
                 id: "s-2-0/2714",
@@ -61,14 +61,14 @@ namespace Tests
         [Test]
         public async Task TestLoadActressInvalid()
         {
-            var result = await client.LoadActress("invalid");
+            var result = await client.LoadActress("invalid").ConfigureAwait(false);
             Assert.IsNull(result);
         }
 
         [Test]
         public async Task TestSearchFirst()
         {
-            var result = await client.SearchFirst("Hiyori Yoshioka");
+            var result = await client.SearchFirst("Hiyori Yoshioka").ConfigureAwait(false);
 
             var expected = new Actress(
                 id: "s-2-0/3806",
@@ -84,7 +84,7 @@ namespace Tests
         [Test]
         public async Task TestSearchFirstFemalePornstar()
         {
-            var result = await client.SearchFirst("Ruka Aoi");
+            var result = await client.SearchFirst("Ruka Aoi").ConfigureAwait(false);
 
             // Parsing for female-pornstar results isn't done yet.
             var expected = new Actress(

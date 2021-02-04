@@ -37,13 +37,11 @@ namespace JellyfinJav.Providers.JavlibraryProvider
 
             logger.LogInformation("[JellyfinJav] Javlibrary - Scanning: " + originalTitle);
 
-            Api.Video? result = null;
+            Api.Video? result;
             if (info.ProviderIds.ContainsKey("Javlibrary"))
-                result = await client.LoadVideo(info.ProviderIds["Javlibrary"]);
+                result = await client.LoadVideo(info.ProviderIds["Javlibrary"]).ConfigureAwait(false);
             else
-                result = await client.SearchFirst(
-                    Utility.ExtractCodeFromFilename(originalTitle)
-                );
+                result = await client.SearchFirst( Utility.ExtractCodeFromFilename(originalTitle)).ConfigureAwait(false);
 
             if (!result.HasValue)
                 return new MetadataResult<Movie>();
@@ -55,7 +53,7 @@ namespace JellyfinJav.Providers.JavlibraryProvider
                     OriginalTitle = originalTitle,
                     Name = Utility.CreateVideoDisplayName(result.Value),
                     ProviderIds = new Dictionary<string, string> { { "Javlibrary", result.Value.Id } },
-                    Studios = new[] { result.Value.Studio }.OfType<string>().ToArray(),
+                    Studios = new[] { result.Value.Studio },
                     Genres = result.Value.Genres.ToArray()
                 },
                 People = CreateActressList(result.Value),
@@ -65,7 +63,7 @@ namespace JellyfinJav.Providers.JavlibraryProvider
 
         public async Task<IEnumerable<RemoteSearchResult>> GetSearchResults(MovieInfo info, CancellationToken cancelToken)
         {
-            return from video in await client.Search(info.Name)
+            return from video in await client.Search(info.Name).ConfigureAwait(false)
                    select new RemoteSearchResult
                    {
                        Name = video.code,
@@ -79,19 +77,19 @@ namespace JellyfinJav.Providers.JavlibraryProvider
 
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancelToken)
         {
-            return await httpClient.GetAsync(url).ConfigureAwait(false);
+            return await httpClient.GetAsync(url, cancelToken).ConfigureAwait(false);
         }
 
         private static string NormalizeActressName(string name)
         {
-            if (Plugin.Instance.Configuration.actressNameOrder == ActressNameOrder.FirstLast)
+            if (Plugin.Instance.Configuration.ActressNameOrder == ActressNameOrder.FirstLast)
                 return string.Join(" ", name.Split(' ').Reverse());
             return name;
         }
 
         private static List<PersonInfo> CreateActressList(Api.Video video)
         {
-            if (!Plugin.Instance.Configuration.enableActresses)
+            if (!Plugin.Instance.Configuration.EnableActresses)
                 return new List<PersonInfo>();
 
             return (from actress in video.Actresses

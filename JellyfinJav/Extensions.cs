@@ -12,7 +12,7 @@ namespace JellyfinJav
             if (value == null || !source.StartsWith(value))
                 return source;
 
-            return source.Substring(value.Length);
+            return source[value.Length..];
         }
 
         public static string TrimEnd(this string source, string value)

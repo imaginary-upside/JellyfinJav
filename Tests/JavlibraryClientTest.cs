@@ -18,7 +18,7 @@ namespace Tests
         [Test]
         public async Task TestSearchMany()
         {
-            var results = await client.Search("abp");
+            var results = await client.Search("abp").ConfigureAwait(false);
 
             Assert.AreEqual(results.Count(), 20);
             Assert.AreEqual(results.ElementAt(5).code, "ABP-006");
@@ -28,7 +28,7 @@ namespace Tests
         [Test]
         public async Task TestSearchSingle()
         {
-            var results = await client.Search("HND-723");
+            var results = await client.Search("HND-723").ConfigureAwait(false);
 
             Assert.AreEqual(results.ElementAt(0).code, "HND-723");
             Assert.AreEqual(results.ElementAt(0).url, "https://www.javlibrary.com/en/?v=javli6laqy");
@@ -37,7 +37,7 @@ namespace Tests
         [Test]
         public async Task TestSearchFirstNoResults()
         {
-            var result = await client.SearchFirst("HND-999");
+            var result = await client.SearchFirst("HND-999").ConfigureAwait(false);
 
             Assert.AreEqual(null, result);
         }
@@ -45,7 +45,7 @@ namespace Tests
         [Test]
         public async Task TestSearchFirstInvalid()
         {
-            var result = await client.SearchFirst("259LUXU-1142");
+            var result = await client.SearchFirst("259LUXU-1142").ConfigureAwait(false);
 
             Assert.AreEqual(null, result);
         }
@@ -53,7 +53,7 @@ namespace Tests
         [Test]
         public async Task TestSearchFirstSingleResult()
         {
-            var result = await client.SearchFirst("SSNI-230");
+            var result = await client.SearchFirst("SSNI-230").ConfigureAwait(false);
 
             var correct = new Video(
                 id: "javli7bvzi",
@@ -73,7 +73,7 @@ namespace Tests
         [Test]
         public async Task TestLoadVideoNormalizeTitle()
         {
-            var result = await client.LoadVideo("javli6lg24");
+            var result = await client.LoadVideo("javli6lg24").ConfigureAwait(false);
 
             var correct = new Video(
                 id: "javli6lg24",
@@ -93,7 +93,7 @@ namespace Tests
         [Test]
         public async Task TestLoadVideoOneActress()
         {
-            var result = await client.LoadVideo("javlio354u");
+            var result = await client.LoadVideo("javlio354u").ConfigureAwait(false);
 
             var correct = new Video(
                 id: "javlio354u",
@@ -113,7 +113,7 @@ namespace Tests
         [Test]
         public async Task TestLoadVideoManyActresses()
         {
-            var result = await client.LoadVideo("javli6bm5q");
+            var result = await client.LoadVideo("javli6bm5q").ConfigureAwait(false);
 
             var correct = new Video(
                 id: "javli6bm5q",
@@ -133,7 +133,7 @@ namespace Tests
         [Test]
         public async Task TestLoadVideoNoActresses()
         {
-            var result = await client.LoadVideo("javliarg3u");
+            var result = await client.LoadVideo("javliarg3u").ConfigureAwait(false);
 
             var correct = new Video(
                 id: "javliarg3u",

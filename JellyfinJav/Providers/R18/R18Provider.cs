@@ -3,13 +3,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Http;
-using MediaBrowser.Common.Net;
+using System;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Providers;
 using MediaBrowser.Model.Entities;
-using MediaBrowser.Controller.Configuration;
 using MediaBrowser.Controller.Library;
 using Microsoft.Extensions.Logging;
 
@@ -40,11 +39,11 @@ namespace JellyfinJav.Providers.R18Provider
 
             logger.LogInformation("[JellyfinJav] R18 - Scanning: " + originalTitle);
 
-            Api.Video? video = null;
+            Api.Video? video;
             if (info.ProviderIds.ContainsKey("R18"))
-                video = await client.LoadVideo(info.ProviderIds["R18"]);
+                video = await client.LoadVideo(info.ProviderIds["R18"]).ConfigureAwait(false);
             else
-                video = await client.SearchFirst(Utility.ExtractCodeFromFilename(originalTitle));
+                video = await client.SearchFirst(Utility.ExtractCodeFromFilename(originalTitle)).ConfigureAwait(false);
 
             if (!video.HasValue)
                 return new MetadataResult<Movie>();
@@ -57,8 +56,8 @@ namespace JellyfinJav.Providers.R18Provider
                     Name = Utility.CreateVideoDisplayName(video.Value),
                     PremiereDate = video.Value.ReleaseDate,
                     ProviderIds = new Dictionary<string, string> { { "R18", video.Value.Id } },
-                    Studios = new[] { video.Value.Studio }.OfType<string>().ToArray(),
-                    Genres = video.Value.Genres.OfType<string>().ToArray()
+                    Studios = new[] { video.Value.Studio },
+                    Genres = video.Value.Genres.ToArray()
                 },
                 People = CreateActressList(video.Value),
                 HasMetadata = true
@@ -69,9 +68,9 @@ namespace JellyfinJav.Providers.R18Provider
         {
             var javCode = Utility.ExtractCodeFromFilename(info.Name);
             if (string.IsNullOrEmpty(javCode))
-                return new RemoteSearchResult[] { };
+                return Array.Empty<RemoteSearchResult>();
 
-            return from video in await client.Search(javCode)
+            return from video in await client.Search(javCode).ConfigureAwait(false)
                    select new RemoteSearchResult
                    {
                        Name = video.code,
@@ -85,19 +84,19 @@ namespace JellyfinJav.Providers.R18Provider
 
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancelToken)
         {
-            return await httpClient.GetAsync(url).ConfigureAwait(false);
+            return await httpClient.GetAsync(url, cancelToken).ConfigureAwait(false);
         }
 
         private static string NormalizeActressName(string name)
         {
-            if (Plugin.Instance.Configuration.actressNameOrder == ActressNameOrder.LastFirst)
+            if (Plugin.Instance.Configuration.ActressNameOrder == ActressNameOrder.LastFirst)
                 return string.Join(" ", name.Split(' ').Reverse());
             return name;
         }
 
         private static List<PersonInfo> CreateActressList(Api.Video video)
         {
-            if (!Plugin.Instance.Configuration.enableActresses)
+            if (!Plugin.Instance.Configuration.EnableActresses)
                 return new List<PersonInfo>();
 
             return (from actress in video.Actresses
