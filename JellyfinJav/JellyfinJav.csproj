@@ -11,6 +11,7 @@
     <PackageReference Include="Jellyfin.Controller" Version="10.7.0-rc3" />
     <PackageReference Include="Jellyfin.Model" Version="10.7.0-rc3" />
     <PackageReference Include="Skiasharp" Version="2.80.2" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" />
   </ItemGroup>
 
   <ItemGroup>
