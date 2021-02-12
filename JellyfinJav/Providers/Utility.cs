@@ -1,15 +1,17 @@
-using System.Linq;
-using MediaBrowser.Controller.Providers;
-using MediaBrowser.Controller.Library;
-using MediaBrowser.Controller.Entities;
-using System.Text.RegularExpressions;
-using System.IO;
-using System.Threading.Tasks;
-using System.Net.Http;
-using SkiaSharp;
+#pragma warning disable SA1600
 
 namespace JellyfinJav.Providers
 {
+    using System.IO;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
+    using MediaBrowser.Controller.Entities;
+    using MediaBrowser.Controller.Library;
+    using MediaBrowser.Controller.Providers;
+    using SkiaSharp;
+
     public static class Utility
     {
         // When setting the video title in a Provider, we lose the JAV code details in MovieInfo.
@@ -18,12 +20,14 @@ namespace JellyfinJav.Providers
         {
             var searchQuery = new InternalItemsQuery
             {
-                Name = info.Name
+                Name = info.Name,
             };
             var result = libraryManager.GetItemList(searchQuery).FirstOrDefault();
 
             if (result == null)
+            {
                 return info.Name;
+            }
 
             return result.OriginalTitle ?? result.Name;
         }

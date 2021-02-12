@@ -1,8 +1,10 @@
-using System.Text;
-using System;
+#pragma warning disable SA1600
 
 namespace JellyfinJav.Api
 {
+    using System;
+    using System.Text;
+
     public readonly struct Actress
     {
         public readonly string Id;
@@ -11,31 +13,18 @@ namespace JellyfinJav.Api
         public readonly string Birthplace;
         public readonly string Cover;
 
-        public Actress(string id,
-                       string name,
-                       DateTime? birthdate,
-                       string birthplace,
-                       string cover)
+        public Actress(
+            string id,
+            string name,
+            DateTime? birthdate,
+            string birthplace,
+            string cover)
         {
             this.Id = id;
             this.Name = name;
             this.Birthdate = birthdate;
             this.Birthplace = birthplace;
             this.Cover = cover;
-        }
-
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode() ^
-                   Name.GetHashCode() ^
-                   Birthdate.GetHashCode() ^
-                   Birthplace.GetHashCode() ^
-                   Cover.GetHashCode();
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj is Actress o && this == o;
         }
 
         public static bool operator ==(Actress a1, Actress a2)
@@ -56,13 +45,27 @@ namespace JellyfinJav.Api
         {
             var sb = new StringBuilder();
 
-            sb.Append("id: ").AppendLine(Id);
-            sb.Append("name: ").AppendLine(Name);
-            sb.Append("birthdate: ").AppendLine(Birthdate.ToString());
-            sb.Append("birthplace: ").AppendLine(Birthplace);
-            sb.Append("cover: ").AppendLine(Cover);
+            sb.Append("id: ").AppendLine(this.Id);
+            sb.Append("name: ").AppendLine(this.Name);
+            sb.Append("birthdate: ").AppendLine(this.Birthdate.ToString());
+            sb.Append("birthplace: ").AppendLine(this.Birthplace);
+            sb.Append("cover: ").AppendLine(this.Cover);
 
             return sb.ToString();
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode() ^
+                   this.Name.GetHashCode() ^
+                   this.Birthdate.GetHashCode() ^
+                   this.Birthplace.GetHashCode() ^
+                   this.Cover.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Actress o && this == o;
         }
     }
 }

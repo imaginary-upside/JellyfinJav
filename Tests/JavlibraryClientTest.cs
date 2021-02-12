@@ -1,24 +1,19 @@
-using NUnit.Framework;
-using System.Threading.Tasks;
-using System.Linq;
-using JellyfinJav.Api;
+#pragma warning disable SA1600
 
 namespace Tests
 {
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using JellyfinJav.Api;
+    using NUnit.Framework;
+
     public class JavlibraryClientTest
     {
-        private JavlibraryClient client;
-
-        [OneTimeSetUp]
-        public void OneTimeSetup()
-        {
-            client = new JavlibraryClient();
-        }
-
         [Test]
         public async Task TestSearchMany()
         {
-            var results = await client.Search("abp").ConfigureAwait(false);
+            var results = await JavlibraryClient.Search("abp").ConfigureAwait(false);
 
             Assert.AreEqual(results.Count(), 20);
             Assert.AreEqual(results.ElementAt(5).code, "ABP-006");
@@ -28,7 +23,7 @@ namespace Tests
         [Test]
         public async Task TestSearchSingle()
         {
-            var results = await client.Search("HND-723").ConfigureAwait(false);
+            var results = await JavlibraryClient.Search("HND-723").ConfigureAwait(false);
 
             Assert.AreEqual(results.ElementAt(0).code, "HND-723");
             Assert.AreEqual(results.ElementAt(0).url, "https://www.javlibrary.com/en/?v=javli6laqy");
@@ -37,7 +32,7 @@ namespace Tests
         [Test]
         public async Task TestSearchFirstNoResults()
         {
-            var result = await client.SearchFirst("HND-999").ConfigureAwait(false);
+            var result = await JavlibraryClient.SearchFirst("HND-999").ConfigureAwait(false);
 
             Assert.AreEqual(null, result);
         }
@@ -45,7 +40,7 @@ namespace Tests
         [Test]
         public async Task TestSearchFirstInvalid()
         {
-            var result = await client.SearchFirst("259LUXU-1142").ConfigureAwait(false);
+            var result = await JavlibraryClient.SearchFirst("259LUXU-1142").ConfigureAwait(false);
 
             Assert.AreEqual(null, result);
         }
@@ -53,7 +48,7 @@ namespace Tests
         [Test]
         public async Task TestSearchFirstSingleResult()
         {
-            var result = await client.SearchFirst("SSNI-230").ConfigureAwait(false);
+            var result = await JavlibraryClient.SearchFirst("SSNI-230").ConfigureAwait(false);
 
             var correct = new Video(
                 id: "javli7bvzi",
@@ -64,8 +59,7 @@ namespace Tests
                 studio: "S1 NO.1 STYLE",
                 boxArt: "https://pics.dmm.co.jp/mono/movie/adult/ssni230/ssni230pl.jpg",
                 cover: "https://pics.dmm.co.jp/mono/movie/adult/ssni230/ssni230ps.jpg",
-                releaseDate: null // TODO
-            );
+                releaseDate: null); // TODO
 
             Assert.AreEqual(correct, result);
         }
@@ -73,7 +67,7 @@ namespace Tests
         [Test]
         public async Task TestLoadVideoNormalizeTitle()
         {
-            var result = await client.LoadVideo("javli6lg24").ConfigureAwait(false);
+            var result = await JavlibraryClient.LoadVideo("javli6lg24").ConfigureAwait(false);
 
             var correct = new Video(
                 id: "javli6lg24",
@@ -84,8 +78,7 @@ namespace Tests
                 studio: "SOD Create",
                 boxArt: "https://pics.dmm.co.jp/mono/movie/adult/1stars126/1stars126pl.jpg",
                 cover: "https://pics.dmm.co.jp/mono/movie/adult/1stars126/1stars126ps.jpg",
-                releaseDate: null // TODO
-            );
+                releaseDate: null); // TODO
 
             Assert.AreEqual(result, correct);
         }
@@ -93,7 +86,7 @@ namespace Tests
         [Test]
         public async Task TestLoadVideoOneActress()
         {
-            var result = await client.LoadVideo("javlio354u").ConfigureAwait(false);
+            var result = await JavlibraryClient.LoadVideo("javlio354u").ConfigureAwait(false);
 
             var correct = new Video(
                 id: "javlio354u",
@@ -104,8 +97,7 @@ namespace Tests
                 studio: "Prestige",
                 boxArt: "https://pics.dmm.co.jp/mono/movie/adult/118abp002/118abp002pl.jpg",
                 cover: "https://pics.dmm.co.jp/mono/movie/adult/118abp002/118abp002ps.jpg",
-                releaseDate: null // TODO
-            );
+                releaseDate: null); // TODO
 
             Assert.AreEqual(result, correct);
         }
@@ -113,7 +105,7 @@ namespace Tests
         [Test]
         public async Task TestLoadVideoManyActresses()
         {
-            var result = await client.LoadVideo("javli6bm5q").ConfigureAwait(false);
+            var result = await JavlibraryClient.LoadVideo("javli6bm5q").ConfigureAwait(false);
 
             var correct = new Video(
                 id: "javli6bm5q",
@@ -124,8 +116,7 @@ namespace Tests
                 studio: "SOD Create",
                 boxArt: "https://pics.dmm.co.jp/mono/movie/adult/1sdde592/1sdde592pl.jpg",
                 cover: "https://pics.dmm.co.jp/mono/movie/adult/1sdde592/1sdde592ps.jpg",
-                releaseDate: null // TODO
-            );
+                releaseDate: null); // TODO
 
             Assert.AreEqual(result, correct);
         }
@@ -133,19 +124,18 @@ namespace Tests
         [Test]
         public async Task TestLoadVideoNoActresses()
         {
-            var result = await client.LoadVideo("javliarg3u").ConfigureAwait(false);
+            var result = await JavlibraryClient.LoadVideo("javliarg3u").ConfigureAwait(false);
 
             var correct = new Video(
                 id: "javliarg3u",
                 code: "IPTD-041",
                 title: "Goddesses Of The Speed Of Sound 01 RQ'S Cafe",
-                actresses: new string[] { },
+                actresses: Array.Empty<string>(),
                 genres: new[] { "Mini Skirt", "Big Tits", "Slender", "Race Queen", "Digital Mosaic" },
                 studio: "IDEA POCKET",
                 boxArt: "https://pics.dmm.co.jp/mono/movie/adult/iptd041/iptd041pl.jpg",
                 cover: "https://pics.dmm.co.jp/mono/movie/adult/iptd041/iptd041ps.jpg",
-                releaseDate: null // TODO
-            );
+                releaseDate: null); // TODO
 
             Assert.AreEqual(result, correct);
         }

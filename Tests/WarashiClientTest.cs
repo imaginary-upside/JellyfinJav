@@ -1,59 +1,50 @@
-using System;
-using NUnit.Framework;
-using System.Threading.Tasks;
-using System.Linq;
-using JellyfinJav.Api;
+#pragma warning disable SA1600
 
 namespace Tests
 {
+    using System;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using JellyfinJav.Api;
+    using NUnit.Framework;
+
     public class WarashiClientTest
     {
-        private WarashiClient client;
-
-        [OneTimeSetUp]
-        public void OneTimeSetup()
-        {
-            client = new WarashiClient();
-        }
-
         [Test]
         public async Task TestSearchLastFirst()
         {
-            var results = await client.Search("Sasaki Aki").ConfigureAwait(false);
+            var results = await WarashiClient.Search("Sasaki Aki").ConfigureAwait(false);
             Assert.AreEqual(1, results.Count());
             Assert.AreEqual("Aki Sasaki", results.ElementAt(0).name);
             Assert.AreEqual("s-2-0/2714", results.ElementAt(0).id);
             Assert.AreEqual(
                 new Uri("http://warashi-asian-pornstars.fr/WAPdB-img/pornostars-f/a/k/2714/aki-sasaki/preview/mini/wapdb-aki-sasaki-pornostar-asiatique.warashi-asian-pornstars.fr.jpg"),
-                results.ElementAt(0).cover
-            );
+                results.ElementAt(0).cover);
         }
 
         [Test]
         public async Task TestSearchFirstLast()
         {
-            var results = await client.Search("Maria Nagai").ConfigureAwait(false);
+            var results = await WarashiClient.Search("Maria Nagai").ConfigureAwait(false);
             Assert.AreEqual(2, results.Count());
             Assert.AreEqual("Maria Nagai", results.ElementAt(0).name);
             Assert.AreEqual("s-2-0/3743", results.ElementAt(0).id);
             Assert.AreEqual(
                 new Uri("http://warashi-asian-pornstars.fr/WAPdB-img/pornostars-f/m/a/3743/maria-nagai/preview/mini/wapdb-maria-nagai-pornostar-asiatique.warashi-asian-pornstars.fr.jpg"),
-                results.ElementAt(0).cover
-            );
+                results.ElementAt(0).cover);
         }
 
         [Test]
         public async Task TestLoadActress()
         {
-            var result = await client.LoadActress("s-2-0/2714").ConfigureAwait(false);
+            var result = await WarashiClient.LoadActress("s-2-0/2714").ConfigureAwait(false);
 
             var expected = new Actress(
                 id: "s-2-0/2714",
                 name: "Aki Sasaki",
                 birthdate: DateTime.Parse("December 24, 1979"),
                 birthplace: "Japan, Saitama prefecture",
-                cover: "http://warashi-asian-pornstars.fr/WAPdB-img/pornostars-f/a/k/2714/aki-sasaki/profil-0/large/wapdb-aki-sasaki-pornostar-asiatique.warashi-asian-pornstars.fr.jpg"
-            );
+                cover: "http://warashi-asian-pornstars.fr/WAPdB-img/pornostars-f/a/k/2714/aki-sasaki/profil-0/large/wapdb-aki-sasaki-pornostar-asiatique.warashi-asian-pornstars.fr.jpg");
 
             Assert.AreEqual(expected, result);
         }
@@ -61,22 +52,21 @@ namespace Tests
         [Test]
         public async Task TestLoadActressInvalid()
         {
-            var result = await client.LoadActress("invalid").ConfigureAwait(false);
+            var result = await WarashiClient.LoadActress("invalid").ConfigureAwait(false);
             Assert.IsNull(result);
         }
 
         [Test]
         public async Task TestSearchFirst()
         {
-            var result = await client.SearchFirst("Hiyori Yoshioka").ConfigureAwait(false);
+            var result = await WarashiClient.SearchFirst("Hiyori Yoshioka").ConfigureAwait(false);
 
             var expected = new Actress(
                 id: "s-2-0/3806",
                 name: "Hiyori Yoshioka",
                 birthdate: DateTime.Parse("August 08, 1999"),
                 birthplace: "Japan",
-                cover: "http://warashi-asian-pornstars.fr/WAPdB-img/pornostars-f/h/i/3806/hiyori-yoshioka/profil-0/large/wapdb-hiyori-yoshioka-pornostar-asiatique.warashi-asian-pornstars.fr.jpg"
-            );
+                cover: "http://warashi-asian-pornstars.fr/WAPdB-img/pornostars-f/h/i/3806/hiyori-yoshioka/profil-0/large/wapdb-hiyori-yoshioka-pornostar-asiatique.warashi-asian-pornstars.fr.jpg");
 
             Assert.AreEqual(expected, result);
         }
@@ -84,7 +74,7 @@ namespace Tests
         [Test]
         public async Task TestSearchFirstFemalePornstar()
         {
-            var result = await client.SearchFirst("Ruka Aoi").ConfigureAwait(false);
+            var result = await WarashiClient.SearchFirst("Ruka Aoi").ConfigureAwait(false);
 
             // Parsing for female-pornstar results isn't done yet.
             var expected = new Actress(
@@ -92,8 +82,7 @@ namespace Tests
                 name: null,
                 birthdate: null,
                 birthplace: null,
-                cover: "http://warashi-asian-pornstars.fr/WAPdB-img/pornostars-f/r/u/786/ruka-aoi/preview/mini/wapdb-ruka-aoi-pornostar-asiatique.warashi-asian-pornstars.fr.jpg"
-            );
+                cover: "http://warashi-asian-pornstars.fr/WAPdB-img/pornostars-f/r/u/786/ruka-aoi/preview/mini/wapdb-ruka-aoi-pornostar-asiatique.warashi-asian-pornstars.fr.jpg");
 
             Assert.AreEqual(expected, result);
         }

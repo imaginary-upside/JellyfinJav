@@ -1,9 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+#pragma warning disable SA1600
 
 namespace JellyfinJav.Api
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     public readonly struct Video
     {
         public readonly string Id;
@@ -16,15 +18,16 @@ namespace JellyfinJav.Api
         public readonly string Cover;
         public readonly DateTime? ReleaseDate;
 
-        public Video(string id,
-                     string code,
-                     string title,
-                     IEnumerable<string> actresses,
-                     IEnumerable<string> genres,
-                     string studio,
-                     string boxArt,
-                     string cover,
-                     DateTime? releaseDate)
+        public Video(
+            string id,
+            string code,
+            string title,
+            IEnumerable<string> actresses,
+            IEnumerable<string> genres,
+            string studio,
+            string boxArt,
+            string cover,
+            DateTime? releaseDate)
         {
             this.Id = id;
             this.Code = code;
@@ -35,37 +38,6 @@ namespace JellyfinJav.Api
             this.BoxArt = boxArt;
             this.Cover = cover;
             this.ReleaseDate = releaseDate;
-        }
-
-        public override string ToString()
-        {
-            return $"Id: {Id}\n" +
-                   $"Code: {Code}\n" +
-                   $"Title: {Title}\n" +
-                   $"Actresses: {string.Join(", ", Actresses)}\n" +
-                   $"Genres: {string.Join(", ", Genres)}\n" +
-                   $"Studio: {Studio}\n" +
-                   $"BoxArt: {BoxArt}\n" +
-                   $"Cover: {Cover}\n" +
-                   $"ReleaseDate: {ReleaseDate}\n";
-        }
-
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode() ^
-                   Code.GetHashCode() ^
-                   Title.GetHashCode() ^
-                   Actresses.GetHashCode() ^
-                   Genres.GetHashCode() ^
-                   Studio.GetHashCode() ^
-                   BoxArt.GetHashCode() ^
-                   Cover.GetHashCode() ^
-                   ReleaseDate.GetHashCode();
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj is Video o && this == o;
         }
 
         public static bool operator ==(Video v1, Video v2)
@@ -84,6 +56,37 @@ namespace JellyfinJav.Api
         public static bool operator !=(Video v1, Video v2)
         {
             return !(v1 == v2);
+        }
+
+        public override string ToString()
+        {
+            return $"Id: {this.Id}\n" +
+                   $"Code: {this.Code}\n" +
+                   $"Title: {this.Title}\n" +
+                   $"Actresses: {string.Join(", ", this.Actresses)}\n" +
+                   $"Genres: {string.Join(", ", this.Genres)}\n" +
+                   $"Studio: {this.Studio}\n" +
+                   $"BoxArt: {this.BoxArt}\n" +
+                   $"Cover: {this.Cover}\n" +
+                   $"ReleaseDate: {this.ReleaseDate}\n";
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode() ^
+                   this.Code.GetHashCode() ^
+                   this.Title.GetHashCode() ^
+                   this.Actresses.GetHashCode() ^
+                   this.Genres.GetHashCode() ^
+                   this.Studio.GetHashCode() ^
+                   this.BoxArt.GetHashCode() ^
+                   this.Cover.GetHashCode() ^
+                   this.ReleaseDate.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Video o && this == o;
         }
     }
 }

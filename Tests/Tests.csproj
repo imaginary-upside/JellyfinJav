@@ -2,14 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>net50</TargetFramework>
-
     <IsPackable>false</IsPackable>
+    <NoWarn>SA1633</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="nunit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.16.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" />
   </ItemGroup>
 
   <ItemGroup>

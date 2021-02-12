@@ -1,19 +1,21 @@
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Net.Http;
-using MediaBrowser.Controller.Entities;
-using MediaBrowser.Controller.Providers;
-using MediaBrowser.Model.Entities;
-using MediaBrowser.Model.Providers;
-using System;
+#pragma warning disable SA1600
 
 namespace JellyfinJav.Providers.WarashiProvider
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Net.Http;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using JellyfinJav.Api;
+    using MediaBrowser.Controller.Entities;
+    using MediaBrowser.Controller.Providers;
+    using MediaBrowser.Model.Entities;
+    using MediaBrowser.Model.Providers;
+
     public class WarashiPersonImageProvider : IRemoteImageProvider
     {
-        private readonly static HttpClient httpClient = new HttpClient();
-        private readonly static Api.WarashiClient client = new Api.WarashiClient();
+        private static readonly HttpClient HttpClient = new HttpClient();
 
         public string Name => "Warashi";
 
@@ -21,26 +23,30 @@ namespace JellyfinJav.Providers.WarashiProvider
         {
             var id = item.GetProviderId("Warashi");
             if (string.IsNullOrEmpty(id))
+            {
                 return Array.Empty<RemoteImageInfo>();
+            }
 
-            var actress = await client.LoadActress(id).ConfigureAwait(false);
+            var actress = await WarashiClient.LoadActress(id).ConfigureAwait(false);
             if (!actress.HasValue || actress.Value.Cover == null)
+            {
                 return Array.Empty<RemoteImageInfo>();
+            }
 
             return new RemoteImageInfo[]
             {
                 new RemoteImageInfo
                 {
-                    ProviderName = Name,
+                    ProviderName = this.Name,
                     Type = ImageType.Primary,
-                    Url = actress.Value.Cover
-                }
+                    Url = actress.Value.Cover,
+                },
             };
         }
 
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancelToken)
         {
-            return await httpClient.GetAsync(url, cancelToken).ConfigureAwait(false);
+            return await HttpClient.GetAsync(url, cancelToken).ConfigureAwait(false);
         }
 
         public IEnumerable<ImageType> GetSupportedImages(BaseItem item)

@@ -1,46 +1,51 @@
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Net.Http;
-using System;
-using MediaBrowser.Controller.Entities;
-using MediaBrowser.Controller.Entities.Movies;
-using MediaBrowser.Controller.Providers;
-using MediaBrowser.Model.Entities;
-using MediaBrowser.Model.Providers;
+#pragma warning disable SA1600
 
 namespace JellyfinJav.Providers.JavlibraryProvider
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Net.Http;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using JellyfinJav.Api;
+    using MediaBrowser.Controller.Entities;
+    using MediaBrowser.Controller.Entities.Movies;
+    using MediaBrowser.Controller.Providers;
+    using MediaBrowser.Model.Entities;
+    using MediaBrowser.Model.Providers;
+
     public class JavlibraryImageProvider : IRemoteImageProvider, IHasOrder
     {
-        private static readonly HttpClient httpClient = new HttpClient();
+        private static readonly HttpClient HttpClient = new HttpClient();
 
         public string Name => "Javlibrary";
+
         public int Order => 100;
 
         public async Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancelToken)
         {
             var id = item.GetProviderId("Javlibrary");
             if (string.IsNullOrEmpty(id))
+            {
                 return Array.Empty<RemoteImageInfo>();
+            }
 
-            var client = new Api.JavlibraryClient();
-            var video = await client.LoadVideo(id).ConfigureAwait(false);
+            var video = await JavlibraryClient.LoadVideo(id).ConfigureAwait(false);
 
             return new RemoteImageInfo[]
             {
                 new RemoteImageInfo
                 {
-                    ProviderName = Name,
+                    ProviderName = this.Name,
                     Type = ImageType.Primary,
-                    Url = video.BoxArt
-                }
+                    Url = video.BoxArt,
+                },
             };
         }
 
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancelToken)
         {
-            var httpResponse = await httpClient.GetAsync(url, cancelToken).ConfigureAwait(false);
+            var httpResponse = await HttpClient.GetAsync(url, cancelToken).ConfigureAwait(false);
             await Utility.CropThumb(httpResponse).ConfigureAwait(false);
             return httpResponse;
         }
