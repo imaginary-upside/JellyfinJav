@@ -79,6 +79,15 @@ namespace JellyfinJav.Api
                 return null;
             }
 
+            // See if we can find an exact match first.
+            foreach ((string code, string id, Uri _) in results)
+            {
+                if (string.Equals(searchCode, code))
+                {
+                    return await LoadVideo(id).ConfigureAwait(false);
+                }
+            }
+
             return await LoadVideo(results.First().id).ConfigureAwait(false);
         }
 
