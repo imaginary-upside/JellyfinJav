@@ -1,5 +1,3 @@
-#pragma warning disable SA1600, CS1591
-
 namespace JellyfinJav.Providers
 {
     using System.IO;
@@ -12,10 +10,16 @@ namespace JellyfinJav.Providers
     using MediaBrowser.Controller.Providers;
     using SkiaSharp;
 
+    /// <summary>A general utility class for random functions.</summary>
     public static class Utility
     {
-        // When setting the video title in a Provider, we lose the JAV code details in MovieInfo.
-        // So this is used to retrieve the JAV code to then be able to search using a different Provider.
+        /// <summary>
+        /// When setting the video title in a Provider, we lose the JAV code details in MovieInfo.
+        /// So this is used to retrieve the JAV code to then be able to search using a different Provider.
+        /// </summary>
+        /// <param name="info">The video's info.</param>
+        /// <param name="libraryManager">Instance of the <see cref="ILibraryManager" />.</param>
+        /// <returns>The video's original title.</returns>
         public static string GetVideoOriginalTitle(MovieInfo info, ILibraryManager libraryManager)
         {
             var searchQuery = new InternalItemsQuery
@@ -32,6 +36,9 @@ namespace JellyfinJav.Providers
             return result.OriginalTitle ?? result.Name;
         }
 
+        /// <summary>Extracts the jav code from a video's filename.</summary>
+        /// <param name="filename">The video's filename.</param>
+        /// <returns>The video's jav code.</returns>
         public static string? ExtractCodeFromFilename(string filename)
         {
             var rx = new Regex(@"[\w\d]+-\d+", RegexOptions.Compiled);
@@ -39,6 +46,9 @@ namespace JellyfinJav.Providers
             return match?.Value.ToUpper();
         }
 
+        /// <summary>Creates a video's display name according to the plugin's selected configuration.</summary>
+        /// <param name="video">The video.</param>
+        /// <returns>The video's created display name.</returns>
         public static string CreateVideoDisplayName(Api.Video video)
         {
             return Plugin.Instance?.Configuration.VideoDisplayName switch
@@ -49,6 +59,9 @@ namespace JellyfinJav.Providers
             };
         }
 
+        /// <summary>Crops a full size dvd cover into just the front cover image.</summary>
+        /// <param name="httpResponse">The full size dvd cover's http response.</param>
+        /// <returns>An empty task when the job is done.</returns>
         public static async Task CropThumb(HttpResponseMessage httpResponse)
         {
             using var imageStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false);

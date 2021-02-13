@@ -1,5 +1,3 @@
-#pragma warning disable SA1600, CS1591
-
 namespace JellyfinJav.Providers.R18Provider
 {
     using System;
@@ -17,22 +15,29 @@ namespace JellyfinJav.Providers.R18Provider
     using MediaBrowser.Model.Providers;
     using Microsoft.Extensions.Logging;
 
+    /// <summary>The provider for R18 videos.</summary>
     public class R18Provider : IRemoteMetadataProvider<Movie, MovieInfo>, IHasOrder
     {
         private static readonly HttpClient HttpClient = new HttpClient();
         private readonly ILibraryManager libraryManager;
         private readonly ILogger<R18Provider> logger;
 
+        /// <summary>Initializes a new instance of the <see cref="R18Provider"/> class.</summary>
+        /// <param name="libraryManager">Instance of the <see cref="ILibraryManager" />.</param>
+        /// <param name="logger">Instance of the <see cref="ILogger" />.</param>
         public R18Provider(ILibraryManager libraryManager, ILogger<R18Provider> logger)
         {
             this.libraryManager = libraryManager;
             this.logger = logger;
         }
 
+        /// <inheritdoc />
         public string Name => "R18";
 
+        /// <inheritdoc />
         public int Order => 99;
 
+        /// <inheritdoc />
         public async Task<MetadataResult<Movie>> GetMetadata(MovieInfo info, CancellationToken cancelToken)
         {
             var originalTitle = Utility.GetVideoOriginalTitle(info, this.libraryManager);
@@ -77,6 +82,7 @@ namespace JellyfinJav.Providers.R18Provider
             };
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<RemoteSearchResult>> GetSearchResults(MovieInfo info, CancellationToken cancelToken)
         {
             var javCode = Utility.ExtractCodeFromFilename(info.Name);
@@ -97,6 +103,7 @@ namespace JellyfinJav.Providers.R18Provider
                    };
         }
 
+        /// <inheritdoc />
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancelToken)
         {
             return await HttpClient.GetAsync(url, cancelToken).ConfigureAwait(false);

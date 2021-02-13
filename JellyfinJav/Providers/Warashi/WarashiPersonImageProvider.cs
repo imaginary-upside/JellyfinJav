@@ -1,5 +1,3 @@
-#pragma warning disable SA1600, CS1591
-
 namespace JellyfinJav.Providers.WarashiProvider
 {
     using System;
@@ -13,12 +11,15 @@ namespace JellyfinJav.Providers.WarashiProvider
     using MediaBrowser.Model.Entities;
     using MediaBrowser.Model.Providers;
 
+    /// <summary>The provider for Warashi actress headshots.</summary>
     public class WarashiPersonImageProvider : IRemoteImageProvider
     {
         private static readonly HttpClient HttpClient = new HttpClient();
 
+        /// <inheritdoc />
         public string Name => "Warashi";
 
+        /// <inheritdoc />
         public async Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancelToken)
         {
             var id = item.GetProviderId("Warashi");
@@ -44,16 +45,19 @@ namespace JellyfinJav.Providers.WarashiProvider
             };
         }
 
+        /// <inheritdoc />
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancelToken)
         {
             return await HttpClient.GetAsync(url, cancelToken).ConfigureAwait(false);
         }
 
+        /// <inheritdoc />
         public IEnumerable<ImageType> GetSupportedImages(BaseItem item)
         {
             return new[] { ImageType.Primary };
         }
 
+        /// <inheritdoc />
         public bool Supports(BaseItem item) => item is Person;
     }
 }

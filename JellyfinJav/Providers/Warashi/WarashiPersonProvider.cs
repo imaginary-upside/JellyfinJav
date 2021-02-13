@@ -1,5 +1,3 @@
-#pragma warning disable SA1600, CS1591
-
 namespace JellyfinJav.Providers.AsianscreensProvider
 {
     using System.Collections.Generic;
@@ -13,18 +11,23 @@ namespace JellyfinJav.Providers.AsianscreensProvider
     using MediaBrowser.Model.Providers;
     using Microsoft.Extensions.Logging;
 
+    /// <summary>The provider for Warashi actresses.</summary>
     public class WarashiPersonProvider : IRemoteMetadataProvider<Person, PersonLookupInfo>
     {
         private static readonly HttpClient HttpClient = new HttpClient();
         private readonly ILogger<WarashiPersonProvider> logger;
 
+        /// <summary>Initializes a new instance of the <see cref="WarashiPersonProvider"/> class.</summary>
+        /// <param name="logger">Instance of the <see cref="ILogger" />.</param>
         public WarashiPersonProvider(ILogger<WarashiPersonProvider> logger)
         {
             this.logger = logger;
         }
 
+        /// <inheritdoc />
         public string Name => "Warashi";
 
+        /// <inheritdoc />
         public async Task<IEnumerable<RemoteSearchResult>> GetSearchResults(PersonLookupInfo info, CancellationToken cancelationToken)
         {
             return from actress in await WarashiClient.Search(info.Name).ConfigureAwait(false)
@@ -39,6 +42,7 @@ namespace JellyfinJav.Providers.AsianscreensProvider
                    };
         }
 
+        /// <inheritdoc />
         public async Task<MetadataResult<Person>> GetMetadata(PersonLookupInfo info, CancellationToken cancellationToken)
         {
             this.logger.LogInformation("[JellyfinJav] Warashi - Scanning: " + info.Name);
@@ -76,6 +80,7 @@ namespace JellyfinJav.Providers.AsianscreensProvider
             };
         }
 
+        /// <inheritdoc />
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancelToken)
         {
             return await HttpClient.GetAsync(url, cancelToken).ConfigureAwait(false);

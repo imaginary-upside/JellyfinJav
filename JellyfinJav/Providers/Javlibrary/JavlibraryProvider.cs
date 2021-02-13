@@ -1,5 +1,3 @@
-#pragma warning disable SA1600, CS1591
-
 namespace JellyfinJav.Providers.JavlibraryProvider
 {
     using System.Collections.Generic;
@@ -16,12 +14,16 @@ namespace JellyfinJav.Providers.JavlibraryProvider
     using MediaBrowser.Model.Providers;
     using Microsoft.Extensions.Logging;
 
+    /// <summary>The provider for Javlibrary videos.</summary>
     public class JavlibraryProvider : IRemoteMetadataProvider<Movie, MovieInfo>, IHasOrder
     {
         private static readonly HttpClient HttpClient = new HttpClient();
         private readonly ILibraryManager libraryManager;
         private readonly ILogger<JavlibraryProvider> logger;
 
+        /// <summary>Initializes a new instance of the <see cref="JavlibraryProvider"/> class.</summary>
+        /// <param name="libraryManager">Instance of the <see cref="ILibraryManager" />.</param>
+        /// <param name="logger">Instance of the <see cref="ILogger" />.</param>
         public JavlibraryProvider(
             ILibraryManager libraryManager,
             ILogger<JavlibraryProvider> logger)
@@ -30,10 +32,13 @@ namespace JellyfinJav.Providers.JavlibraryProvider
             this.logger = logger;
         }
 
+        /// <inheritdoc />
         public string Name => "Javlibrary";
 
+        /// <inheritdoc />
         public int Order => 100;
 
+        /// <inheritdoc />
         public async Task<MetadataResult<Movie>> GetMetadata(MovieInfo info, CancellationToken cancelToken)
         {
             var originalTitle = Utility.GetVideoOriginalTitle(info, this.libraryManager);
@@ -76,6 +81,7 @@ namespace JellyfinJav.Providers.JavlibraryProvider
             };
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<RemoteSearchResult>> GetSearchResults(MovieInfo info, CancellationToken cancelToken)
         {
             return from video in await JavlibraryClient.Search(info.Name).ConfigureAwait(false)
@@ -89,6 +95,7 @@ namespace JellyfinJav.Providers.JavlibraryProvider
                    };
         }
 
+        /// <inheritdoc />
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancelToken)
         {
             return await HttpClient.GetAsync(url, cancelToken).ConfigureAwait(false);

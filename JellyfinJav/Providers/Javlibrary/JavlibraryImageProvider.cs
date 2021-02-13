@@ -1,5 +1,3 @@
-#pragma warning disable SA1600, CS1591
-
 namespace JellyfinJav.Providers.JavlibraryProvider
 {
     using System;
@@ -14,14 +12,18 @@ namespace JellyfinJav.Providers.JavlibraryProvider
     using MediaBrowser.Model.Entities;
     using MediaBrowser.Model.Providers;
 
+    /// <summary>The provider for Javlibrary video covers.</summary>
     public class JavlibraryImageProvider : IRemoteImageProvider, IHasOrder
     {
         private static readonly HttpClient HttpClient = new HttpClient();
 
+        /// <inheritdoc />
         public string Name => "Javlibrary";
 
+        /// <inheritdoc />
         public int Order => 100;
 
+        /// <inheritdoc />
         public async Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancelToken)
         {
             var id = item.GetProviderId("Javlibrary");
@@ -43,6 +45,7 @@ namespace JellyfinJav.Providers.JavlibraryProvider
             };
         }
 
+        /// <inheritdoc />
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancelToken)
         {
             var httpResponse = await HttpClient.GetAsync(url, cancelToken).ConfigureAwait(false);
@@ -50,11 +53,13 @@ namespace JellyfinJav.Providers.JavlibraryProvider
             return httpResponse;
         }
 
+        /// <inheritdoc />
         public IEnumerable<ImageType> GetSupportedImages(BaseItem item)
         {
             return new[] { ImageType.Primary };
         }
 
+        /// <inheritdoc />
         public bool Supports(BaseItem item) => item is Movie;
     }
 }
