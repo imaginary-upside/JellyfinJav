@@ -1,4 +1,4 @@
-#pragma warning disable SA1600
+#pragma warning disable SA1600, CS1591
 
 namespace JellyfinJav.Providers.WarashiProvider
 {

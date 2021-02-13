@@ -16,8 +16,8 @@ namespace Tests
             var results = await JavlibraryClient.Search("abp").ConfigureAwait(false);
 
             Assert.AreEqual(results.Count(), 20);
-            Assert.AreEqual(results.ElementAt(5).code, "ABP-006");
-            Assert.AreEqual(results.ElementAt(5).url, "https://www.javlibrary.com/en/?v=javlijaqye");
+            Assert.AreEqual(results.ElementAt(5).Code, "ABP-006");
+            Assert.AreEqual(results.ElementAt(5).Id, "javlijaqye");
         }
 
         [Test]
@@ -25,8 +25,8 @@ namespace Tests
         {
             var results = await JavlibraryClient.Search("HND-723").ConfigureAwait(false);
 
-            Assert.AreEqual(results.ElementAt(0).code, "HND-723");
-            Assert.AreEqual(results.ElementAt(0).url, "https://www.javlibrary.com/en/?v=javli6laqy");
+            Assert.AreEqual(results.ElementAt(0).Code, "HND-723");
+            Assert.AreEqual(results.ElementAt(0).Id, "javli6laqy");
         }
 
         [Test]

@@ -23,13 +23,13 @@ namespace JellyfinJav.Api
         public readonly IEnumerable<string> Genres;
 
         /// <summary>The studio which released the video.</summary>
-        public readonly string Studio;
+        public readonly string? Studio;
 
         /// <summary>An absolute url to the boxart.</summary>
-        public readonly string BoxArt;
+        public readonly string? BoxArt;
 
         /// <summary>An absolute url to the cover image.</summary>
-        public readonly string Cover;
+        public readonly string? Cover;
 
         /// <summary>The date which the video was released.</summary>
         public readonly DateTime? ReleaseDate;
@@ -50,9 +50,9 @@ namespace JellyfinJav.Api
             string title,
             IEnumerable<string> actresses,
             IEnumerable<string> genres,
-            string studio,
-            string boxArt,
-            string cover,
+            string? studio,
+            string? boxArt,
+            string? cover,
             DateTime? releaseDate)
         {
             this.Id = id;
@@ -66,6 +66,9 @@ namespace JellyfinJav.Api
             this.ReleaseDate = releaseDate;
         }
 
+        /// <summary>Checks if two Video objects are equal.</summary>
+        /// <param name="v1">The first video.</param>
+        /// <param name="v2">The second video.</param>
         public static bool operator ==(Video v1, Video v2)
         {
             return v1.Id == v2.Id &&
@@ -79,6 +82,9 @@ namespace JellyfinJav.Api
                    v1.ReleaseDate == v2.ReleaseDate;
         }
 
+        /// <summary>Checks if two Video objects are not equal.</summary>
+        /// <param name="v1">The first video.</param>
+        /// <param name="v2">The second video.</param>
         public static bool operator !=(Video v1, Video v2)
         {
             return !(v1 == v2);
@@ -107,14 +113,14 @@ namespace JellyfinJav.Api
                    this.Title.GetHashCode() ^
                    this.Actresses.GetHashCode() ^
                    this.Genres.GetHashCode() ^
-                   this.Studio.GetHashCode() ^
-                   this.BoxArt.GetHashCode() ^
-                   this.Cover.GetHashCode() ^
+                   this.Studio?.GetHashCode() ?? 0 ^
+                   this.BoxArt?.GetHashCode() ?? 0 ^
+                   this.Cover?.GetHashCode() ?? 0 ^
                    this.ReleaseDate.GetHashCode();
         }
 
         /// <inheritdoc />
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is Video o && this == o;
         }

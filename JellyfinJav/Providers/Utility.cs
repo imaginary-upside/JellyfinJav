@@ -1,4 +1,4 @@
-#pragma warning disable SA1600
+#pragma warning disable SA1600, CS1591
 
 namespace JellyfinJav.Providers
 {
@@ -32,7 +32,7 @@ namespace JellyfinJav.Providers
             return result.OriginalTitle ?? result.Name;
         }
 
-        public static string ExtractCodeFromFilename(string filename)
+        public static string? ExtractCodeFromFilename(string filename)
         {
             var rx = new Regex(@"[\w\d]+-\d+", RegexOptions.Compiled);
             var match = rx.Match(filename);
@@ -41,7 +41,7 @@ namespace JellyfinJav.Providers
 
         public static string CreateVideoDisplayName(Api.Video video)
         {
-            return Plugin.Instance.Configuration.VideoDisplayName switch
+            return Plugin.Instance?.Configuration.VideoDisplayName switch
             {
                 VideoDisplayName.CodeTitle => video.Code + " " + video.Title,
                 VideoDisplayName.Title => video.Title,

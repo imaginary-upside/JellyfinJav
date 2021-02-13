@@ -16,10 +16,10 @@ namespace JellyfinJav.Api
         public readonly DateTime? Birthdate;
 
         /// <summary>The actress' birthplace, normally will be just the prefecture or generic Japan.</summary>
-        public readonly string Birthplace;
+        public readonly string? Birthplace;
 
         /// <summary>A url to a picture of the actress, or null if none was found.</summary>
-        public readonly string Cover;
+        public readonly string? Cover;
 
         /// <summary>Initializes a new instance of the <see cref="Actress" /> struct.</summary>
         /// <param name="id">The actress' website-specific identifier.</param>
@@ -31,8 +31,8 @@ namespace JellyfinJav.Api
             string id,
             string name,
             DateTime? birthdate,
-            string birthplace,
-            string cover)
+            string? birthplace,
+            string? cover)
         {
             this.Id = id;
             this.Name = name;
@@ -41,6 +41,9 @@ namespace JellyfinJav.Api
             this.Cover = cover;
         }
 
+        /// <summary>Checks if two Actress objects are equal.</summary>
+        /// <param name="a1">The first actress.</param>
+        /// <param name="a2">The second actress.</param>
         public static bool operator ==(Actress a1, Actress a2)
         {
             return a1.Id == a2.Id &&
@@ -50,6 +53,9 @@ namespace JellyfinJav.Api
                    a1.Cover == a2.Cover;
         }
 
+        /// <summary>Checks if two Actress objects are not equal.</summary>
+        /// <param name="a1">The first actress.</param>
+        /// <param name="a2">The second actress.</param>
         public static bool operator !=(Actress a1, Actress a2)
         {
             return !(a1 == a2);
@@ -76,12 +82,12 @@ namespace JellyfinJav.Api
             return this.Id.GetHashCode() ^
                    this.Name.GetHashCode() ^
                    this.Birthdate.GetHashCode() ^
-                   this.Birthplace.GetHashCode() ^
-                   this.Cover.GetHashCode();
+                   this.Birthplace?.GetHashCode() ?? 0 ^
+                   this.Cover?.GetHashCode() ?? 0;
         }
 
         /// <inheritdoc />
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is Actress o && this == o;
         }

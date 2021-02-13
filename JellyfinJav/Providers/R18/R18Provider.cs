@@ -1,4 +1,4 @@
-#pragma warning disable SA1600
+#pragma warning disable SA1600, CS1591
 
 namespace JellyfinJav.Providers.R18Provider
 {
@@ -47,7 +47,13 @@ namespace JellyfinJav.Providers.R18Provider
             }
             else
             {
-                video = await R18Client.SearchFirst(Utility.ExtractCodeFromFilename(originalTitle)).ConfigureAwait(false);
+                var code = Utility.ExtractCodeFromFilename(originalTitle);
+                if (code is null)
+                {
+                    return new MetadataResult<Movie>();
+                }
+
+                video = await R18Client.SearchFirst(code).ConfigureAwait(false);
             }
 
             if (!video.HasValue)
@@ -82,12 +88,12 @@ namespace JellyfinJav.Providers.R18Provider
             return from video in await R18Client.Search(javCode).ConfigureAwait(false)
                    select new RemoteSearchResult
                    {
-                       Name = video.code,
+                       Name = video.Code,
                        ProviderIds = new Dictionary<string, string>
                        {
-                           { "R18", video.id },
+                           { "R18", video.Id },
                        },
-                       ImageUrl = video.cover.ToString(),
+                       ImageUrl = video.Cover?.ToString(),
                    };
         }
 
@@ -98,7 +104,7 @@ namespace JellyfinJav.Providers.R18Provider
 
         private static string NormalizeActressName(string name)
         {
-            if (Plugin.Instance.Configuration.ActressNameOrder == ActressNameOrder.LastFirst)
+            if (Plugin.Instance?.Configuration.ActressNameOrder == ActressNameOrder.LastFirst)
             {
                 return string.Join(" ", name.Split(' ').Reverse());
             }
@@ -108,7 +114,7 @@ namespace JellyfinJav.Providers.R18Provider
 
         private static List<PersonInfo> CreateActressList(Api.Video video)
         {
-            if (!Plugin.Instance.Configuration.EnableActresses)
+            if (Plugin.Instance?.Configuration.EnableActresses == false)
             {
                 return new List<PersonInfo>();
             }

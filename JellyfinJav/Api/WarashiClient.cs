@@ -19,29 +19,47 @@ namespace JellyfinJav.Api
         /// <summary>Searches for an actress by name.</summary>
         /// <param name="searchName">The actress name to search for.</param>
         /// <returns>A list of all actresses found.</returns>
-        public static async Task<IEnumerable<(string name, string id, Uri cover)>> Search(string searchName)
+        public static async Task<IEnumerable<ActressResult>> Search(string searchName)
         {
-            var form = new FormUrlEncodedContent(new Dictionary<string, string>
+            var form = new FormUrlEncodedContent(new[]
             {
-                { "recherche_critere", "f" },
-                { "recherche_valeur", searchName },
-                { "x", "0" },
-                { "y", "0" },
+                new KeyValuePair<string?, string?>("recherche_critere", "f"),
+                new KeyValuePair<string?, string?>("recherche_valeur", searchName),
+                new KeyValuePair<string?, string?>("x", "0"),
+                new KeyValuePair<string?, string?>("y", "0"),
             });
 
             var response = await HttpClient.PostAsync("http://warashi-asian-pornstars.fr/en/s-12/search", form).ConfigureAwait(false);
             var html = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var doc = await Context.OpenAsync(req => req.Content(html)).ConfigureAwait(false);
 
-            return doc.QuerySelectorAll(".resultat-pornostar")
-                      .Select(n =>
-            {
-                var name = NormalizeName(n.QuerySelector(".correspondance-lien")?.TextContent);
-                var id = ExtractId(n.QuerySelector("a")?.GetAttribute("href"));
-                var cover = "http://warashi-asian-pornstars.fr" + n.QuerySelector("img")?.GetAttribute("src");
+            var actresses = new List<ActressResult>();
 
-                return (name, id, new Uri(cover));
-            }).Where(n => string.Equals(NormalizeName(searchName), n.name) || string.Equals(NormalizeName(ReverseName(searchName)), n.name));
+            foreach (var row in doc.QuerySelectorAll(".resultat-pornostar"))
+            {
+                var name = NormalizeName(row.QuerySelector(".correspondance-lien")?.TextContent);
+                var id = ExtractId(row.QuerySelector("a")?.GetAttribute("href") ?? string.Empty);
+                var cover = "http://warashi-asian-pornstars.fr" + row.QuerySelector("img")?.GetAttribute("src");
+
+                if (name is null || id is null)
+                {
+                    continue;
+                }
+
+                if (!string.Equals(NormalizeName(searchName), name) && !string.Equals(NormalizeName(ReverseName(searchName)), name))
+                {
+                    continue;
+                }
+
+                actresses.Add(new ActressResult
+                {
+                    Name = name,
+                    Id = id,
+                    Cover = new Uri(cover),
+                });
+            }
+
+            return actresses;
         }
 
         /// <summary>Same as <see cref="Actress" />, but parses and returns the first found actress.</summary>
@@ -56,7 +74,7 @@ namespace JellyfinJav.Api
                 return null;
             }
 
-            return await LoadActress(results.First().id).ConfigureAwait(false);
+            return await LoadActress(results.First().Id).ConfigureAwait(false);
         }
 
         /// <summary>Finds and parses an actress by id.</summary>
@@ -88,10 +106,16 @@ namespace JellyfinJav.Api
             var doc = await Context.OpenAsync(req => req.Content(html)).ConfigureAwait(false);
 
             var id = ExtractId(url.ToString());
-            var name = NormalizeName(doc.QuerySelector("#pornostar-profil [itemprop=name]")?.TextContent);
+            var name = NormalizeName(doc.QuerySelector("#pornostar-profil [itemprop=name]")?.TextContent) ??
+                       NormalizeName(doc.QuerySelector("#main h1")?.TextContent);
             var birthdate = ExtractBirthdate(doc);
             var birthplace = doc.QuerySelector("[itemprop=birthPlace]")?.TextContent.Trim();
             var cover = ExtractCover(doc);
+
+            if (id is null || name is null)
+            {
+                return null;
+            }
 
             return new Actress(
                 id: id,
@@ -112,7 +136,7 @@ namespace JellyfinJav.Api
             return null;
         }
 
-        private static string ExtractId(string url)
+        private static string? ExtractId(string url)
         {
             var match = Regex.Match(url, @"\/en\/(.+?)\/.+\/(\d+)$");
 
@@ -124,9 +148,9 @@ namespace JellyfinJav.Api
             return $"{match.Groups[1].Value}/{match.Groups[2].Value}";
         }
 
-        private static string NormalizeName(string name)
+        private static string? NormalizeName(string? name)
         {
-            if (name == null)
+            if (name is null)
             {
                 return null;
             }
@@ -139,7 +163,7 @@ namespace JellyfinJav.Api
             return string.Join(" ", name.Split(' ').Reverse());
         }
 
-        private static string ExtractCover(IDocument doc)
+        private static string? ExtractCover(IDocument doc)
         {
             // First try asian-female-pornstar
             var cover = doc.QuerySelector("#pornostar-profil-photos-0 [itemprop=image]")?.GetAttribute("src") ??

@@ -1,4 +1,4 @@
-#pragma warning disable SA1600, SA1602
+#pragma warning disable SA1600, SA1602, CS1591
 
 namespace JellyfinJav
 {

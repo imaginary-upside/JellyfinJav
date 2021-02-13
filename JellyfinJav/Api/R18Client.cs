@@ -57,20 +57,32 @@ namespace JellyfinJav.Api
         /// <summary>Searches for a video by jav code.</summary>
         /// <param name="searchCode">The jav code. Ex: ABP-001.</param>
         /// <returns>A list of every matched video.</returns>
-        public static async Task<IEnumerable<(string code, string id, Uri cover)>> Search(string searchCode)
+        public static async Task<IEnumerable<VideoResult>> Search(string searchCode)
         {
             var response = await HttpClient.GetAsync($"https://www.r18.com/common/search/order=match/searchword={searchCode}").ConfigureAwait(false);
             var html = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var doc = await Context.OpenAsync(req => req.Content(html)).ConfigureAwait(false);
 
-            return doc.QuerySelectorAll(".item-list")
-                      .Select(n =>
-                      {
-                          var code = n.QuerySelector("img")?.GetAttribute("alt");
-                          var id = n.GetAttribute("data-content_id");
-                          var cover = new Uri(n.QuerySelector("img")?.GetAttribute("data-original"));
-                          return (code, id, cover);
-                      });
+            var videos = new List<VideoResult>();
+
+            foreach (var n in doc.QuerySelectorAll(".item-list"))
+            {
+                var code = n.QuerySelector("img")?.GetAttribute("alt");
+                var id = n.GetAttribute("data-content_id");
+                var cover = n.QuerySelector("img")?.GetAttribute("data-original");
+
+                if (code is not null && cover is not null)
+                {
+                    videos.Add(new VideoResult
+                    {
+                        Code = code,
+                        Id = id,
+                        Cover = new Uri(cover),
+                    });
+                }
+            }
+
+            return videos;
         }
 
         /// <summary>Searches for a video by jav code, and returns the first result.</summary>
@@ -85,15 +97,15 @@ namespace JellyfinJav.Api
             }
 
             // See if we can find an exact match first.
-            foreach ((string code, string id, Uri _) in results)
+            foreach (var result in results)
             {
-                if (string.Equals(searchCode, code))
+                if (string.Equals(searchCode, result.Code))
                 {
-                    return await LoadVideo(id).ConfigureAwait(false);
+                    return await LoadVideo(result.Id).ConfigureAwait(false);
                 }
             }
 
-            return await LoadVideo(results.First().id).ConfigureAwait(false);
+            return await LoadVideo(results.First().Id).ConfigureAwait(false);
         }
 
         /// <summary>Loads a video by id.</summary>
@@ -114,14 +126,20 @@ namespace JellyfinJav.Api
             var title = Decensor(doc.QuerySelector("cite[itemprop=name]")?.TextContent);
             var actresses = doc.QuerySelectorAll("span[itemprop=name]")
                                ?.Select(n => NormalizeActress(n.TextContent))
-                               .Where(actress => actress != "----");
+                               .Where(actress => actress != "----") ?? Array.Empty<string>();
             var genres = doc.QuerySelectorAll("[itemprop=genre]")
-                               ?.Select(n => Decensor(n.TextContent.Trim()))
-                               .Where(genre => NotSaleGenre(genre));
+                            ?.Select(n => Decensor(n.TextContent.Trim()))
+                            .OfType<string>()
+                            .Where(genre => NotSaleGenre(genre)) ?? Array.Empty<string>();
             var studio = doc.QuerySelector("[itemprop=productionCompany]")?.TextContent.Trim();
             var cover = doc.QuerySelector("[itemprop=image]")?.GetAttribute("src");
-            var boxArt = cover.Replace("ps.jpg", "pl.jpg");
+            var boxArt = cover?.Replace("ps.jpg", "pl.jpg");
             var releaseDate = ExtractReleaseDate(doc);
+
+            if (title is null || code is null)
+            {
+                return null;
+            }
 
             title = NormalizeTitle(title, actresses);
 
@@ -186,21 +204,21 @@ namespace JellyfinJav.Api
             return DateTime.Parse(release, culture);
         }
 
-        private static string Decensor(string censored)
+        private static string? Decensor(string? censored)
         {
             if (censored == null)
             {
-                return censored;
+                return null;
             }
 
             var rx = new Regex(string.Join("|", CensoredWords.Keys.Select(k => Regex.Escape(k))));
             return rx.Replace(censored, m => CensoredWords[m.Value]);
         }
 
-        private static bool NotSaleGenre(string genre)
+        private static bool NotSaleGenre(string? genre)
         {
             var rx = new Regex(@"\bsale\b", RegexOptions.IgnoreCase);
-            var match = rx.Match(genre);
+            var match = rx.Match(genre ?? string.Empty);
 
             return !match.Success;
         }

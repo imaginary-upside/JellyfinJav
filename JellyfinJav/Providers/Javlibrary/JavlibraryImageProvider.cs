@@ -1,4 +1,4 @@
-#pragma warning disable SA1600
+#pragma warning disable SA1600, CS1591
 
 namespace JellyfinJav.Providers.JavlibraryProvider
 {
@@ -38,7 +38,7 @@ namespace JellyfinJav.Providers.JavlibraryProvider
                 {
                     ProviderName = this.Name,
                     Type = ImageType.Primary,
-                    Url = video.BoxArt,
+                    Url = video?.BoxArt,
                 },
             };
         }

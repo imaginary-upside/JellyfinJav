@@ -1,4 +1,4 @@
-#pragma warning disable SA1600
+#pragma warning disable SA1600, CS1591
 
 namespace JellyfinJav.Providers.JavlibraryProvider
 {
@@ -7,7 +7,6 @@ namespace JellyfinJav.Providers.JavlibraryProvider
     using System.Net.Http;
     using System.Threading;
     using System.Threading.Tasks;
-    using System.Web;
     using JellyfinJav.Api;
     using MediaBrowser.Controller.Entities;
     using MediaBrowser.Controller.Entities.Movies;
@@ -48,7 +47,13 @@ namespace JellyfinJav.Providers.JavlibraryProvider
             }
             else
             {
-                result = await JavlibraryClient.SearchFirst(Utility.ExtractCodeFromFilename(originalTitle)).ConfigureAwait(false);
+                var code = Utility.ExtractCodeFromFilename(originalTitle);
+                if (code is null)
+                {
+                    return new MetadataResult<Movie>();
+                }
+
+                result = await JavlibraryClient.SearchFirst(code).ConfigureAwait(false);
             }
 
             if (!result.HasValue)
@@ -76,11 +81,10 @@ namespace JellyfinJav.Providers.JavlibraryProvider
             return from video in await JavlibraryClient.Search(info.Name).ConfigureAwait(false)
                    select new RemoteSearchResult
                    {
-                       Name = video.code,
+                       Name = video.Code,
                        ProviderIds = new Dictionary<string, string>
                        {
-                           // Functionality should be instead moved into the javlibrary lib
-                           { "Javlibrary", HttpUtility.ParseQueryString(video.url.Query).Get("v") },
+                           { "Javlibrary", video.Id },
                        },
                    };
         }
@@ -92,7 +96,7 @@ namespace JellyfinJav.Providers.JavlibraryProvider
 
         private static string NormalizeActressName(string name)
         {
-            if (Plugin.Instance.Configuration.ActressNameOrder == ActressNameOrder.FirstLast)
+            if (Plugin.Instance?.Configuration.ActressNameOrder == ActressNameOrder.FirstLast)
             {
                 return string.Join(" ", name.Split(' ').Reverse());
             }
@@ -102,7 +106,7 @@ namespace JellyfinJav.Providers.JavlibraryProvider
 
         private static List<PersonInfo> CreateActressList(Api.Video video)
         {
-            if (!Plugin.Instance.Configuration.EnableActresses)
+            if (Plugin.Instance?.Configuration.EnableActresses == false)
             {
                 return new List<PersonInfo>();
             }

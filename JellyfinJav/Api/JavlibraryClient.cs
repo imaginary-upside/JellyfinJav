@@ -27,7 +27,7 @@ namespace JellyfinJav.Api
         /// results[10].url // https://http://www.javlibrary.com/en/?v=javlijdqrm
         /// </code>
         /// </example>
-        public static async Task<IEnumerable<(string code, Uri url)>> Search(string identifier)
+        public static async Task<IEnumerable<VideoResult>> Search(string identifier)
         {
             var doc = await LoadPage("https://www.javlibrary.com/en/vl_searchbyid.php?keyword=" + identifier).ConfigureAwait(false);
 
@@ -35,16 +35,43 @@ namespace JellyfinJav.Api
             if (doc.QuerySelector("#video_id") != null)
             {
                 var resultCode = doc.QuerySelector("#video_id .text")?.TextContent;
-                var url = new Uri("https://www.javlibrary.com" + doc.QuerySelector("#video_title a")?.GetAttribute("href"));
-                return new[] { (resultCode, url) };
+                var url = "https://www.javlibrary.com" + doc.QuerySelector("#video_title a")?.GetAttribute("href");
+                var id = HttpUtility.ParseQueryString(new Uri(url).Query)?.Get("v");
+
+                if (resultCode is null || id is null)
+                {
+                    return Array.Empty<VideoResult>();
+                }
+
+                return new[]
+                {
+                    new VideoResult
+                    {
+                        Code = resultCode,
+                        Id = id,
+                    },
+                };
             }
 
-            return doc.QuerySelectorAll(".video").Select(n =>
+            var videos = new List<VideoResult>();
+
+            foreach (var n in doc.QuerySelectorAll(".video"))
             {
                 var code = n.QuerySelector(".id").TextContent;
                 var url = new Uri("https://www.javlibrary.com/en/" + n.QuerySelector("a")?.GetAttribute("href"));
-                return (code, url);
-            });
+                var id = HttpUtility.ParseQueryString(url.Query)?.Get("v");
+
+                if (code is not null && id is not null)
+                {
+                    videos.Add(new VideoResult
+                    {
+                        Code = code,
+                        Id = id,
+                    });
+                }
+            }
+
+            return videos;
         }
 
         /// <summary>Loads a specific JAV by url.</summary>
@@ -58,7 +85,7 @@ namespace JellyfinJav.Api
         /// result.Title // Fan Fan PRESTIGE Large Thanksgiving Soil And Shiro To Spree Yamakawa Blue Sky Meets Escalate! Basutsua ~
         /// </code>
         /// </example>
-        public static async Task<Video> LoadVideo(Uri url)
+        public static async Task<Video?> LoadVideo(Uri url)
         {
             var response = await HttpClient.GetAsync(url).ConfigureAwait(false);
             var html = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -107,7 +134,7 @@ namespace JellyfinJav.Api
         /// result.Title // Fan Fan PRESTIGE Large Thanksgiving Soil And Shiro To Spree Yamakawa Blue Sky Meets Escalate! Basutsua ~
         /// </code>
         /// </example>
-        public static async Task<Video> LoadVideo(string id)
+        public static async Task<Video?> LoadVideo(string id)
         {
             return await LoadVideo(new Uri("https://www.javlibrary.com/en/?v=" + id)).ConfigureAwait(false);
         }
@@ -119,23 +146,29 @@ namespace JellyfinJav.Api
             return await Context.OpenAsync(req => req.Content(html)).ConfigureAwait(false);
         }
 
-        private static Video ParseVideoPage(IDocument doc)
+        private static Video? ParseVideoPage(IDocument doc)
         {
             var id = HttpUtility.ParseQueryString(
                 new Uri("https://www.javlibrary.com" + doc.QuerySelector("#video_title a")?.GetAttribute("href")).Query)["v"];
             var code = doc.QuerySelector("#video_id .text")?.TextContent;
+            if (id is null || code is null)
+            {
+                return null;
+            }
+
             var actresses = doc.QuerySelectorAll(".star a").Select(n => n.TextContent);
-            var title = doc.QuerySelector("#video_title a")?
-                           .TextContent
+            var title = doc.QuerySelector("#video_title a")
+                           ?.TextContent
                            .Replace(code, string.Empty)
                            .TrimStart(' ')
                            .Trim(actresses.FirstOrDefault())
-                           .Trim(ReverseName(actresses.FirstOrDefault()))
-                           .Trim();
+                           .Trim(ReverseName(actresses.FirstOrDefault() ?? string.Empty))
+                           .Trim() ?? string.Empty;
+
             var genres = doc.QuerySelectorAll(".genre a").Select(n => n.TextContent);
             var studio = doc.QuerySelector("#video_maker a")?.TextContent;
             var boxArt = doc.QuerySelector("#video_jacket_img")?.GetAttribute("src")?.Insert(0, "https:");
-            var cover = boxArt.Replace("pl.jpg", "ps.jpg");
+            var cover = boxArt?.Replace("pl.jpg", "ps.jpg");
 
             return new Api.Video(
                 id: id,
@@ -151,11 +184,6 @@ namespace JellyfinJav.Api
 
         private static string ReverseName(in string name)
         {
-            if (name == null)
-            {
-                return null;
-            }
-
             return string.Join(" ", name.Split(' ').Reverse());
         }
     }

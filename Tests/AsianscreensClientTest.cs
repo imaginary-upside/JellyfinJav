@@ -23,7 +23,7 @@ namespace Tests
         {
             var results = await this.client.Search("Sasaki Aki").ConfigureAwait(false);
             Assert.AreEqual(1, results.Count());
-            Assert.AreEqual("Aki Sasaki", results.ElementAt(0).name);
+            Assert.AreEqual("Aki Sasaki", results.ElementAt(0).Name);
         }
 
         [Test]
@@ -31,7 +31,7 @@ namespace Tests
         {
             var results = await this.client.Search("Aki Sasaki").ConfigureAwait(false);
             Assert.AreEqual(1, results.Count());
-            Assert.AreEqual("Aki Sasaki", results.ElementAt(0).name);
+            Assert.AreEqual("Aki Sasaki", results.ElementAt(0).Name);
         }
 
         [Test]
@@ -39,8 +39,8 @@ namespace Tests
         {
             var results = await this.client.Search("Ai Nanase").ConfigureAwait(false);
             Assert.AreEqual(2, results.Count());
-            Assert.AreEqual("Ai Nanase", results.ElementAt(0).name);
-            Assert.AreEqual("Ai Nanase #2", results.ElementAt(1).name);
+            Assert.AreEqual("Ai Nanase", results.ElementAt(0).Name);
+            Assert.AreEqual("Ai Nanase #2", results.ElementAt(1).Name);
         }
 
         [Test]

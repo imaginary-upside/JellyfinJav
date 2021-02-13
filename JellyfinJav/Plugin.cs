@@ -1,4 +1,4 @@
-#pragma warning disable SA1600
+#pragma warning disable SA1600, CS1591
 
 namespace JellyfinJav
 {
@@ -17,7 +17,7 @@ namespace JellyfinJav
             Instance = this;
         }
 
-        public static Plugin Instance { get; private set; }
+        public static Plugin? Instance { get; private set; }
 
         public override string Name => "Jellyfin JAV";
 

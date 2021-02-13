@@ -19,7 +19,7 @@ namespace JellyfinJav.Api
         /// <summary>Searches for an actress by name.</summary>
         /// <param name="searchName">The actress name to search for.</param>
         /// <returns>A list of all actresses found.</returns>
-        public async Task<IEnumerable<(string name, string id, Uri cover)>> Search(string searchName)
+        public async Task<IEnumerable<ActressResult>> Search(string searchName)
         {
             var reversedName = string.Join(" ", searchName.Split(' ').Reverse());
             if (searchName != reversedName)
@@ -46,7 +46,7 @@ namespace JellyfinJav.Api
                 return null;
             }
 
-            return await this.LoadActress(result.ElementAt(0).id).ConfigureAwait(false);
+            return await this.LoadActress(result.First().Id).ConfigureAwait(false);
         }
 
         /// <summary>Finds and parses an actress by id.</summary>
@@ -77,6 +77,11 @@ namespace JellyfinJav.Api
             var birthplace = ExtractCell(doc, "Birthplace: ");
             var cover = GetCover(doc);
 
+            if (id is null || name is null)
+            {
+                return null;
+            }
+
             return new Actress(
                 id: id,
                 name: name,
@@ -85,7 +90,7 @@ namespace JellyfinJav.Api
                 cover: cover);
         }
 
-        private static string ExtractId(Uri url)
+        private static string? ExtractId(Uri url)
         {
             var match = IdFromUrl.Match(url.ToString());
 
@@ -109,11 +114,11 @@ namespace JellyfinJav.Api
             return DateTime.Parse(asString);
         }
 
-        private static string ExtractCell(IDocument doc, string cellName)
+        private static string? ExtractCell(IDocument doc, string cellName)
         {
             var cell = doc.QuerySelectorAll("td")
-                          .FirstOrDefault(n => n.TextContent == cellName)
-                          .NextElementSibling
+                          ?.FirstOrDefault(n => n.TextContent == cellName)
+                          ?.NextElementSibling
                           .TextContent;
 
             if (cell == "n/a")
@@ -124,7 +129,7 @@ namespace JellyfinJav.Api
             return cell;
         }
 
-        private static string GetCover(IDocument doc)
+        private static string? GetCover(IDocument doc)
         {
             var path = doc.QuerySelector("img[src*=\"/products/400000/portraits/\"]")
                           .GetAttribute("src");
@@ -158,13 +163,13 @@ namespace JellyfinJav.Api
             return new Uri(url);
         }
 
-        private async Task<IEnumerable<(string name, string id, Uri cover)>> SearchHelper(string searchName)
+        private async Task<IEnumerable<ActressResult>> SearchHelper(string searchName)
         {
             var response = await this.httpClient.GetAsync($"https://www.asianscreens.com/directory/{searchName[0]}.asp").ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
             {
-                return Array.Empty<(string, string, Uri)>();
+                return Array.Empty<ActressResult>();
             }
 
             var html = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -175,16 +180,41 @@ namespace JellyfinJav.Api
                                  .QuerySelectorAll("tr:not(:last-child)")
                                  .Skip(2);
 
-            return actressRows.Select(row =>
+            if (actressRows is null)
+            {
+                return Array.Empty<ActressResult>();
+            }
+
+            var actresses = new List<ActressResult>();
+
+            foreach (var row in actressRows)
             {
                 var name = row.QuerySelector("td:nth-child(1)")?.TextContent;
                 var id = row.QuerySelector("a")
                             ?.GetAttribute("href")
                             .TrimStart('/')
                             .Replace(".asp", string.Empty);
+                if (name is null || id is null)
+                {
+                    continue;
+                }
+
+                if (!name.Split(' ').Contains(searchName, StringComparer.CurrentCultureIgnoreCase) && Regex.Replace(name, @" #\d", string.Empty) != searchName)
+                {
+                    continue;
+                }
+
                 var cover = GenerateCoverUrl(id);
-                return (name, id, cover);
-            }).Where(actress => actress.name.Split(' ').Contains(searchName, StringComparer.CurrentCultureIgnoreCase) || Regex.Replace(actress.name, @" #\d", string.Empty) == searchName);
+
+                actresses.Add(new ActressResult
+                {
+                    Name = name,
+                    Id = id,
+                    Cover = cover,
+                });
+            }
+
+            return actresses;
         }
     }
 }

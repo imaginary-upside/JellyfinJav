@@ -1,4 +1,4 @@
-#pragma warning disable SA1600
+#pragma warning disable SA1600, CS1591
 
 namespace JellyfinJav.Providers.AsianscreensProvider
 {
@@ -30,12 +30,12 @@ namespace JellyfinJav.Providers.AsianscreensProvider
             return from actress in await Client.Search(info.Name).ConfigureAwait(false)
                    select new RemoteSearchResult
                    {
-                       Name = actress.name,
+                       Name = actress.Name,
                        ProviderIds = new Dictionary<string, string>
                        {
-                           { "Asianscreens", actress.id },
+                           { "Asianscreens", actress.Id },
                        },
-                       ImageUrl = actress.cover.ToString(),
+                       ImageUrl = actress.Cover?.ToString(),
                    };
         }
 
