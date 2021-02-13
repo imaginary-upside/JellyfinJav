@@ -5,6 +5,7 @@
     <AssemblyVersion>2020.01.30.1</AssemblyVersion>
     <FileVersion>2020.01.30.1</FileVersion>
     <NoWarn>SA1633</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
