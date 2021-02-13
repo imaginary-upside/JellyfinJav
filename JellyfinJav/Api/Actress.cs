@@ -1,18 +1,32 @@
-#pragma warning disable SA1600
-
 namespace JellyfinJav.Api
 {
     using System;
     using System.Text;
 
+    /// <summary>A struct for representing a jav actress.</summary>
     public readonly struct Actress
     {
+        /// <summary>The website-specific identifier.</summary>
         public readonly string Id;
+
+        /// <summary>The actress' English name in either First-Last or Last-First order.</summary>
         public readonly string Name;
+
+        /// <summary>The actress' birthday or null if unknown.</summary>
         public readonly DateTime? Birthdate;
+
+        /// <summary>The actress' birthplace, normally will be just the prefecture or generic Japan.</summary>
         public readonly string Birthplace;
+
+        /// <summary>A url to a picture of the actress, or null if none was found.</summary>
         public readonly string Cover;
 
+        /// <summary>Initializes a new instance of the <see cref="Actress" /> struct.</summary>
+        /// <param name="id">The actress' website-specific identifier.</param>
+        /// <param name="name">The actress' English name.</param>
+        /// <param name="birthdate">The actress' birthday.</param>
+        /// <param name="birthplace">The actress' birthplace.</param>
+        /// <param name="cover">A url to a picture of the actress.</param>
         public Actress(
             string id,
             string name,
@@ -41,6 +55,8 @@ namespace JellyfinJav.Api
             return !(a1 == a2);
         }
 
+        /// <summary>Prints out each of the actress' public variables.</summary>
+        /// <returns>All the public variables.</returns>
         public override string ToString()
         {
             var sb = new StringBuilder();
@@ -54,6 +70,7 @@ namespace JellyfinJav.Api
             return sb.ToString();
         }
 
+        /// <inheritdoc />
         public override int GetHashCode()
         {
             return this.Id.GetHashCode() ^
@@ -63,6 +80,7 @@ namespace JellyfinJav.Api
                    this.Cover.GetHashCode();
         }
 
+        /// <inheritdoc />
         public override bool Equals(object obj)
         {
             return obj is Actress o && this == o;

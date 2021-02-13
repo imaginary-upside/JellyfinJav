@@ -1,5 +1,3 @@
-#pragma warning disable SA1600
-
 namespace JellyfinJav.Api
 {
     using System;
@@ -12,6 +10,7 @@ namespace JellyfinJav.Api
     using AngleSharp;
     using AngleSharp.Dom;
 
+    /// <summary>A web scraping client for r18.com.</summary>
     public static class R18Client
     {
         private static readonly IDictionary<string, string> CensoredWords = new Dictionary<string, string>
@@ -55,6 +54,9 @@ namespace JellyfinJav.Api
         private static readonly HttpClient HttpClient = new HttpClient();
         private static readonly IBrowsingContext Context = BrowsingContext.New();
 
+        /// <summary>Searches for a video by jav code.</summary>
+        /// <param name="searchCode">The jav code. Ex: ABP-001.</param>
+        /// <returns>A list of every matched video.</returns>
         public static async Task<IEnumerable<(string code, string id, Uri cover)>> Search(string searchCode)
         {
             var response = await HttpClient.GetAsync($"https://www.r18.com/common/search/order=match/searchword={searchCode}").ConfigureAwait(false);
@@ -71,6 +73,9 @@ namespace JellyfinJav.Api
                       });
         }
 
+        /// <summary>Searches for a video by jav code, and returns the first result.</summary>
+        /// <param name="searchCode">The jav code. Ex: ABP-001.</param>
+        /// <returns>The parsed video.</returns>
         public static async Task<Video?> SearchFirst(string searchCode)
         {
             var results = await Search(searchCode).ConfigureAwait(false);
@@ -91,6 +96,9 @@ namespace JellyfinJav.Api
             return await LoadVideo(results.First().id).ConfigureAwait(false);
         }
 
+        /// <summary>Loads a video by id.</summary>
+        /// <param name="id">The r18.com unique video identifier.</param>
+        /// <returns>The parsed video.</returns>
         public static async Task<Video?> LoadVideo(string id)
         {
             var response = await HttpClient.GetAsync($"https://www.r18.com/videos/vod/movies/detail/-/id={id}/").ConfigureAwait(false);

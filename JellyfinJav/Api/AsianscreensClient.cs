@@ -1,5 +1,3 @@
-#pragma warning disable SA1600
-
 namespace JellyfinJav.Api
 {
     using System;
@@ -11,12 +9,16 @@ namespace JellyfinJav.Api
     using AngleSharp;
     using AngleSharp.Dom;
 
+    /// <summary>A web scraping client for asianscreens.com.</summary>
     public class AsianscreensClient
     {
         private static readonly Regex IdFromUrl = new Regex(@".*\/(.*)\.asp", RegexOptions.Compiled);
         private readonly HttpClient httpClient = new HttpClient();
         private readonly IBrowsingContext context = BrowsingContext.New();
 
+        /// <summary>Searches for an actress by name.</summary>
+        /// <param name="searchName">The actress name to search for.</param>
+        /// <returns>A list of all actresses found.</returns>
         public async Task<IEnumerable<(string name, string id, Uri cover)>> Search(string searchName)
         {
             var reversedName = string.Join(" ", searchName.Split(' ').Reverse());
@@ -32,6 +34,9 @@ namespace JellyfinJav.Api
             }
         }
 
+        /// <summary>Same as <see cref="Actress" />, but parses and returns the first found actress.</summary>
+        /// <param name="searchName">The actress name to search for.</param>
+        /// <returns>The first actress found.</returns>
         public async Task<Actress?> SearchFirst(string searchName)
         {
             var result = await this.Search(searchName).ConfigureAwait(false);
@@ -44,11 +49,17 @@ namespace JellyfinJav.Api
             return await this.LoadActress(result.ElementAt(0).id).ConfigureAwait(false);
         }
 
+        /// <summary>Finds and parses an actress by id.</summary>
+        /// <param name="id">The actress' asianscreens.com identifier.</param>
+        /// <returns>The parsed actress.</returns>
         public async Task<Actress?> LoadActress(string id)
         {
             return await this.LoadActress(new Uri($"https://www.asianscreens.com/{id}.asp")).ConfigureAwait(false);
         }
 
+        /// <summary>Finds and parses an actress by url.</summary>
+        /// <param name="url">The actress' asianscreens.com absolute url.</param>
+        /// <returns>The parsed actress.</returns>
         public async Task<Actress?> LoadActress(Uri url)
         {
             var response = await this.httpClient.GetAsync(url).ConfigureAwait(false);

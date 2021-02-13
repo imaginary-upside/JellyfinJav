@@ -1,23 +1,49 @@
-#pragma warning disable SA1600
-
 namespace JellyfinJav.Api
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
 
+    /// <summary>A struct representing a japanese adult video (JAV).</summary>
     public readonly struct Video
     {
+        /// <summary>The website-specific identifier.</summary>
         public readonly string Id;
+
+        /// <summary>The jav code. Ex: ABP-001.</summary>
         public readonly string Code;
+
+        /// <summary>The video's English title.</summary>
         public readonly string Title;
+
+        /// <summary>A list of every actress in the video.</summary>
         public readonly IEnumerable<string> Actresses;
+
+        /// <summary>A list of the video's genres.</summary>
         public readonly IEnumerable<string> Genres;
+
+        /// <summary>The studio which released the video.</summary>
         public readonly string Studio;
+
+        /// <summary>An absolute url to the boxart.</summary>
         public readonly string BoxArt;
+
+        /// <summary>An absolute url to the cover image.</summary>
         public readonly string Cover;
+
+        /// <summary>The date which the video was released.</summary>
         public readonly DateTime? ReleaseDate;
 
+        /// <summary>Initializes a new instance of the <see cref="Video" /> struct.</summary>
+        /// <param name="id">The website-specific identifier.</param>
+        /// <param name="code">The jav code. Ex: ABP-001.</param>
+        /// <param name="title">The English title.</param>
+        /// <param name="actresses">Every actress in the video.</param>
+        /// <param name="genres">The video's genres.</param>
+        /// <param name="studio">The studio which released the video.</param>
+        /// <param name="boxArt">An absolute url to the boxart.</param>
+        /// <param name="cover">An absolute url to the cover image.</param>
+        /// <param name="releaseDate">The date which the video was released.</param>
         public Video(
             string id,
             string code,
@@ -58,6 +84,8 @@ namespace JellyfinJav.Api
             return !(v1 == v2);
         }
 
+        /// <summary>Prints out each of the video's public variables.</summary>
+        /// <returns>All the public variables.</returns>
         public override string ToString()
         {
             return $"Id: {this.Id}\n" +
@@ -71,6 +99,7 @@ namespace JellyfinJav.Api
                    $"ReleaseDate: {this.ReleaseDate}\n";
         }
 
+        /// <inheritdoc />
         public override int GetHashCode()
         {
             return this.Id.GetHashCode() ^
@@ -84,6 +113,7 @@ namespace JellyfinJav.Api
                    this.ReleaseDate.GetHashCode();
         }
 
+        /// <inheritdoc />
         public override bool Equals(object obj)
         {
             return obj is Video o && this == o;

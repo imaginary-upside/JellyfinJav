@@ -1,5 +1,3 @@
-#pragma warning disable SA1600
-
 namespace JellyfinJav.Api
 {
     using System;

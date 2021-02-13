@@ -1,5 +1,3 @@
-#pragma warning disable SA1600
-
 namespace JellyfinJav.Api
 {
     using System;
@@ -12,11 +10,15 @@ namespace JellyfinJav.Api
     using AngleSharp;
     using AngleSharp.Dom;
 
+    /// <summary>A web scraping client for warashi-asian-pornstars.fr.</summary>
     public static class WarashiClient
     {
         private static readonly HttpClient HttpClient = new HttpClient();
         private static readonly IBrowsingContext Context = BrowsingContext.New();
 
+        /// <summary>Searches for an actress by name.</summary>
+        /// <param name="searchName">The actress name to search for.</param>
+        /// <returns>A list of all actresses found.</returns>
         public static async Task<IEnumerable<(string name, string id, Uri cover)>> Search(string searchName)
         {
             var form = new FormUrlEncodedContent(new Dictionary<string, string>
@@ -42,6 +44,9 @@ namespace JellyfinJav.Api
             }).Where(n => string.Equals(NormalizeName(searchName), n.name) || string.Equals(NormalizeName(ReverseName(searchName)), n.name));
         }
 
+        /// <summary>Same as <see cref="Actress" />, but parses and returns the first found actress.</summary>
+        /// <param name="searchName">The actress name to search for.</param>
+        /// <returns>The first actress found.</returns>
         public static async Task<Actress?> SearchFirst(string searchName)
         {
             var results = await Search(searchName).ConfigureAwait(false);
@@ -54,6 +59,9 @@ namespace JellyfinJav.Api
             return await LoadActress(results.First().id).ConfigureAwait(false);
         }
 
+        /// <summary>Finds and parses an actress by id.</summary>
+        /// <param name="id">The actress' asianscreens.com identifier.</param>
+        /// <returns>The parsed actress.</returns>
         public static async Task<Actress?> LoadActress(string id)
         {
             var parsedId = id.Split('/');
@@ -65,6 +73,9 @@ namespace JellyfinJav.Api
             return await LoadActress(new Uri($"http://warashi-asian-pornstars.fr/en/{parsedId[0]}/anything/anything/{parsedId[1]}")).ConfigureAwait(false);
         }
 
+        /// <summary>Finds and parses an actress by url.</summary>
+        /// <param name="url">The actress' asianscreens.com absolute url.</param>
+        /// <returns>The parsed actress.</returns>
         private static async Task<Actress?> LoadActress(Uri url)
         {
             var response = await HttpClient.GetAsync(url).ConfigureAwait(false);
