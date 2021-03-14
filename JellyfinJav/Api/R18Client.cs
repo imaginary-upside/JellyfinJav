@@ -54,6 +54,11 @@ namespace JellyfinJav.Api
         private static readonly HttpClient HttpClient = new HttpClient();
         private static readonly IBrowsingContext Context = BrowsingContext.New();
 
+        static R18Client()
+        {
+            HttpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
+        }
+
         /// <summary>Searches for a video by jav code.</summary>
         /// <param name="searchCode">The jav code. Ex: ABP-001.</param>
         /// <returns>A list of every matched video.</returns>
