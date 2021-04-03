@@ -2,7 +2,7 @@ version: "3"
 
 services:
   jellyfin:
-    image: jellyfin/jellyfin:stable-rc
+    image: jellyfin/jellyfin:latest
     volumes:
       - config:/config:z
       - ./videos:/media/videos:ro
