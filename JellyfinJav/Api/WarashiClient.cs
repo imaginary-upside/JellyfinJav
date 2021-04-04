@@ -37,16 +37,11 @@ namespace JellyfinJav.Api
 
             foreach (var row in doc.QuerySelectorAll(".resultat-pornostar"))
             {
-                var name = NormalizeName(row.QuerySelector(".correspondance-lien")?.TextContent);
+                var name = NormalizeName(row.QuerySelector("p")?.TextContent.Split('-')[0].Trim());
                 var id = ExtractId(row.QuerySelector("a")?.GetAttribute("href") ?? string.Empty);
                 var cover = "http://warashi-asian-pornstars.fr" + row.QuerySelector("img")?.GetAttribute("src");
 
                 if (name is null || id is null)
-                {
-                    continue;
-                }
-
-                if (!string.Equals(NormalizeName(searchName), name) && !string.Equals(NormalizeName(ReverseName(searchName)), name))
                 {
                     continue;
                 }
@@ -67,14 +62,25 @@ namespace JellyfinJav.Api
         /// <returns>The first actress found.</returns>
         public static async Task<Actress?> SearchFirst(string searchName)
         {
-            var results = await Search(searchName).ConfigureAwait(false);
+            var form = new FormUrlEncodedContent(new[]
+            {
+                new KeyValuePair<string?, string?>("recherche_critere", "f"),
+                new KeyValuePair<string?, string?>("recherche_valeur", searchName),
+                new KeyValuePair<string?, string?>("x", "0"),
+                new KeyValuePair<string?, string?>("y", "0"),
+            });
 
-            if (!results.Any())
+            var response = await HttpClient.PostAsync("http://warashi-asian-pornstars.fr/en/s-12/search", form).ConfigureAwait(false);
+            var html = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var doc = await Context.OpenAsync(req => req.Content(html)).ConfigureAwait(false);
+
+            var id = ExtractId(doc.QuerySelector(".correspondance_exacte a")?.GetAttribute("href") ?? string.Empty);
+            if (id is null)
             {
                 return null;
             }
 
-            return await LoadActress(results.First().Id).ConfigureAwait(false);
+            return await LoadActress(id).ConfigureAwait(false);
         }
 
         /// <summary>Finds and parses an actress by id.</summary>
@@ -155,12 +161,7 @@ namespace JellyfinJav.Api
                 return null;
             }
 
-            return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(name.ToLower());
-        }
-
-        private static string ReverseName(string name)
-        {
-            return string.Join(" ", name.Split(' ').Reverse());
+            return CultureInfo.CurrentCulture.TextInfo.ToTitleCase(name.ToLower()).Trim();
         }
 
         private static string? ExtractCover(IDocument doc)

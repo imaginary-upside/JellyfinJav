@@ -14,7 +14,6 @@ namespace Tests
         public async Task TestSearchLastFirst()
         {
             var results = await WarashiClient.Search("Sasaki Aki").ConfigureAwait(false);
-            Assert.AreEqual(1, results.Count());
             Assert.AreEqual("Aki Sasaki", results.ElementAt(0).Name);
             Assert.AreEqual("s-2-0/2714", results.ElementAt(0).Id);
             Assert.AreEqual(
@@ -26,7 +25,6 @@ namespace Tests
         public async Task TestSearchFirstLast()
         {
             var results = await WarashiClient.Search("Maria Nagai").ConfigureAwait(false);
-            Assert.AreEqual(2, results.Count());
             Assert.AreEqual("Maria Nagai", results.ElementAt(0).Name);
             Assert.AreEqual("s-2-0/3743", results.ElementAt(0).Id);
             Assert.AreEqual(
