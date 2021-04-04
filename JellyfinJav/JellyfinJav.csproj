@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net50</TargetFramework>
-    <AssemblyVersion>2021.03.14.0</AssemblyVersion>
-    <FileVersion>2021.03.14.0</FileVersion>
+    <AssemblyVersion>2021.04.04.0</AssemblyVersion>
+    <FileVersion>2021.04.04.0</FileVersion>
     <NoWarn>SA1633</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Nullable>enable</Nullable>
