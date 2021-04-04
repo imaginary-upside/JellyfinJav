@@ -13,7 +13,7 @@ namespace Tests
         [Test]
         public async Task TestSearchMany()
         {
-            var results = await R18Client.Search("abp").ConfigureAwait(false);
+            var results = await R18Client.Search("sora").ConfigureAwait(false);
 
             Assert.AreEqual(30, results.Count());
         }
@@ -57,17 +57,17 @@ namespace Tests
         public async Task TestLoadVideo()
         {
             var expected = new Video(
-                id: "118abp00925",
-                code: "ABP-925",
-                title: "You Can Really Fuck These Girls?! - The Legendary Pink Salon 13 - Get Your Fill Of A Tall Girl With Big Tits!",
-                actresses: new[] { "Reina Kashima" },
-                genres: new[] { "Tall Girl", "Featured Actress", "Cosplay", "Creampie", "Sex Toys", "Hi-Def" },
-                studio: "Prestige",
-                boxArt: "https://pics.r18.com/digital/video/118abp00925/118abp00925pl.jpg",
-                cover: "https://pics.r18.com/digital/video/118abp00925/118abp00925ps.jpg",
-                releaseDate: DateTime.Parse("2019-11-22"));
+                id: "ssni00643",
+                code: "SSNI-643",
+                title: "A Woman With Divine Titties Lala Anzai Her Adult Video Debut Miraculous Huge Tits A 7-Tit-Jamming Special",
+                actresses: new[] { "Rara Anzai" },
+                genres: new[] { "Big Tits", "Big Tits Lover", "Featured Actress", "Titty Fuck", "Debut", "Minimal Mosaic", "Hi-Def" },
+                studio: "S1 NO.1 STYLE",
+                boxArt: "https://pics.r18.com/digital/video/ssni00643/ssni00643pl.jpg",
+                cover: "https://pics.r18.com/digital/video/ssni00643/ssni00643ps.jpg",
+                releaseDate: DateTime.Parse("2019-11-30"));
 
-            var result = await R18Client.LoadVideo("118abp00925").ConfigureAwait(false);
+            var result = await R18Client.LoadVideo("ssni00643").ConfigureAwait(false);
 
             Assert.AreEqual(expected, result);
         }
