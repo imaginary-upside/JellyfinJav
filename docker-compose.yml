@@ -6,8 +6,8 @@ services:
     volumes:
       - config:/config:z
       - ./videos:/media/videos:ro
-      - ${PWD}/JellyfinJav/bin/Debug/net50/JellyfinJav.dll:/config/plugins/JellyfinJav/JellyfinJav.dll:ro
-      - /home/justin/.nuget/packages/anglesharp/0.14.0/lib/netstandard2.0/AngleSharp.dll:/config/plugins/JellyfinJav/Anglesharp.dll:ro
+      - ./JellyfinJav/bin/Debug/net50/JellyfinJav.dll:/config/plugins/JellyfinJav/JellyfinJav.dll:ro
+      - ~/.nuget/packages/anglesharp/0.14.0/lib/netstandard2.0/AngleSharp.dll:/config/plugins/JellyfinJav/Anglesharp.dll:ro
     ports:
       - 127.0.0.1:8896:8096
 
