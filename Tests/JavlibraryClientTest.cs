@@ -32,7 +32,7 @@ namespace Tests
         [Test]
         public async Task TestSearchFirstNoResults()
         {
-            var result = await JavlibraryClient.SearchFirst("HND-999").ConfigureAwait(false);
+            var result = await JavlibraryClient.SearchFirst("AAA-111").ConfigureAwait(false);
 
             Assert.AreEqual(null, result);
         }
