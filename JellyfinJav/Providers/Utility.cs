@@ -28,7 +28,7 @@ namespace JellyfinJav.Providers
             };
             var result = libraryManager.GetItemList(searchQuery).FirstOrDefault();
 
-            if (result == null)
+            if (result is null)
             {
                 return info.Name;
             }
@@ -41,9 +41,24 @@ namespace JellyfinJav.Providers
         /// <returns>The video's jav code.</returns>
         public static string? ExtractCodeFromFilename(string filename)
         {
-            var rx = new Regex(@"[\w\d]+-\d+", RegexOptions.Compiled);
-            var match = rx.Match(filename);
-            return match?.Value.ToUpper();
+            var rx = new Regex(@"[\w\d]+-?\d+");
+            var value = rx.Match(filename)?.Value.ToUpper();
+
+            if (value is null)
+            {
+                return null;
+            }
+
+            if (value.Contains("-"))
+            {
+                return value;
+            }
+            else
+            {
+                rx = new Regex(@"([\w\d]+?)(\d+)");
+                var groups = rx.Match(value).Groups;
+                return groups[1] + "-" + groups[2];
+            }
         }
 
         /// <summary>Creates a video's display name according to the plugin's selected configuration.</summary>
