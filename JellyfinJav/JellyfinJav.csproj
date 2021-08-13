@@ -12,8 +12,8 @@
 
   <ItemGroup>
     <PackageReference Include="AngleSharp" Version="0.14.0" />
-    <PackageReference Include="Jellyfin.Controller" Version="10.7.1" />
-    <PackageReference Include="Jellyfin.Model" Version="10.7.1" />
+    <PackageReference Include="Jellyfin.Controller" Version="10.7.6" />
+    <PackageReference Include="Jellyfin.Model" Version="10.7.6" />
     <PackageReference Include="Skiasharp" Version="2.80.2" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118" />
   </ItemGroup>

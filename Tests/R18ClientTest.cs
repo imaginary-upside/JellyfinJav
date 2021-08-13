@@ -38,7 +38,7 @@ namespace Tests
                 studio: "M's Video Group",
                 boxArt: "https://pics.r18.com/digital/video/mvsd00282/mvsd00282pl.jpg",
                 cover: "https://pics.r18.com/digital/video/mvsd00282/mvsd00282ps.jpg",
-                releaseDate: DateTime.Parse("2015-12-12"));
+                releaseDate: DateTime.Parse("2015-12-12 10:00:21"));
 
             var result = await R18Client.SearchFirst("MVSD-282").ConfigureAwait(false);
 
@@ -65,7 +65,7 @@ namespace Tests
                 studio: "S1 NO.1 STYLE",
                 boxArt: "https://pics.r18.com/digital/video/ssni00643/ssni00643pl.jpg",
                 cover: "https://pics.r18.com/digital/video/ssni00643/ssni00643ps.jpg",
-                releaseDate: DateTime.Parse("2019-11-30"));
+                releaseDate: DateTime.Parse("2019-11-30 10:00:59"));
 
             var result = await R18Client.LoadVideo("ssni00643").ConfigureAwait(false);
 
@@ -84,7 +84,7 @@ namespace Tests
                 studio: "Nanpa JAPAN",
                 boxArt: "https://pics.r18.com/digital/video/njvr00023/njvr00023pl.jpg",
                 cover: "https://pics.r18.com/digital/video/njvr00023/njvr00023ps.jpg",
-                releaseDate: DateTime.Parse("2019-07-26"));
+                releaseDate: DateTime.Parse("2019-07-26 10:00:31"));
 
             var result = await R18Client.LoadVideo("njvr00023").ConfigureAwait(false);
 

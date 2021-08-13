@@ -2,13 +2,13 @@ namespace JellyfinJav.Api
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.Linq;
     using System.Net.Http;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using AngleSharp;
-    using AngleSharp.Dom;
 
     /// <summary>A web scraping client for r18.com.</summary>
     public static class R18Client
@@ -118,28 +118,30 @@ namespace JellyfinJav.Api
         /// <returns>The parsed video.</returns>
         public static async Task<Video?> LoadVideo(string id)
         {
-            var response = await HttpClient.GetAsync($"https://www.r18.com/videos/vod/movies/detail/-/id={id}/").ConfigureAwait(false);
+            var response = await HttpClient.GetAsync($"https://www.r18.com/api/v4f/contents/{id}").ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
                 return null;
             }
 
-            var html = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var doc = await Context.OpenAsync(req => req.Content(html)).ConfigureAwait(false);
+            var res = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var videoResponse = JsonSerializer.Deserialize<VideoResponse>(res, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            });
 
-            var code = doc.QuerySelector(".product-details dl:nth-child(2) dd:nth-of-type(3)")?.TextContent.Trim();
-            var title = Decensor(doc.QuerySelector("cite[itemprop=name]")?.TextContent);
-            var actresses = doc.QuerySelectorAll("span[itemprop=name]")
-                               ?.Select(n => NormalizeActress(n.TextContent))
-                               .Where(actress => actress != "----") ?? Array.Empty<string>();
-            var genres = doc.QuerySelectorAll("[itemprop=genre]")
-                            ?.Select(n => Decensor(n.TextContent.Trim()))
-                            .OfType<string>()
-                            .Where(genre => NotSaleGenre(genre)) ?? Array.Empty<string>();
-            var studio = doc.QuerySelector("[itemprop=productionCompany]")?.TextContent.Trim();
-            var cover = doc.QuerySelector("[itemprop=image]")?.GetAttribute("src");
-            var boxArt = cover?.Replace("ps.jpg", "pl.jpg");
-            var releaseDate = ExtractReleaseDate(doc);
+            var code = videoResponse?.Data?.Code;
+            var title = Decensor(videoResponse?.Data?.Title);
+            var actresses = videoResponse?.Data?.Actresses?.Select(a => NormalizeActress(a.Name)) ?? Array.Empty<string>();
+            var genres = videoResponse?.Data?.Categories?.Select(genre => Decensor(genre.Name)).OfType<string>().Where(genre => NotSaleGenre(genre)) ?? Array.Empty<string>();
+            var studio = videoResponse?.Data?.Maker?.Name;
+            var boxArt = videoResponse?.Data?.Images?.JacketImage?.Large;
+            var cover = videoResponse?.Data?.Images?.JacketImage?.Medium;
+            DateTime? releaseDate = null;
+            if (!string.IsNullOrEmpty(videoResponse?.Data?.ReleaseDate))
+            {
+                releaseDate = DateTime.Parse(videoResponse.Data.ReleaseDate);
+            }
 
             if (title is null || code is null)
             {
@@ -160,8 +162,13 @@ namespace JellyfinJav.Api
                 releaseDate: releaseDate);
         }
 
-        private static string NormalizeActress(string actress)
+        private static string NormalizeActress(string? actress)
         {
+            if (actress is null)
+            {
+                return string.Empty;
+            }
+
             var rx = new Regex(@"^(.+?)( ?\(.+\))?$");
             var match = rx.Match(actress);
 
@@ -192,26 +199,9 @@ namespace JellyfinJav.Api
             return match.Groups[2].Value;
         }
 
-        private static DateTime? ExtractReleaseDate(IDocument doc)
-        {
-            var release = doc.QuerySelector("[itemprop=dateCreated]")?.TextContent;
-            if (release == null)
-            {
-                return null;
-            }
-
-            var culture = new CultureInfo("en-US");
-            culture.DateTimeFormat.AbbreviatedMonthNames = new string[]
-            {
-                "Jan.", "Feb.", "Mar.", "Apr.", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec.", string.Empty,
-            };
-
-            return DateTime.Parse(release, culture);
-        }
-
         private static string? Decensor(string? censored)
         {
-            if (censored == null)
+            if (censored is null)
             {
                 return null;
             }
@@ -220,12 +210,66 @@ namespace JellyfinJav.Api
             return rx.Replace(censored, m => CensoredWords[m.Value]);
         }
 
-        private static bool NotSaleGenre(string? genre)
+        private static bool NotSaleGenre(string genre)
         {
             var rx = new Regex(@"\bsale\b", RegexOptions.IgnoreCase);
             var match = rx.Match(genre ?? string.Empty);
 
             return !match.Success;
+        }
+
+        private class VideoResponse
+        {
+            public DataC? Data { get; set; }
+
+            public class DataC
+            {
+                [JsonPropertyName("dvd_id")]
+                public string? Code { get; set; }
+
+                public string? Title { get; set; }
+
+                [JsonPropertyName("release_date")]
+                public string? ReleaseDate { get; set; }
+
+                public Actress[] Actresses { get; set; } = Array.Empty<Actress>();
+
+                public Image? Images { get; set; }
+
+                public Category[] Categories { get; set; } = Array.Empty<Category>();
+
+                public string? Studio { get; set; }
+
+                public MakerC? Maker { get; set; }
+
+                public class Actress
+                {
+                    public string? Name { get; set; }
+                }
+
+                public class Image
+                {
+                    [JsonPropertyName("jacket_image")]
+                    public JacketImageC? JacketImage { get; set; }
+
+                    public class JacketImageC
+                    {
+                        public string? Large { get; set; }
+
+                        public string? Medium { get; set; }
+                    }
+                }
+
+                public class Category
+                {
+                    public string? Name { get; set; }
+                }
+
+                public class MakerC
+                {
+                    public string? Name { get; set; }
+                }
+            }
         }
     }
 }
